@@ -1,0 +1,23 @@
+package:
+  name: telepathy-mission-control
+  version: 5.16.3
+  www: http://telepathy.freedesktop.org/wiki/Mission_Control
+  short: Mission Control -- or MC for short -- is a Telepathy component implementing both the Account Manager and Channel Dispatcher specifications.
+
+download:
+  url: http://telepathy.freedesktop.org/releases/telepathy-mission-control
+  file_tar_gz: ~
+  checksum: 71575d2ff8aa7337aca355e3d921eba5cd2ff050fabc01e51577343093e98b7d
+  verify: asc
+
+version:
+  installed_pkgconfig: mission-control-plugins
+
+linux:
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --disable-Werror --disable-schemas-compile --disable-upower
+    - make: ~
+  - test:
+    - sh: make check || { kx_echo "REDOING MAKE CHECK"; make -k check; }
+  - install:
+    - install: ~

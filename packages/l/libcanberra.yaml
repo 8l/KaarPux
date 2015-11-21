@@ -1,0 +1,28 @@
+package:
+  name: libcanberra
+  version: 0.30
+  www: http://0pointer.de/lennart/projects/libcanberra/
+  short: |
+      libcanberra is an implementation of the XDG Sound Theme and Name Specifications,
+      for generating event sounds on free desktops, such as GNOME.
+      It comes with several backends (ALSA, PulseAudio, OSS, GStreamer, null) and is designed to be portable.
+
+download:
+  url: http://0pointer.de/lennart/projects/libcanberra/
+  file_tar_xz: ~
+  checksum: c2b671e67e0c288a69fc33dc1b6f1b534d07882c2aceed37004bf48c601afa72
+
+version:
+  installed_pkgconfig: ~
+
+linux:
+  - build:
+    - configure_kx: >
+        --disable-alsa
+        --disable-oss
+        --disable-gstreamer
+        --disable-gtk-doc
+    - make: ~
+  # 'make check' does nothing
+  - install:
+    - install: ~

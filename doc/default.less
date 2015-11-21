@@ -1,0 +1,688 @@
+/* ============================================================ */
+/*           RESET                                              */
+/* ============================================================ */
+
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+/* ============================================================ */
+/*           COLORS                                             */
+/* ============================================================ */
+
+/* http://www.yafla.com/yaflacolor/ColorRGBHSL.html */
+/* http://lesscss.org/functions/#color-operations */
+
+@color_base: #091F92;
+@color_neutral: #f8f8f8;
+
+@color_fore: darken(@color_base, 10%);
+@color_back: @color_neutral;
+@color_head: lighten(@color_base, 10%);
+
+@color_topbot_back: @color_base;
+@color_topbot_fore: @color_neutral;
+@color_topbot_sep: darken(@color_base, 10%);
+@color_navbot_sep: @color_neutral;
+
+@color_link: lighten(spin(@color_base, -30), 15%);
+@color_link_visited: lighten(spin(@color_base, 30), 15%);
+@color_link_hover: spin(@color_base, 180);
+@color_link_active: spin(@color_base, 180);
+
+@color_table_border: lighten(@color_fore, 30%);
+
+@color_code: spin(@color_fore, -120);
+@color_command: spin(@color_fore, -120);
+@color_application: @color_base;
+@color_gui:@color_base;
+
+@color_plist_back: #FFFFFF;
+@color_plist_back_emphasis: darken(@color_neutral, 5%);
+@color_plist_fore: @color_code;
+@color_plist_border: lighten(@color_code, 20%);
+
+@color_warning_back: #FFFFFF;
+@color_warning_fore: spin(@color_fore, 120);
+@color_warning_border: lighten(@color_warning_fore, 20%);
+
+@color_note_back: #FFFFFF;
+@color_note_fore: @color_fore;
+@color_note_border: lighten(@color_fore, 20%);
+
+@color_important_back: @color_note_back;
+@color_important_fore: @color_note_fore;
+@color_important_border: @color_note_border;
+
+
+/* ============================================================ */
+/*           FONTS                                              */
+/* ============================================================ */
+
+/*   http://webdesignandsuch.com/8-great-font-stacks-for-web-design/   */
+
+
+/* Times New Roman-based stack */
+
+.font_serif() {
+	font-family: Cambria, "Hoefler Text", Utopia, "Liberation Serif", "Nimbus Roman No9 L Regular", Times, "Times New Roman", serif;
+}
+
+
+/* Verdana-based sans serif stack */
+
+.font_sans_serif() {
+	font-family: Corbel, "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", "Bitstream Vera Sans", "Liberation Sans", Verdana, "Verdana Ref", sans-serif;
+}
+
+/* Monospace stack */
+
+.font_monospace() {
+	font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+	font-size: 95%;
+}
+
+
+/* ============================================================ */
+/*           LINKS                                              */
+/* ============================================================ */
+
+a:link {
+	color: @color_link;
+}
+
+a:visited {
+	color: @color_link_visited;
+}
+
+a:active {
+	color: @color_link_active;
+}
+
+a:hover{
+	color: @color_link_hover;
+}
+
+div.top,
+div.navfooter {
+	a:link, a:visited {
+		color: @color_topbot_fore;
+	}
+	a:active {
+		color: lighten(@color_link_active, 20%);
+	}
+	a:hover{
+		color: lighten(@color_link_hover, 20%);
+	}
+}
+
+div.top .kaarpux {
+	a:link { text-decoration:none; }
+	a:visited { text-decoration: none; }
+	a:hover { text-decoration: none; }
+	a:active { text-decoration: none; }
+}
+
+/*
+div.toc > dl > dt > span {
+	a:link, a:visited {
+		color: @color_head;
+	}
+	a:active {
+		color: @color_link_active;
+	}
+	a:hover{
+		color: @color_link_hover;
+	}
+}
+*/
+
+/* ============================================================ */
+/*           BODY                                               */
+/* ============================================================ */
+
+body  {
+	background: @color_back;
+}
+
+
+/* ============================================================ */
+/*           TOP                                                */
+/* ============================================================ */
+
+div.top {
+	background: @color_topbot_back;
+	color: @color_topbot_fore;
+	.font_sans_serif;
+	font-weight: bold;
+	display: block;
+	overflow: hidden;
+	padding: 1em 2em 1em 2em;
+
+	.kaarpux {
+		display: block;
+		float: left;
+
+		#kaarpux {
+			font-size: 280%;
+		}
+	}
+
+	.quicklinks {
+		display: block;
+		float: right;
+		letter-spacing: 0.1em;
+
+		li {
+			margin: 0.3em 0;
+		}
+	}
+}
+
+
+/* ============================================================ */
+/*           NAVHEADER                                          */
+/* ============================================================ */
+
+div.navheader {
+	background: @color_back;
+	color: @color_fore;
+	.font_sans_serif;
+	font-size: 80%;
+	display: block;
+	overflow: hidden;
+	border-bottom: 1px solid @color_topbot_sep;
+	padding: 0.3em 1em 0.5em 2.0em;
+
+	.breadcrumbs { 
+
+		ul {
+			padding-left: 0;
+			margin-left: 0;
+			list-style: none; 
+			float: left;
+
+			li {
+				float: left;
+			}
+
+			.breadcrumb-link:after {
+				content: ">";
+				margin: 0 0.5em; 
+				font-weight: bold;
+			}
+		}
+	}
+
+	.next {
+		float: right;
+			span:after {
+			content: " | "; 
+			font-weight: bold;
+		}
+	}
+}
+
+
+/* ============================================================ */
+/*           NAVFOOTER                                          */
+/* ============================================================ */
+
+div.navfooter {
+	margin-top: 3em;
+	background: @color_topbot_back;
+	color: @color_topbot_fore;
+	.font_sans_serif;
+	font-size: 80%;
+	display: block;
+	overflow: hidden;
+
+	li.prev {
+		float: left;
+		text-align: left;
+	}
+
+	li.copyright {
+		float: left;
+		text-align: center;
+	}
+
+	li.next {
+		float: left;
+		text-align: right;
+	}
+
+	li.prev,
+	li.next {
+		width: 33%;
+	}
+
+	li.copyright {
+		width: 34%;
+	}
+
+	li.prev > ul,
+	li.copyright > ul,
+	li.next > ul {
+		padding: 0.5em 1em 0.5em 1em;
+		> li {
+			margin-top: 0.25em;
+		}
+	}
+
+	li.prev > ul,
+	li.next > ul {
+		> li:first-child {
+			font-weight: bold;
+		}
+	}
+
+	li.copyright > ul {
+		border-left: 1px solid @color_navbot_sep;
+		border-right: 1px solid @color_navbot_sep;
+	}
+
+	.copyright1 {
+		padding: 0.5em 1em 0.5em 1em;
+		text-align: center;
+	}
+}
+
+
+/* ============================================================ */
+/*           MAIN                                               */
+/* ============================================================ */
+
+div.book,
+div.chapter,
+div.section {
+	color: @color_fore;
+	line-height: 140%;
+	margin-left: 1em;
+	margin-right: 1em;
+
+	p {
+		margin: 1em 0 0.5em 0;
+	}
+}
+
+/* ============================================================ */
+/*           INDEX PAGE                                         */
+/* ============================================================ */
+
+div.release {
+	margin-top: 1em;
+	margin-bottom: 1em;
+	line-height: 120%;
+
+	ul.release {
+		li {
+			margin-top: 0;
+			margin-bottom: 0;	
+		}
+	}
+}
+
+@media all and (min-width: 100ex) {
+	div.index {
+		display: block;
+		overflow: hidden;
+
+		.main {
+			float: left;
+			width: 60%;
+		}
+
+		.news {
+			float: left;
+			width: 40%;
+		}
+		.news2 {
+			border-left: 1px solid lighten(@color_fore, 60%);
+		}
+	}
+}
+
+
+/* ============================================================ */
+/*           EMPHASIS                                           */
+/* ============================================================ */
+
+b       { font-weight: bold; }
+em      { font-style: italic; }
+strong  { font-weight: bold; }
+
+a.xref em { font-style: normal; } 
+
+
+/* ============================================================ */
+/*           HEADERS                                            */
+/* ============================================================ */
+
+.h() {
+	.font_sans_serif();
+	font-weight: bold;
+	color: @color_head;
+	letter-spacing: 0.05em;
+	margin: 3ex 0 1ex 0;
+}
+
+h1 {
+	.h();
+	font-size: 200%;
+}
+
+h2 {
+	.h();
+	font-size: 160%;
+}
+
+h3 {
+	.h();
+	font-size: 130%;
+}
+
+h4 {
+	.h();
+	font-size: 110%;
+}
+
+p.title {
+	.h();
+	font-size: 130%;
+}
+
+
+/* ============================================================ */
+/*           TABLE OF CONTENTS                                  */
+/* ============================================================ */
+
+div.toc {
+	.font_sans_serif;
+
+	p:first-child {
+		display: none;
+	}
+}
+
+div.book .toc,
+div.chapter .toc,
+div.section .toc {
+
+	.appendix {
+		display: none;
+	}
+
+	.chapter {
+		letter-spacing: 0.05em;
+	}
+
+	> dl > dt {
+		margin: 2ex 0 1ex 0;
+		font-size: 110%;
+		font-weight: bold;
+		color: @color_head;
+	}
+
+	> dl > dd {
+		padding-left: 1em;
+	}
+}
+
+div.appendix .toc {
+
+	> dl > dt {
+		margin: 0.5ex 0 0.5ex 2ex;
+	}
+
+	> dl > dd {
+		padding-left: 2em;
+	}
+}
+
+div.book .titlepage hr {
+	display: none;
+}
+
+
+/* ============================================================ */
+/*           SPANS                                              */
+/* ============================================================ */
+
+code {
+	color: @color_code;
+	.font_monospace;
+}
+
+span.application {
+	color: @color_application;
+	font-weight: bold;
+	.font_sans_serif;
+}
+
+span.command
+{
+	color: @color_command;
+	font-weight: bold;
+	.font_monospace;
+}
+
+span.guilabel,
+span.guimenu,
+span.guimenuitem
+{
+	color: @color_gui;
+	.font_sans_serif;
+}
+
+
+/* ============================================================ */
+/*           LISTS                                              */
+/* ============================================================ */
+
+div.section {
+
+	ul {
+		list-style: disc;
+	}
+
+	ol {
+		list-style: decimal;
+	}
+
+	ul, ol {
+		margin-left: 1em;
+		padding-left: 1em;
+	}
+
+	ul li, ol li {
+		margin: 0.2em 0 0 0.2em;
+	}
+
+	ul p, ol p {
+		margin: 0.2em 0 0 0.2em;
+	}
+
+	li.step {
+		margin-top: 0.5em;
+	}
+
+	dl {
+		margin: 0.5em 0;
+	}
+
+	dt {
+		margin: 0.5em 0 0 0;
+	}
+
+	dd {
+		margin: 0.2em 0 0 2em;
+	}
+
+	dd p {
+		margin: 0;
+	}
+}
+
+
+/* ============================================================ */
+/*           TABLES                                             */
+/* ============================================================ */
+
+div.table,
+div.informaltable {
+
+	margin: 0.5em 0em;
+
+	.font_sans_serif;
+
+	p.title {
+		display: none;
+	}
+
+	table {
+		border-top: 1px solid @color_table_border;
+		border-right: 1px solid @color_table_border;
+		border-collapse: collapse;
+
+		th { font-weight: bold; }
+
+		td, th {
+			border-left: 1px solid @color_table_border;
+			border-bottom: 1px solid @color_table_border;
+			border-collapse:collapse;
+			padding: 0.3em 1em;
+		}
+	}
+
+}
+
+
+/* ============================================================ */
+/*           KXBOX MIXIN                                        */
+/* ============================================================ */
+
+.kxbox() {
+	margin: 0.5em 0em !important;
+	padding: 0.5em 0.75em;
+	border-style: solid;
+	border-width: 1px 1px 1px 4px;
+}
+
+div.note h3,
+div.important h3,
+div.warning h3 {
+	margin: 1ex 0 0.5ex 0;
+}
+
+/* ============================================================ */
+/*           PROGRAMLISTING                                     */
+/* ============================================================ */
+
+pre.programlisting {
+	.kxbox();
+	background-color: @color_plist_back;
+	color: @color_plist_fore;
+	border-color:@color_plist_border;
+	.font_monospace
+}
+
+pre.programlisting .emphasis {
+	display: block;
+	background-color: @color_plist_back_emphasis;
+	color: @color_plist_fore;
+	padding: 0.5em;
+}
+
+
+/* ============================================================ */
+/*           WARNING                                            */
+/* ============================================================ */
+
+div.warning {
+	.kxbox();
+	background-color: @color_warning_back;
+	color: @color_warning_fore;
+	border-color:@color_warning_border;
+}
+
+
+/* ============================================================ */
+/*           NOTE                                               */
+/* ============================================================ */
+
+div.note {
+	.kxbox();
+	background-color: @color_note_back;
+	color: @color_note_fore;
+	border-color:@color_note_border;
+}
+
+
+/* ============================================================ */
+/*           IMPORTANT                                          */
+/* ============================================================ */
+
+div.important {
+	.kxbox();
+	background-color: @color_important_back;
+	color: @color_important_fore;
+	border-color:@color_important_border;
+}
+
+
+/* ============================================================ */
+/*           SECURITY                                           */
+/* ============================================================ */
+
+td.security_open {
+	background-color: #ffd0d0;
+}
+

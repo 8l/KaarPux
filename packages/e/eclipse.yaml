@@ -1,0 +1,48 @@
+package:
+  name: eclipse
+  version: 4.5.1
+  www: http://eclipse.org/
+  short: |
+      Eclipse is a multi-language software development environment comprising an integrated development environment (IDE) and an extensible plug-in system.
+      It is written mostly in Java.
+
+download:
+  url: http://download.eclipse.org/eclipse/downloads/drops4/R-4.5.1-201509040015/
+  file: eclipse-SDK-${KX_ECLIPSE_VERSION}-linux-gtk-x86_64.tar.gz
+  dir: eclipse
+  checksum: 5cec6e63e2283e0c3ecbed361832208633c0c9bd
+
+version:
+  installed: kxver_file_pattern("/opt/kaarpux/eclipse/lib/eclipse/artifacts.xml", qr|id='org.eclipse.sdk' version='([0-9]+\.+[0-9\.]*[0-9]+)|);
+  upstream: |
+      my $html = kxver_html_download("download.eclipse.org", "/eclipse/downloads/");
+      if ( $html =~ /Latest Release.*?drops.?\/R-([0-9\.]+)-/s ) {
+      return $1;
+      } else {
+      return "n/a";
+      }
+
+opt:
+
+  - build:
+    - echo: "no build"
+
+  - install: 
+    - sh: |
+        LIB=${KX_PREFIX}/lib/${KX_ECLIPSE}
+        mkdir -pv ${LIB}
+        cp -rp * ${LIB}
+        mkdir -pv ${KX_PREFIX}/bin
+        ln -svf ${LIB}/eclipse ${KX_PREFIX}/bin
+
+        mkdir -p ${KX_PREFIX}/share/pixmaps
+        cp icon.xpm ${KX_PREFIX}/share/pixmaps/eclipse.png
+
+        mkdir -pv "${KX_PREFIX}/share/applications"
+    - get_pkg_file: eclipse.desktop
+    - sh: > 
+        desktop-file-install
+        --vendor Eclipse
+        --dir "${KX_PREFIX}/share/applications"
+        --add-category Development
+        eclipse.desktop

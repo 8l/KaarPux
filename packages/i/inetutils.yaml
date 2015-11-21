@@ -1,0 +1,47 @@
+package:
+  name: inetutils
+  version: 1.9.4
+  www: http://www.gnu.org/software/inetutils/
+  short: Inetutils is a collection of common network programs.
+
+download:
+  gnuz: ~
+  checksum: be8f75eff936b8e41b112462db51adf689715658a1b09e0d6b05d11ec92cc616
+
+version:
+  installed_sh_trailing: ping --version
+  upstream_gnu: ~
+  wiz_savannah: ~
+  news: NEWS
+  changelog: ChangeLog
+
+bootstrap_8:
+  # Fix an incompatibility between this package and Glibc-2.16.0
+  - sh: sed -i -e '/gets is a/d' lib/stdio.in.h
+  - configure_kx: >
+      --libexecdir=/bin
+      --disable-ifconfig
+      --disable-logger
+      --disable-syslogd
+      --disable-whois
+      --disable-servers
+  - make: ~
+  - check: ~
+  - install: ~
+
+verify_cli: |
+  kx_cli_match_success "ping -c1 localhost" { "ping statistics" "1 packets transmitted" "1 packets received" "0% packet loss"}
+  kx_cli_match_success "ping6 -c1 ::1" { "ping statistics" "1 packets transmitted" "1 packets received" "0% packet loss"}
+  kx_cli_match_success "traceroute localhost" { "127.0.0.1" }
+  kx_cli_success "hostname"
+
+# Not tested:
+# /bin/ftp
+# /bin/rcp
+# /bin/talk
+# /bin/rlogin
+# /bin/tftp
+# /bin/rsh
+# /bin/telnet
+# /bin/rexec
+

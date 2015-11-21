@@ -1,0 +1,27 @@
+package:
+  name: dialog
+  version: 1.2-20140219
+  www: http://invisible-island.net/dialog/
+  short: script-interpreter which provides a set of curses widgets
+
+download:
+  url: ftp://invisible-island.net/dialog
+  file_tgz: ~
+  checksum: ccf07eedf147ac901aff1d984ab63ddd6986b615ddf67435f270d5462ea4ca81
+  verify: asc
+version: ~
+
+linux:
+
+  - build:
+    - configure_kx: >
+        --with-ncursesw
+        --enable-nls
+    - make: ~
+
+  # No test suite
+
+  - install:
+    - make: install-full
+
+# TODO: verify_cli

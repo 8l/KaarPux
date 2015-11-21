@@ -1,0 +1,23 @@
+package:
+  name: kbd
+  version: 2.0.3
+  www: http://www.kbd-project.org
+  short: keytable files and keyboard utilities for the Linux kernel.
+
+download:
+  file_tar_gz: ~
+  url: http://ftp.altlinux.com/pub/people/legion/kbd
+  checksum: 1933a9a9607a88fddb798f4c1df44ca81257733756c480567ceb52a41de273b9
+
+version:
+  installed_sh_trailing: setfont -V
+
+bootstrap_8:
+  - patch: kbd-1.15.2-backspace-1.patch
+  - configure_kx: ~
+  - make: ~
+  - check: ~
+  - install: ~ 
+
+# TODO: verify_cli test cases
+# Diffucult since we are (probably) not on a terminal

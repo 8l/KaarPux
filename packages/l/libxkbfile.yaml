@@ -1,0 +1,26 @@
+package:
+  name: libxkbfile
+  version: 1.0.9
+  www: http://xorg.freedesktop.org/
+  short: X11 keyboard file manipulation library
+
+download:
+  url: http://xorg.freedesktop.org/releases/individual/lib
+  file_tar_bz2: ~
+  checksum: 51817e0530961975d9513b773960b4edd275f7d5c72293d5a151ed4f42aeb16a
+
+version: ~
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~
+
+
+

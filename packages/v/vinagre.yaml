@@ -1,0 +1,48 @@
+package:
+  name: vinagre
+  version: 3.18.1
+  www: http://projects.gnome.org/vinagre/
+  short:  VNC (and SSH, RDP and SPICE) client for the GNOME Desktop.
+
+download:
+  gnomexz: ~
+  checksum: 5ddad95bb4dacc771d57541ecad49c9c9879043c0404c726c4853a243d710c98
+version:
+  installed_na: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - use_gcc: ~
+    - configure_kx_bash:  --disable-schemas-compile
+    - sh: "sed -e 's/install-data-hook: install-update-icon-cache/install-data-hook:/' -i Makefile"
+    - make: ~
+
+  - install:
+    - install: ~
+
+verify_gui: |
+    spawn vinagre vinagre
+
+    find menubar _ 4
+    find menu View 2
+
+    application
+    find menubar _ 4
+    find menu Remote 2
+    find menuitem Connect 2
+
+    # TODO: verify_gui: we cannot traverse to dialog Connect, because the application is "grayed out"
+    # find menu Remote 4
+    # find menuitem Connect 2
+    # do click
+    # application
+    # await dialog Connect 1
+
+    application
+    find menu Remote 4
+    find menuitem Quit 2
+    do click
+    desktop
+    away application vinagre 1

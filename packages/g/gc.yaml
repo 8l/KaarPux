@@ -1,0 +1,26 @@
+package:
+  name: gc
+  version: 7.4.2
+  www: http://www.hboehm.info/gc/
+  short: The Boehm-Demers-Weiser conservative garbage collector can be used as a garbage collecting replacement for C malloc or C++ new
+
+download:
+  url: http://www.hboehm.info/gc/gc_source/
+  file_tar_gz: ~
+  checksum: 12c05fd2811d989341d8c6d81f66af87
+
+version:
+  installed_pkgconfig: bdw-gc
+
+linux:
+
+  - build:
+    - sh: autoreconf -fi
+    - configure_kx: --enable-cplusplus --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

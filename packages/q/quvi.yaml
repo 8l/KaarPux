@@ -1,0 +1,33 @@
+package:
+  name: quvi
+  version: 0.9.5
+  www: http://quvi.sourceforge.net/
+  short: |
+      parses media stream URLs for Internet applications
+      that would otherwise have to use adobe flash multimedia platform to access the media streams.
+
+download:
+  sourceforge: quvi/${KX_QUVI_VERSION_MM}/quvi
+  file_tar_xz: ~
+  checksum: cb3918aad990b9bc49828a5071159646247199a63de0dd4c706adc5c8cd0a2c0
+  verify: sig
+
+version:
+  installed: kxver_sh_pattern("quvi --version", qr|quvi v([0-9.]+)|);
+  upstream: kxver_upstream_sourceforge("quvi", undef, "quvi");
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~
+
+verify_cli: |
+
+  kx_cli_match_success "quvi http://www.youtube.com/watch?v=jNQXAC9IVRw" { "Me at the zoo" duration link url }
+

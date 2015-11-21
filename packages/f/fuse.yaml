@@ -1,0 +1,28 @@
+package:
+  name: fuse
+  version: 2.9.4
+  www: http://fuse.sourceforge.net/
+  short: FUSE makes it possible to implement a filesystem in a userspace program.
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: 6be9c0bff6af8c677414935f31699ea5a7f8f5f791cfa5205be02ea186b97ce1
+
+version:
+  installed_sh_trailing: fusermount --version
+  upstream: kxver_upstream_sourceforge("fuse", "fuse-2.X", "fuse");
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_success fusermount --version

@@ -1,0 +1,33 @@
+package:
+  name: gtk2+
+  version: 2.24.28
+
+download:
+  url: ftp://ftp.gnome.org/pub/gnome/sources/gtk+/2.24
+  file: gtk+-${KX_GTK2_PLUS_VERSION}.tar.xz
+  dir: gtk+-${KX_GTK2_PLUS_VERSION}
+  checksum: b2c6441e98bc5232e5f9bba6965075dcf580a8726398f7374d39f90b88ed4656
+
+version:
+  hold: 1
+  installed_pkgconfig: gtk+-2.0
+  upstream_gnome: gtk+
+
+linux:
+
+  - build:
+    - configure_kx: >
+        --disable-gtk-doc
+        --with-xinput=yes
+        --enable-man
+    # http://pkgs.fedoraproject.org/cgit/gtk2.git/commit/?id=15ae31a42a527d883a6dfcf57e954b5140ae2e81
+    # fight unused direct deps
+    - sh: sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+    - make_repeat: ~
+
+  - test:
+    - sh: mkdir -pv ~/.local/share/
+    - check: ~
+
+  - install:
+    - install: ~

@@ -1,0 +1,36 @@
+package:
+  name: xterm
+  version: 320
+  www: http://invisible-island.net/xterm/
+  short: The xterm program is a terminal emulator for the X Window System.
+
+download:
+  url: ftp://invisible-island.net/xterm
+  file_tgz: ~
+  checksum: a60dbb574334c081425fa30f011cd9f571e3be7a91e2a84e252461798bce24a7
+  verify: asc
+
+version:
+  installed: kxver_sh_pattern("xterm -v", qr|\(([0-9]+)\)$|);
+  upstream: kxver_scrape_ftp("invisible-island.net", "xterm", qr|xterm-([0-9]+)|);
+
+linux:
+
+  - build:
+    - echo:  Pre-configure
+    - sh: sed -i '/v0/,+1s/new:/new:kb=^?:/' termcap
+    - sh: printf '\tkbs=\\177,\n' >>terminfo
+
+    - configure_kx: --enable-luit --enable-wide-chars --with-app-defaults=/etc/X11/app-defaults
+
+    - make: ~
+
+  # No test suite
+
+  - install:
+    - install: ~
+    - sh: make install-ti
+
+# TODO: Configure xterm
+# See http://www.linuxfromscratch.org/blfs/view/svn/x/xterm.html
+

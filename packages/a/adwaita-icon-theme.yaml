@@ -1,0 +1,20 @@
+package:
+  name: adwaita-icon-theme
+  version: 3.18.0
+
+download:
+  url: https://download.gnome.org/sources/adwaita-icon-theme/${KX_ADWAITA_ICON_THEME_VERSION_MM}
+  file_tar_xz: ~
+  checksum: 5e9ce726001fdd8ee93c394fdc3cdb9e1603bbed5b7c62df453ccf521ec50e58
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages 
+    - make: ~
+
+  - install:
+    - install: ~

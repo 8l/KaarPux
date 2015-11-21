@@ -1,0 +1,9 @@
+NAME="KaarPux: GNU/Linux"
+VERSION="5.0.0 (Hardeknud)"
+ID=kaarpux
+VERSION_ID=5.0.0
+PRETTY_NAME="KaarPux 5.0.0 (Hardeknud)"
+ANSI_COLOR="1;32"
+HOME_URL="http://kaarpux.kaarposoft.dk"
+SUPPORT_URL="http://sourceforge.net/p/kaarpux/discussion/"
+BUG_REPORT_URL="http://sourceforge.net/p/kaarpux/tickets/"

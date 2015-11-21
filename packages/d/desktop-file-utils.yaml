@@ -1,0 +1,24 @@
+package:
+  name: desktop-file-utils
+  version: 0.22
+  www: http://www.freedesktop.org/wiki/Software/desktop-file-utils
+  short: desktop-file-utils contains a few command line utilities for working with desktop entries.
+
+download:
+  freedesktop_xz: ~
+  checksum: 843532672692f98e9b2d6ae6cc8658da562dfde1606c7f33d9d227a344de56c5
+
+version:
+  installed: return "n/a";
+
+linux:
+  - build:
+    - configure_kx: --sysconfdir=/etc --localstatedir=/var     
+    - make: ~
+  # 'make check' does nothing
+  - install:
+    - install: ~     
+
+verify_cli: |
+  kx_cli_success update-desktop-database --help
+  kx_cli_success desktop-file-install --help

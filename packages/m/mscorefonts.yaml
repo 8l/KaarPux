@@ -1,0 +1,39 @@
+package:
+  name: mscorefonts
+  version: final
+  www: http://corefonts.sourceforge.net/
+  short: Microsoft's TrueType core fonts
+
+download:
+  no_download: ~
+
+additional_downloads:
+  - http://downloads.sourceforge.net/project/corefonts/the%20fonts/final/andale32.exe andale32.exe c4db8cbe42c566d12468f5fdad38c43721844c69 /mscorefonts/
+  - http://downloads.sourceforge.net/project/corefonts/the%20fonts/final/arial32.exe  arial32.exe  6d75f8436f39ab2da5c31ce651b7443b4ad2916e /mscorefonts/
+  - http://downloads.sourceforge.net/project/corefonts/the%20fonts/final/arialb32.exe arialb32.exe d45cdab84b7f4c1efd6d1b369f50ed0390e3d344 /mscorefonts/
+  - http://downloads.sourceforge.net/project/corefonts/the%20fonts/final/comic32.exe  comic32.exe  2371d0327683dcc5ec1684fe7c275a8de1ef9a51 /mscorefonts/
+  - http://downloads.sourceforge.net/project/corefonts/the%20fonts/final/courie32.exe courie32.exe 06a745023c034f88b4135f5e294fece1a3c1b057 /mscorefonts/
+  - http://downloads.sourceforge.net/project/corefonts/the%20fonts/final/georgi32.exe georgi32.exe 90e4070cb356f1d811acb943080bf97e419a8f1e /mscorefonts/
+  - http://downloads.sourceforge.net/project/corefonts/the%20fonts/final/impact32.exe impact32.exe 86b34d650cfbbe5d3512d49d2545f7509a55aad2 /mscorefonts/
+  - http://downloads.sourceforge.net/project/corefonts/the%20fonts/final/times32.exe  times32.exe  20b79e65cdef4e2d7195f84da202499e3aa83060 /mscorefonts/
+  - http://downloads.sourceforge.net/project/corefonts/the%20fonts/final/trebuc32.exe trebuc32.exe 50aab0988423efcc9cf21fac7d64d534d6d0a34a /mscorefonts/
+  - http://downloads.sourceforge.net/project/corefonts/the%20fonts/final/verdan32.exe verdan32.exe f5b93cedf500edc67502f116578123618c64a42a /mscorefonts/
+  - http://downloads.sourceforge.net/project/corefonts/the%20fonts/final/webdin32.exe webdin32.exe 2fb4a42c53e50bc70707a7b3c57baf62ba58398f /mscorefonts/
+
+linux:
+
+  - prepare_and_build:
+    - echo: Unpacking
+    - sh: |
+        cd ${KX_BASE}/build/linux
+        rm -rf "${KX_MSCOREFONTS}"
+        mkdir -p "${KX_MSCOREFONTS}"
+        cd "${KX_MSCOREFONTS}"
+        cp ${KX_BASE}/../downloads/mscorefonts/*.exe .
+        cabextract *.exe
+
+  - install:
+    - sh: |
+        mkdir -pv /share/fonts/mscorefonts
+        cp *.TTF /share/fonts/mscorefonts
+        fc-cache -v /share/fonts/mscorefonts

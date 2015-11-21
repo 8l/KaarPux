@@ -1,0 +1,26 @@
+package:
+  name: mpfr
+  version: 3.1.2
+  www: http://www.mpfr.org/
+  short: The MPFR library is a C library for multiple-precision floating-point computations with correct rounding.
+
+lfs:
+  - http://www.linuxfromscratch.org/lfs/view/development/chapter06/mpfr.html
+
+download:
+  url_pkg_ver: http://www.mpfr.org/
+  file_tar_xz: ~
+  checksum: 399d0f47ef6608cc01d29ed1b99c7faff36d9994c45f36f41ba250147100453b
+  verify: asc
+
+version:
+  installed: kxver_header_file("MPFR", "/include/mpfr.h", "PATCHLEVEL");
+
+bootstrap_5:
+  # Consolideted upstream patch from Linux From Scratch
+  - patch: mpfr-3.1.2-upstream_fixes-3.patch
+  - configure_kx: --enable-thread-safe --disable-static
+  - make: ~
+  - check: ~ 
+  - install: ~ 
+

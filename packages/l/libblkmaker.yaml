@@ -1,0 +1,24 @@
+package:
+  name: libblkmaker
+  version: 0.5.1
+  www: https://github.com/bitcoin/libblkmaker/blob/master/README
+  short:  C implementation of bitcoin getblocktemplate (BIP 22)
+
+download:
+  full_url: https://github.com/bitcoin/libblkmaker/archive/v${KX_LIBBLKMAKER_VERSION}.tar.gz
+  file: ${KX_LIBBLKMAKER}.tar.gz
+  checksum: f9d1ccdc2931ed7fe8248b2541e0e0cbf85da3434e2adf41e1ddeffdcec185bd
+
+version:
+  installed_pkgconfig: libblkmaker_jansson-0.1
+  upstream: kxver_scrape_url(undef, "https://github.com/bitcoin/libblkmaker/releases", qr|v([0-9]+[0-9.\-_]*[0-9]+)\.tar|);
+
+opt:
+
+  - build:
+    - sh: ./autogen.sh
+    - configure_kx: ~
+    - make: ~
+
+  - install:
+    - install: ~

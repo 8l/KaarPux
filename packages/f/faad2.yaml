@@ -1,0 +1,21 @@
+package:
+  name: faad2
+  version: 2.7
+  www: http://www.audiocoding.com/faad2.html
+  short: FAAD2 is an open source MPEG-4 and MPEG-2 AAC decoder.
+
+download:
+  url: http://downloads.sourceforge.net/faac
+  checksum: 14561b5d6bc457e825bfd3921ae50a6648f377a9396eaf16d4b057b39a3f63b5
+
+version:
+  installed: kxver_sh_pattern("faad -h", qr|Decoder V([0-9\.]+)|);
+  upstream: kxver_upstream_sourceforge("faac", "faad2-src", "faad2");
+
+linux:
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+  # 'make check' does nothing
+  - install:
+    - install: ~

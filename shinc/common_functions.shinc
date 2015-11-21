@@ -1,0 +1,571 @@
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2012-2013: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+# ============================================================
+kx_echo () {
+	echo "KAARPUX: " "$@"
+}
+
+
+# ============================================================
+kx_error_echo () {
+	echo "" >&2
+	echo "KAARPUX: *** ***" >&2
+	echo "KAARPUX: *** ***" "$@" >&2
+	echo "KAARPUX: *** ***" >&2
+	echo "" >&2
+}
+
+# ============================================================
+kx_step_echo () {
+	echo ""
+	echo "KAARPUX:  ------------------------------------------------------------"
+	echo "KAARPUX: " "$@"
+	echo "KAARPUX:  ------------------------------------------------------------"
+	echo ""
+}
+
+# ============================================================
+kx_error_exit () {
+	kx_error_echo $@
+	exit 1
+	}
+
+# ============================================================
+kx_log_error_exit () {
+	local RC="$1"
+	local ID="$2"
+	shift; shift
+	kx_log_error "${ID}" "$@"
+	trap '' INT HUP TERM QUIT EXIT
+	exit ${RC}
+	}
+
+# ============================================================
+kx_echo_var () {
+	eval "local VV=\"\$$1\""
+	echo "KAARPUX: $1 = [${VV}]"
+}
+
+# ============================================================
+kx_log () {
+	local ID=$1
+	shift
+	local TIME=$(date +%F_%T)
+	echo I $TIME $ID "$@"
+}
+
+# ============================================================
+kx_log_debug () {
+	local ID=$1
+	shift
+	local TIME=$(date +%F_%T)
+	echo D $TIME $ID "$@"
+}
+
+# ============================================================
+kx_log_warn () {
+	local ID=$1
+	shift
+	local TIME=$(date +%F_%T)
+	echo W $TIME $ID "$@"
+}
+
+# ============================================================
+kx_log_error () {
+	local ID=$1
+	shift
+	local TIME=$(date +%F_%T)
+	echo E $TIME $ID '*** ***' "$@" >&2
+}
+
+# ============================================================
+kx_ensure_runas_kaarpux () {
+        test $(id -un) = kaarpux || kx_error_exit "Script [$0] must be run as [kaarpux]"
+        }
+
+# ============================================================
+kx_ensure_runas_root () {
+        test $(id -u) -eq 0 || kx_error_exit "Script [$0] must be run as root"
+        }
+
+
+# ============================================================
+kx_ensure_runas_nonroot () {
+        test $(id -u) -ne 0 || kx_error_exit "Script [$0] must *NOT* be run as root"
+        }
+
+
+# ============================================================
+kx_ensure_chroot () {
+	test $(id -u) -eq 0 || kx_error_exit "Script [$0] must be run in chroot, but you are not root"
+	test -n "${FAKE_CHROOT:-}" && { kx_echo "Faking chroot"; return 0; }
+	local R1=$(stat -c %d:%i /proc/1/root/.)
+	local R2=$(stat -c %d:%i /)
+	test "$R1" = "$R2" && kx_error_exit "Script [$0] must be run in chroot"
+	return 0
+        }
+
+# ============================================================
+kx_ensure_runinX () {
+	echo "AAA"
+	echo "BBB"
+        test x"${DISPLAY:-unset}" != x"unset" || kx_error_exit "Script [$0] must be run inside X11"
+	echo "CCC"
+        }
+
+
+
+# ============================================================
+kx_untar () {
+	local DIR=$1
+	local FILE=$2
+	local OPTIONS=""
+	case ${FILE} in
+		*tar.bz2)
+			OPTIONS="j"
+			echo "--- --- untar [${OPTIONS}]: [${FILE}] -> [${DIR}]"
+			tar x${OPTIONS} -C "${DIR}" -f "${FILE}"
+			;;
+		*tar.gz | *tgz)
+			OPTIONS="z"
+			echo "--- --- untar [${OPTIONS}]: [${FILE}] -> [${DIR}]"
+			tar x${OPTIONS} -C "${DIR}" -f "${FILE}"
+			;;
+		*tar.xz | *tar.lzma)
+			OPTIONS="J"
+			echo "--- --- untar [${OPTIONS}]: [${FILE}] -> [${DIR}]"
+			tar x${OPTIONS} -C "${DIR}" -f "${FILE}"
+			;;
+		*tar.lz)
+			OPTIONS=""
+			echo "--- --- untar [${OPTIONS}]: [${FILE}] -> [${DIR}]"
+			tar x${OPTIONS} -C "${DIR}" -f "${FILE}"
+			;;
+		*tar)
+			OPTIONS=""
+			echo "--- --- untar [${OPTIONS}]: [${FILE}] -> [${DIR}]"
+			tar x${OPTIONS} -C "${DIR}" -f "${FILE}"
+			;;
+		*zip | *xpi)
+			echo "--- --- unzip: [${FILE}] -> [${DIR}]"
+			unzip -d "${DIR}" ${FILE}
+			;;
+		*txt)
+			echo "--- --- copy []: [${FILE}] -> [${DIR}]"
+			cp -rp "${FILE}" "${DIR}"
+			;;
+		*)
+			echo "Unknown format to unpack for [${FILE}]"
+			exit 1
+			;;
+	esac
+	}
+
+
+# ============================================================
+kx_time_diff () {
+	local TXT="$1"
+	local START_SECS="$2"
+	local END_SECS=$(date +%s)
+	local ELAPSED_SECS=$(($END_SECS - $START_SECS))
+	kx_log KX_PKG_DONE "[${TXT}] took [${ELAPSED_SECS}] seconds elapsed"
+}
+
+
+
+# ============================================================
+kx_checksum () {
+	echo $(${1}sum "$2" | cut -d " " -f 1)
+	}
+
+# ============================================================
+kx_checksum_only_batch () {
+	MISSING="$1"
+	shift
+	for f in "$@"; do
+		eval kx_checksum_only $f || echo $f >> "${MISSING}"
+	done
+}
+
+# ============================================================
+kx_download_only_batch () {
+	MISSING="$1"
+	shift
+	for f in "$@"; do
+		eval kx_download_only $f || echo $f >> "${MISSING}"
+	done
+}
+
+# ============================================================
+kx_download_batch () {
+	MISSING="$1"
+	shift
+	for f in "$@"; do
+		eval kx_download_only $f 2>&1 || { echo $f >> "${MISSING}"; return 1; }
+		eval kx_checksum_only $f || echo $f >> "${MISSING}"
+	done
+}
+
+# ============================================================
+kx_checksum_only () {
+	local DOWNLOAD_FROM="${1#\"%\"}"
+	local DOWNLOAD_FILE="${2#\"%\"}"
+	local DOWNLOAD_CHECKSUM=$3
+	local DOWNLOAD_SUBDIR="${4:-}"
+	local CHECKSUM_TYPE="md5"
+	test $(expr length "${DOWNLOAD_CHECKSUM}") -gt 32 && CHECKSUM_TYPE=sha1
+	test $(expr length "${DOWNLOAD_CHECKSUM}") -gt 40 && CHECKSUM_TYPE=sha256
+	mkdir -pv "${KX_BASE}/../downloads${DOWNLOAD_SUBDIR}"
+	cd "${KX_BASE}/../downloads${DOWNLOAD_SUBDIR}"
+	if test -f "${DOWNLOAD_FILE}"; then
+		if test "no" = "${DOWNLOAD_CHECKSUM}"; then
+			if ! test -s "${DOWNLOAD_FILE}"; then
+				kx_error_echo "[${DOWNLOAD_FILE}] is empty"
+				return 1
+			fi
+			kx_echo "[${DOWNLOAD_FILE}] already downloaded; not verifying checksum"
+			return 0
+		fi
+		local CHECKSUM=$(kx_checksum "${CHECKSUM_TYPE}" "${DOWNLOAD_FILE}")
+		if test "${CHECKSUM}" = "${DOWNLOAD_CHECKSUM}"; then
+			kx_echo "[${DOWNLOAD_FILE}] already downloaded; ${CHECKSUM_TYPE} ok"
+			return 0
+		else
+			kx_error_echo "Wrong [${CHECKSUM_TYPE}] on [${DOWNLOAD_FROM}]"
+			kx_error_echo "Got [${CHECKSUM}] expected [${DOWNLOAD_CHECKSUM}]"
+			return 1
+		fi
+	else
+		kx_echo "[${DOWNLOAD_FILE}] not found"
+		return 1
+	fi
+}
+
+# ============================================================
+kx_download_only () {
+	local DOWNLOAD_FROM=$1
+	local DOWNLOAD_FILE=$2
+	local DOWNLOAD_CHECKSUM=$3
+	local DOWNLOAD_SUBDIR="${4:-}"
+	local CHECKSUM_TYPE="md5"
+	cd "${KX_BASE}/../downloads${DOWNLOAD_SUBDIR}"
+	wget --tries=2 --output-document="${DOWNLOAD_FILE}" "${DOWNLOAD_FROM}"
+	return $?
+}
+
+# ============================================================
+kx_download() {
+	kx_checksum_only "$@" && return 0
+	kx_download_only "$@" || exit 1
+	kx_checksum_only "$@" || exit 1
+}
+
+# ============================================================
+kx_findkeys_batch () {
+	MISSING="$1"
+	shift
+	cd "${KX_BASE}/../downloads/gpg_keys"
+	for f in "$@"; do
+		eval kx_findkey $f 2>&1 || echo $f >> "${MISSING}"
+	done
+}
+
+# ============================================================
+kx_get_fingerprint () {
+	local KEYID="$1"
+	local AWDA="--allow-weak-digest-algos"
+	gpg ${AWDA} --version >/dev/null 2>&1 || AWDA=""
+	local GPG="gpg ${AWDA} --lock-multiple --homedir=${KX_BASE}/gpg"
+	local TMP=`mktemp` 
+	$GPG --with-fingerprint --with-colon "${KX_BASE}/../downloads/gpg_keys/${KEYID}.txt" > ${TMP} || { echo "n/a"; return 1; }
+	grep ^fpr ${TMP} | cut -f10 -d:
+	rm -f ${TMP}
+}
+
+# ============================================================
+kx_findkey() {
+	local KEYID="$1"
+	local FINGERPRINT="$2"
+	local OUT
+	local FP
+		if test -s "${KX_BASE}/../downloads/gpg_keys/${KEYID}.txt"; then
+			kx_echo [${KEYID}] already downloaded
+		else
+			kx_echo "Downloading [${KEYID}] (missing)"
+			wget --tries=2 -O "${KX_BASE}/../downloads/gpg_keys/${KEYID}.txt" "http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x${KEYID}" ||
+			wget --tries=2 -O "${KX_BASE}/../downloads/gpg_keys/${KEYID}.txt" "http://keys.gnupg.net/pks/lookup?op=get&search=0x${KEYID}" ||
+			wget --tries=2 -O "${KX_BASE}/../downloads/gpg_keys/${KEYID}.txt" "http://pool.sks-keyservers.net:11371/pks/lookup?op=get&search=0x${KEYID}" ||
+			return $?
+		fi
+
+		FP=$(kx_get_fingerprint ${KEYID})
+		if test "${FP}" != "${FINGERPRINT}"; then
+			kx_echo "Downloading [${KEYID}] (had wrong fingerprint)"
+			wget --tries=2 -O "${KX_BASE}/../downloads/gpg_keys/${KEYID}.txt" "http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x${KEYID}" ||
+			wget --tries=2 -O "${KX_BASE}/../downloads/gpg_keys/${KEYID}.txt" "http://keys.gnupg.net/pks/lookup?op=get&search=0x${KEYID}" ||
+			wget --tries=2 -O "${KX_BASE}/../downloads/gpg_keys/${KEYID}.txt" "http://pool.sks-keyservers.net:11371/pks/lookup?op=get&search=0x${KEYID}" ||
+			return $?
+		fi
+
+		FP=$(kx_get_fingerprint ${KEYID})
+		test "${FP}" = "${FINGERPRINT}" || { kx_error_echo "Wrong fingerprint on [${KEYID}]; got [${FP}] expected [${FINGERPRINT}]"; return 1;}
+}
+
+
+# ============================================================
+kx_import_key() {
+	local KEYID="$1"
+	local FINGERPRINT="$2"
+	local OUT
+	local FP
+	local AWDA="--allow-weak-digest-algos"
+	gpg ${AWDA} --version >/dev/null 2>&1 || AWDA=""
+	local GPG="gpg ${AWDA} --lock-once --homedir=${KX_BASE}/gpg"
+	
+	FP=$($GPG --with-colon --fingerprint ${KEYID} 2>/dev/null | grep ^fpr | cut -f10 -d:)
+	if test -n "$FP"; then
+		test "${FP}" = "${FINGERPRINT}" || \
+		kx_error_exit "Wrong fingerprint in keyring for [${KEYID}]; got [${FP}] expected [${FINGERPRINT}]"
+	        kx_echo [${KEYID}] already in keyring
+	else
+		if test -f "${KX_BASE}/../downloads/gpg_keys/${KEYID}.txt"; then
+			kx_echo [${KEYID}] already downloaded
+		else
+			wget -O "${KX_BASE}/../downloads/gpg_keys/${KEYID}.txt" "http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x${KEYID}"
+		fi
+		FP=`$GPG --with-fingerprint --with-colon "${KX_BASE}/../downloads/gpg_keys/${KEYID}.txt" | grep ^fpr | cut -f10 -d:`
+		test "${FP}" = "${FINGERPRINT}" || kx_error_exit "Wrong fingerprint on [${KEYID}]; got [${FP}] expected [${FINGERPRINT}]"
+		$GPG --fast-import "${KX_BASE}/../downloads/gpg_keys/${KEYID}.txt" || exit $?
+		echo "${FINGERPRINT}:6:" | $GPG --import-ownertrust || exit $?
+	fi
+}
+
+# ============================================================
+kx_verify_batch () {
+	MISSING="$1"
+	shift
+	cd "${KX_BASE}/../downloads"
+	for f in "$@"; do
+		eval kx_verify $f || echo $f >> "${MISSING}"
+	done
+}
+
+# ============================================================
+kx_verify() {
+	local MODE="$1"
+	local DATA_FILE="$2"
+	local SIGN_FILE="$3"
+	local SHA_FILE
+
+	if ! command -V gpg >/dev/null 2>&1; then
+		kx_echo "NOT verifying signature of [${DATA_FILE}] (no gpg found)"
+		return 0
+	fi
+
+	local AWDA="--allow-weak-digest-algos"
+	gpg ${AWDA} --version >/dev/null 2>&1 || AWDA=""
+	local GPG="gpg ${AWDA}  --lock-multiple --homedir=${KX_BASE}/gpg"
+	kx_echo "Verifying signature of [${DATA_FILE}] with [${SIGN_FILE}]"
+	case "${MODE}" in
+		sig | sign | asc)
+			$GPG --verify "${SIGN_FILE}"
+			;;
+		tar.xz.sign)
+			xz -cd "${DATA_FILE}" | $GPG --verify "${SIGN_FILE}" -
+			;;
+		sha1.asc)
+			SHA_FILE="${SIGN_FILE%.asc}"
+			$GPG --decrypt "${SIGN_FILE}" > "${SHA_FILE}"
+			cat "${SHA_FILE}"
+			sha1sum --check "${SHA_FILE}"
+			rm "${SHA_FILE}"
+			;;
+		*)
+			kx_error_exit "Invalid mode [${MODE}] for verify of [${DATA_FILE}]"
+	esac
+}
+
+
+# ============================================================
+kx_install_pkg_file () {
+	local P1=$1
+	local PKG=$2
+	local MODE=$3
+	local FILE=$4
+	local TO=$5
+	install -m ${MODE} "${KX_BASE}/../master/packages/${P1}/${PKG}.files/${FILE}" "${TO}"
+}
+
+
+# ============================================================
+kx_append_pkg_file () {
+	local P1=$1
+	local PKG=$2
+	local FILE=$3
+	local TO=$4
+	cat "${KX_BASE}/../master/packages/${P1}/${PKG}.files/${FILE}" >> "${TO}"
+}
+
+
+# ============================================================
+kx_get_pkg_file () {
+	local P1=$1
+	local PKG=$2
+	local FILE=$3
+	local DEST=${4:-.}
+	cp "${KX_BASE}/../master/packages/${P1}/${PKG}.files/${FILE}" "${DEST}"
+}
+
+
+# ============================================================
+kx_git_describe () {
+
+	BF="${KX_BASE}/../base_version.txt"
+	CF="${KX_BASE}/../current_version.txt"
+
+	if git status >/dev/null 2>&1; then
+		V="$(git describe --abbrev=8 | cut -c2-)"
+		VX="$(git status --porcelain | grep -v "^\\?" | wc -l)"
+		test $VX -gt 0 && V="$V-$VX"
+		echo "$V" > "$CF"
+	else
+		( . ${KX_BASE}/../master/files/etc/os-release; echo "${VERSION_ID}"; ) > "$CF"
+	fi
+
+	test -f "$CF" || echo "unknown_version" > "$CF"
+	test -f "$BF" || cp "$CF" "$BF"
+
+	echo "Base version:   " [$(cat "$BF")]
+	echo "Current version:" [$(cat "$CF")]
+}
+
+# ============================================================
+
+kx_parallel_start () {
+	if test -n "${KX_PARALLEL:-}"; then
+		kx_log KX_PAR_STRT "Starting parallel build"
+		rm -f "${KX_BASE}/.kaarpux_parallel_error"
+		touch "${KX_BASE}/.kaarpux_parallel_error"
+	fi
+}
+
+
+# ============================================================
+
+kx_parallel_end () {
+	local PASS
+	PASS="${1:-UNKNOWN}"
+	if test -n "${KX_PARALLEL:-}"; then
+		sleep 0.5
+		kx_log KX_PAR_WAIT "Waiting for children to finish"
+		wait
+		if test -s "${KX_BASE}/.kaarpux_parallel_error"; then
+			kx_log_error_exit 1 KX_PAR_FAIL "Parallel build failed: [" $(cat "${KX_BASE}/.kaarpux_parallel_error") "]"
+		else
+
+			if test "${PASS%%_*}" = "opt"; then
+				kx_log KX_PAR_UOPT "Updating /opt filesystem"
+				${KX_BASE}/../master/tools/kx_opt.pl >> ${KX_BASE}/log/opt/opt.log
+			fi
+
+			kx_log KX_PAR_DONE "Parallel build complete"
+		fi
+	fi
+}
+
+
+# ============================================================
+
+kx_killtree() {
+	# kill all PID's on command line and, recursively, their children
+	local PID
+	for PID; do
+		kill -STOP $PID > /dev/null 2>&1 || true
+		local CHILD_PID
+		for CHILD_PID in $(pgrep -P $PID); do
+			kx_killtree $CHILD_PID
+		done
+		kill $PID > /dev/null 2>&1 || true
+		kill -CONT $PID > /dev/null 2>&1 || true
+	done
+}
+
+
+# ============================================================
+
+kx_unlock_and_kill_children () {
+	kx_log_warn KX_PHA_KILL "Got interrupt; killing children"
+	# Stop immediate children, so they do not spawn grandchildren
+	kill -STOP $(pgrep -P $$) > /dev/null 2>&1 || true
+	# Kill immediate children, and recursively their grandchildren
+	kx_killtree $(pgrep -P $$)
+	# Once more, as children or grandchildren may have spawned children, even if we tried to stop that
+	kill -STOP $(pgrep -P $$) > /dev/null 2>&1 || true
+	kx_killtree $(pgrep -P $$)
+	# And one more time, but of course if we are unlucky a process may still be left over
+	kill -STOP $(pgrep -P $$) > /dev/null 2>&1 || true
+	kx_killtree $(pgrep -P $$)
+}
+
+# ============================================================
+
+kx_identify () {
+	command -v systemd-detect-virt > /dev/null && \
+		kx_log KX_ENV_INFO Virtualization: $(systemd-detect-virt)
+	kx_log KX_ENV_INFO nproc $(nproc)
+	kx_log KX_ENV_INFO $( grep MemTotal /proc/meminfo)
+	kx_log KX_ENV_INFO $(uname --all)
+	kx_log KX_ENV_INFO $(ip addr | grep "inet " | grep -v 127.0.0.1)
+	command -v lsb_release > /dev/null && \
+		kx_log KX_ENV_INFO $(lsb_release --all --short 2>/dev/null)
+	test -f /etc/os-release && \
+		kx_log KX_ENV_INFO $( grep PRETTY_NAME /etc/os-release)
+	kx_log KX_ENV_INFO Kaarpux base_version: $(cat ${KX_BASE}/../base_version.txt) current_version: $(cat ${KX_BASE}/../current_version.txt)
+	kx_log KX_ENV_INFO KX_DISABLE_TEST: ${KX_DISABLE_TEST:-}
+	kx_log KX_ENV_INFO KX_PARALLEL: ${KX_PARALLEL:-}
+	kx_log KX_ENV_INFO KX_SYSTEMTAP: ${KX_SYSTEMTAP:-}
+}
+
+# ============================================================
+
+kx_sar_start() {
+	local PHASE
+	PHASE=$1
+	rm -f "${KX_BASE}/log/${PHASE}.sar"
+	KX_SAR_CMD=/usr/lib/sa/sadc
+	test -x ${KX_SAR_CMD} || KX_SAR_CMD=/usr/lib/sysstat/sadc
+	test -x ${KX_SAR_CMD} || KX_SAR_CMD=/usr/lib64/sa/sadc
+	${KX_SAR_CMD} -S XALL 60 "${KX_BASE}/log/${PHASE}.sar" &
+	KX_SAR_PID=$!
+}
+
+kx_sar_stop() {
+	local PHASE
+	PHASE=$1
+	kill -s PIPE ${KX_SAR_PID} || true
+	${KX_SAR_CMD} -S XALL 1 1 "${KX_BASE}/log/${PHASE}.sar" || true
+}
+
+# ============================================================
+
+kx_malloc_mallopt () {
+	if test "${KX_MALLOC_MALLOPT_KB:-0}" -gt 0; then
+		# See comment in default_definitions.shinc
+		export MALLOC_MMAP_THRESHOLD_=$(( ${KX_MALLOC_MALLOPT_KB} * 1024 ))
+		export MALLOC_TRIM_THRESHOLD_=$(( ${KX_MALLOC_MALLOPT_KB} * 1024 ))
+		export MALLOC_TOP_PAD_=$(( ${KX_MALLOC_MALLOPT_KB} * 1024 ))
+	fi
+}
+
+# ============================================================
+
+kx_init () {
+	kx_malloc_mallopt
+}
+

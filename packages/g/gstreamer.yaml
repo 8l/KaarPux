@@ -1,0 +1,31 @@
+package:
+  name: gstreamer
+  version: 1.6.0
+  
+download:
+  url: http://gstreamer.freedesktop.org/src/gstreamer/
+  file_tar_xz: ~
+  checksum: 52ef885647afef11c8b7645a9afefe04aa09e8971c4b932e7717872ab8a30fcc
+
+version:
+  installed_pkgconfig: gstreamer-1.0
+
+linux:
+
+  - build:
+    - configure_kx: >
+        --disable-gtk-doc
+        --disable-static
+        --disable-tests
+        --disable-fatal-warnings
+        --with-package-name="gstreamer"
+        --with-package-origin="http://kaarpux.kaarposoft.dk/packages/g/gstreamer.html"
+    - make: ~
+ 
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+# TODO: verify_cli

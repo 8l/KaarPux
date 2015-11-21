@@ -1,0 +1,26 @@
+package:
+  name: graphviz
+  version: 2.38.0
+  www: http://www.graphviz.org/
+  short: |
+      The Graphviz layout programs take descriptions of graphs in a simple text language,
+      and make diagrams in useful formats, such as images and SVG for web pages, PDF or Postscript for inclusion in other documents;
+      or display in an interactive graph browser. (Graphviz also supports GXL, an XML dialect.)
+      Graphviz has many useful features for concrete diagrams, such as options for colors, fonts, tabular node layouts, line styles, hyperlinks, rolland custom shapes.
+
+download:
+  url: http://www.graphviz.org/pub/graphviz/stable/SOURCES/
+  file_tar_gz: ~
+  checksum: 81aa238d9d4a010afa73a9d2a704fc3221c731e1e06577c2ab3496bdef67859e
+
+version:
+  installed_sh_version: dot -V
+
+linux:
+
+  - build:
+    - configure_kx_bash: ~
+    - make: ~
+
+  - install:
+    - install: ~

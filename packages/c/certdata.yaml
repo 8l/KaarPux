@@ -1,0 +1,145 @@
+package:
+  name: certdata
+  version: 82fa2a19a9b9
+  short: Certificates for the Web. Originally for Mozilla Firefox, but used by others as well.
+
+download:
+  full_url: http://hg.mozilla.org/releases/mozilla-release/raw-file/${KX_CERTDATA_VERSION}/security/nss/lib/ckfw/builtins/certdata.txt
+  file: ${KX_CERTDATA}.txt
+  checksum: a0a4e6336af93c4e15bca4c37e29d73c41550c4d0cf896138e3a68c4d97df81f
+
+additional_downloads:
+  - http://www.spi-inc.org/ca/spi-cacert.crt spi-cacert.crt 167d78086e9e96632b774a182dd14588e9dd32e2c7ba2aa5f9500791a0dd64ab
+
+doc: |
+      ---------------
+      CA Certificates
+      ---------------
+      %%%%
+      The `Mozilla trusted Certification Authority (CA) certificates <http://www.mozilla.org/projects/security/certs/policy/>`_
+      are used in :program:`KaarPux` as trusted root certificates for Mozilla applications
+      (e.g. :ref:`pkg_firefox`), but also for other applications, such as
+      OpenSSL (:ref:`pkg_openssl`) and Java (:ref:`pkg_openjdk-cacerts`).
+      %%%%
+      The certificates are found in a single file (:file:`certdata.txt`) from
+      `Mozilla Network Security Services (NSS) <https://developer.mozilla.org/en-US/docs/NSS>`_.
+      %%%%
+      Certificate data is kept in :file:`/etc/ssl/certs`.
+      %%%%
+      The :file:`certdata.txt` is processed by
+      :file:`mk-ca-bundle.pl`,
+      which is a slightly modified version of
+      `curl mk-ca-bundle.pl <https://github.com/bagder/curl/blob/master/lib/mk-ca-bundle.pl>`_,
+      which creates :file:`ca-bundle.crt`
+      and :file:`*.pem` files.
+
+      %%%%
+      -------------------------
+      Additional CA Certificate
+      -------------------------
+      %%%%
+      We also install the `SPI CA root certificate <http://www.spi-inc.org/ca>`_
+      from `Software in the Public Interest <http://www.spi-inc.org>`_.
+      %%%%
+      This is used by e.g. `alioth.debian.org <https://alioth.debian.org/>`_.
+      Note that this certificate is *not* automatically imported into e.g. :ref:`pkg_firefox`.
+
+      %%%%
+      -------------------------
+      Certificates from Mozilla
+      -------------------------
+      %%%%
+      It seems that the cannonical source for certificates in Mozilla is
+      `hg.mozilla.org/projects/nss <https://hg.mozilla.org/projects/nss/log/tip/lib/ckfw/builtins/certdata.txt>`_. So
+      `this <https://hg.mozilla.org/projects/nss/log/tip/lib/ckfw/builtins/certdata.txt>`_
+      is where to look to understand why certain certificates have been included or excluded.
+      %%%%
+      Apparently, the :file:`certdata.txt` "moves" through the Mozilla trees as follows:
+      %%%%
+      - `nss <https://hg.mozilla.org/projects/nss/log/tip/lib/ckfw/builtins/certdata.txt>`_
+      - `mozilla-central <http://hg.mozilla.org/mozilla-central/file/tip/security/nss/lib/ckfw/builtins/certdata.txt>`_
+      - `mozilla-aurora <https://hg.mozilla.org/releases/mozilla-aurora/file/default/security//nss/lib/ckfw/builtins/certdata.txt>`_
+      - `mozilla-beta <https://hg.mozilla.org/releases/mozilla-beta/file/default/security/nss/lib/ckfw/builtins/certdata.txt>`_
+      - `mozilla-release <https://hg.mozilla.org/releases/mozilla-release/file/default/security/nss/lib/ckfw/builtins/certdata.txt>`_
+      %%%%
+      In :program:`KaarPux` we generally pick the latest
+      `mozilla-release`_.
+
+      %%%%
+      --------
+      Updating
+      --------
+      %%%%
+      Browse to the `tip of mozilla-release <https://hg.mozilla.org/releases/mozilla-release/file/default/security/nss/lib/ckfw/builtins>`_,
+      to get the latest released version.
+      %%%%
+      Select ``file`` next to ``certdata.txt``.
+      %%%%
+      You should now have a ``URL`` like
+      ``http://hg.mozilla.org/mozilla-release/file/fe0b9a75b342/security/nss/lib/ckfw/builtins/certdata.txt``,
+      where the checkin like ``fe0b9a75b342`` is the parameter you need to change for
+      the ``version:`` in
+      `certdata.yaml <http://sourceforge.net/p/kaarpux/code/ci/HEAD/tree/master/packages/c/certdata.yaml>`_
+
+
+      %%%%
+      ---------------
+      mk-ca-bundle.pl
+      ---------------
+      %%%%
+      You may also want to verify, that there is no update to
+      `curl mk-ca-bundle.pl <https://github.com/bagder/curl/blob/master/lib/mk-ca-bundle.pl>`_,
+      newer than
+      `KaarPux mk-ca-bundle.pl <http://sourceforge.net/p/kaarpux/code/ci/HEAD/tree/master/packages/c/certdata.files/mk-ca-bundle.pl>`_
+
+      %%%%
+      ------------
+      Dependencies
+      ------------
+      %%%%
+      .. note:: If the ``certdata`` package is updated, you must reinstall :ref:`pkg_openjdk-cacerts`.
+
+version:
+  sensitive: 1
+  installed: |
+    my $v = `cat /etc/ssl/certs/certdata_version.txt`;
+    return $v;
+  upstream: |
+    my $up = kxver_scrape_url(undef, "https://hg.mozilla.org/releases/mozilla-release/file/tip/security/nss/lib/ckfw/builtins/certdata.txt", qr |certdata.txt\@([0-9a-f]+)</|);
+    my $v = `cat /etc/ssl/certs/certdata_version.txt`;
+    chomp $v;
+    if ($up eq $v) {
+      return $up;
+    } else {
+      use Digest::SHA qw(sha256_hex);
+      my $uf=kxver_get("http://hg.mozilla.org/releases/mozilla-release/raw-file/$up/security/nss/lib/ckfw/builtins/certdata.txt");
+      my $df=kxver_get("file:///etc/ssl/certs/certdata.txt");
+      if ( sha256_hex($uf) eq sha256_hex($df) ) { return $v; }
+      return "?check?"
+    }
+
+bootstrap_8:
+
+    - sh: |
+        cp ../${KX_CERTDATA}.txt ./certdata.txt
+        echo "${KX_CERTDATA_VERSION}" > certdata_version.txt
+    # https://raw.githubusercontent.com/bagder/curl/619d1704ae04e1baa37b50744c3c778cc1978b5b/lib/mk-ca-bundle.pl
+    - get_pkg_file: mk-ca-bundle.pl
+    - patch: mk-ca-bundle.patch
+    - sh: ./mk-ca-bundle.pl -n
+    - sh: |
+        openssl x509 -in ${KX_BASE}/../downloads/spi-cacert.crt -out spi-cacert.pem -outform PEM
+#        openssl x509 -md5 -fingerprint -text -inform PEM < spi-cacert.pem >> ca-bundle.crt
+        cat spi-cacert.pem >> ca-bundle.crt
+
+    - sh: |
+        test -e /etc/ssl/certs && mv /etc/ssl/certs /etc/ssl/certs.`date +%s`
+        mkdir -pv /etc/ssl/certs
+        cp -rp * /etc/ssl/certs
+        ln -svf ca-bundle.crt /etc/ssl/certs/ca-certificates.crt
+    - sh: |
+        cd /etc/ssl/certs
+        for f in *.pem; do
+        ln -svf  $f $(openssl x509 -hash -noout -in $f).0 
+        done
+

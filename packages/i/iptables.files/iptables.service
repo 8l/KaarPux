@@ -1,0 +1,11 @@
+[Unit]
+Description=iptables firewall
+Before=multi-user.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/etc/iptables.sh
+
+[Install]
+WantedBy=network.target

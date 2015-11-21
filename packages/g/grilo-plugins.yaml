@@ -1,0 +1,24 @@
+package:
+  name: grilo-plugins
+  version: 0.2.16
+  www: https://live.gnome.org/Grilo
+  short: plugins for grilo. 
+
+download:
+  gnomexz: ~
+  checksum: 80b4571f9db6df0d5f0873d30f2ee475204f5831d2974b89c58423d6ffac5203
+
+version:
+  installed_na: ~
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

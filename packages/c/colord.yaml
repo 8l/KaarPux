@@ -1,0 +1,39 @@
+package:
+  name: colord
+  version: 1.2.12
+  www: http://www.freedesktop.org/software/colord/
+  short: colord is a system service that makes it easy to manage, install and generate color profiles to accurately color manage input and output devices. 
+
+download:
+  url: http://www.freedesktop.org/software/colord/releases
+  file_tar_xz: ~
+  checksum: d5241864c16a37f9e40d38d5009255456495a67f170ce0dc9250774442d68c3a
+  verify: asc
+
+version:
+  installed_pkgconfig: ~
+
+linux:
+  - build:
+    - configure_kx: >
+        --disable-gtk-doc
+        --disable-static
+        --disable-examples
+        --disable-strict
+        --disable-argyllcms-sensor
+        --with-daemon-user=colord
+        --disable-schemas-compile
+        --disable-bash-completion
+    - make: ~
+  - install:
+    - echo: Adding [colord] group and user
+    - sh: |
+        groupadd -fg ${KX_COLORD_GID} colord
+        useradd -c "Color Daemon Owner" -d /var/lib/colord -u ${KX_COLORD_UID} -g colord -s /bin/false colord || test "$?" = "9"
+        id colord
+    - install: ~
+    - sh: echo 'UseSANE=false' >> "${KX_PREFIX}/etc/colord.conf"
+
+verify_cli: |
+  kx_cli_success colormgr get-devices
+  kx_cli_success colormgr get-profiles

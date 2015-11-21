@@ -1,0 +1,51 @@
+package:
+  name: tcl
+  version: 8.6.2
+  www: http://tcl.sourceforge.net/
+  short: Tool Command Language.
+
+download:
+  sourceforge: ~
+  file: tcl${KX_TCL_VERSION}-src.tar.gz
+  dir: tcl${KX_TCL_VERSION}
+  checksum: 86f7ae5f581dd0904d04415637ab3aef5a50986c1b6d04c340e2b1b0258da9c4
+
+version:
+  installed: kxver_header_file_full "/lib/tclConfig.sh", qr|TCL_MAJOR_VERSION='([0-9]+)'|, qr|TCL_MINOR_VERSION='([0-9]+)'|, qr|TCL_PATCH_LEVEL='\.([0-9]+)'|;
+  upstream: kxver_upstream_sourceforge("tcl", "Tcl", "tcl");
+
+bootstrap_3:
+  - sh: |
+      cd unix
+      BIT64=""
+      test $(uname -m) = x86_64 && BIT64="--enable-64bit"
+  - configure_tools: ${BIT64} --without-tzdata
+  - make: ~
+  - install: ~
+  - sh: make install-private-headers
+  - echo: post-install
+  - sh: |
+      ln -svf tclsh${KX_TCL_VERSION_MM} "${KX_TOOLS}/bin/tclsh"
+
+bootstrap_7:
+  - sh: |
+      cd unix
+      BIT64=""
+      test $(uname -m) = x86_64 && BIT64="--enable-64bit"
+  - configure_kx: ${BIT64} --without-tzdata --enable-threads
+  - make: ~
+  - sh: >
+      sed -i
+          -e "s@^\(TCL_SRC_DIR='\).*@\1${KX_PREFIX}/include'@"
+          -e "/TCL_B/s@='\(-L\)\?.*unix@='\1${KX_PREFIX}/lib@"
+      tclConfig.sh
+  - test: ~
+  - install: ~
+  - sh: make install-private-headers
+  - echo: post-install
+  - sh: |
+      ln -svf tclsh${KX_TCL_VERSION_MM} "${KX_PREFIX}/bin/tclsh"
+
+# verify_cli:
+# No explicit CLI test of tcl, as the test driver uses tcl, so it is implicitly tested
+

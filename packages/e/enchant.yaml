@@ -1,0 +1,25 @@
+package:
+  name: enchant
+  version: 1.6.0
+  www: http://www.abisource.com/projects/enchant/
+  short: The enchant package provide a generic interface into various existing spell checking libaries.
+
+download:
+  url: http://www.abisource.com/downloads/enchant/${KX_ENCHANT_VERSION}
+  file_tar_gz: ~
+  checksum: 2fac9e7be7e9424b2c5570d8affe568db39f7572c10ed48d4e13cddf03f7097f
+
+version:
+  installed: kxver_sh_pattern("enchant -v" , qr |Enchant ([0-9\.]+)|);
+  upstream: kxver_scrape_url(undef, "http://www.abisource.com/downloads/enchant/", qr|>([0-9]+[0-9.]*[0-9]+)|);
+
+linux:
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+  # 'make check' does nothing
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success "enchant -v" { International Ispell Version Enchant }

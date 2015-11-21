@@ -1,0 +1,6 @@
+# file system  mount-point  type   options         dump  fsck
+#                                                        order
+
+@KX_FSTAB_DEV_ROOT@     /            @KX_FSTAB_FSTYPE_ROOT@  defaults        1     1
+@KX_FSTAB_DEV_SWAP@     swap         swap   pri=1           0     0
+

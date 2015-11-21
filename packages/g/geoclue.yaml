@@ -1,0 +1,25 @@
+package:
+  name: geoclue
+  version: 2.2.0
+  www: http://www.freedesktop.org/wiki/Software/GeoClue
+  short: modular geoinformation service built on top of the D-Bus messaging system
+
+download:
+  url: http://freedesktop.org/software/geoclue/releases/${KX_GEOCLUE_VERSION_MM}
+  file_tar_xz: ~
+  checksum: a490de0d4f97cb65f81e9fd0f687c7e84ef2c41509c214a1438964f541c7d446
+
+version:
+  installed_pkgconfig: geoclue-2.0
+  upstream: kxver_scrape_url(undef, "http://cgit.freedesktop.org/geoclue/refs/tags", qr|>([0-9]+[0-9.]*[0-9]+)<|);
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

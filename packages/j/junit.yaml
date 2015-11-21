@@ -1,0 +1,34 @@
+package:
+  name: junit
+  version: 4.12
+  www: http://www.junit.org/
+  short: |
+      JUnit is a simple framework to write repeatable tests.
+      It is an instance of the xUnit architecture for unit testing frameworks.
+
+  doc: |
+    <para>
+      <systemitem>junit</systemitem> is not installed on the system as such.
+      It is simply left in the build directory, where the bootstrap of
+      <xref linkend="apache-ant" /> will pick it up as prerequisite.
+    </para>
+      
+download:
+  url: http://search.maven.org/remotecontent?filepath=junit/junit/${KX_JUNIT_VERSION}
+  file: ${KX_JUNIT}.jar
+  checksum: 59721f0805e223d84b90677887d9ff567dc534d7c502ca903c0c2b17f05c116a
+
+version:
+  installed_na: ~
+  upstream: "kxver_scrape_url(undef, 'http://search.maven.org/remotecontent?filepath=junit/junit/');"
+
+opt:
+  - prepare_and_build: 
+    - echo: "No separate build. Just copy the jar."
+    - sh: mkdir -pv ${KX_BASE}/build/opt/${KX_JUNIT}
+    - sh: cp ${KX_JUNIT}.jar ${KX_BASE}/build/opt/${KX_JUNIT}
+
+
+  - install_keep:
+    - echo: "No Install. Only used for bootstrapping."
+

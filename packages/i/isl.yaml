@@ -1,0 +1,20 @@
+package:
+  name: isl
+  version: 0.14.1
+  www: http://isl.gforge.inria.fr/
+  short: library for manipulating sets and relations of integer points bounded by linear constraints.
+
+download:
+  url: http://isl.gforge.inria.fr/
+  file_tar_xz: ~
+  checksum: 8882c9e36549fc757efa267706a9af733bb8d7fe3905cbfde43e17a89eea4675
+
+version:
+  installed_pkgconfig: ~
+
+bootstrap_5:
+  - configure_kx: ~
+  - make: ~
+  - check: ~ 
+  - install: ~ 
+

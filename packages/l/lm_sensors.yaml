@@ -1,0 +1,25 @@
+package:
+  name: lm_sensors
+  version: 3.3.5
+  www: http://lm-sensors.org/
+  short: monitoring the hardware health of Linux systems
+
+download:
+  url: http://dl.lm-sensors.org/lm-sensors/releases
+  file_tar_bz2: ~
+  checksum: 5dae6a665e1150159a93743c4ff1943a7efe02cd9d3bb12c4805e7d7adcf4fcf
+
+version:
+  installed_sh_trailing: sensors --version
+
+linux:
+
+  - build:
+    - sh: make PREFIX=/
+
+  # No test suite
+
+  - install:
+    - install: PREFIX=/
+
+# TODO: verify_cli

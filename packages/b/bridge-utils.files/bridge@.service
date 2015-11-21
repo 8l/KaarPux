@@ -1,0 +1,24 @@
+[Unit]
+Description=Network Bridge
+Before=dhcpcd@br0.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+ExecStart=/sbin/brctl addbr br0
+ExecStart=/sbin/brctl addif br0 %I
+ExecStart=/sbin/ifconfig %I up
+ExecStart=/sbin/ifconfig br0 up
+
+ExecStart=/bin/echo 0 > /proc/sys/net/bridge/bridge-nf-call-arptables
+ExecStart=/bin/echo 0 > /proc/sys/net/bridge/bridge-nf-call-iptables
+ExecStart=/bin/echo 0 > /proc/sys/net/bridge/bridge-nf-call-ip6tables
+
+ExecStop=/sbin/ifconfig br0 down
+ExecStop=/sbin/ifconfig %I down
+ExecStop=/sbin/brctl delif br0 %I
+ExecStop=/sbin/brctl delbr br0
+
+[Install]
+WantedBy=network.target

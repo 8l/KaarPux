@@ -1,0 +1,24 @@
+package:
+  name: libtirpc
+  version: 0.3.2
+  www: http://nfsv4.bullopensource.org/doc/tirpc_rpcbind.php
+  short: Libtirpc is a port of Suns Transport-Independent RPC library to Linux. 
+
+download:
+  sourceforge: ~
+  checksum: 2008a379f37f2c5d5a87a568b06707422cc3e4f5da305f7fb71f3f4c6d473ffc
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_upstream_sourceforge("libtirpc", "libtirpc", "libtirpc");
+
+bootstrap_8:
+  # Patch from LinuxFromScratch
+  # http://www.linuxfromscratch.org/blfs/view/svn/basicnet/libtirpc.html
+  # http://www.linuxfromscratch.org/patches/blfs/svn/libtirpc-0.3.2-api_fixes-1.patch
+  - patch: libtirpc-0.3.2-api_fixes-1.patch
+  - configure_kx: --disable-static --disable-gssapi CFLAGS="-fPIC"
+  - make: ~
+  # No testsuite
+  - install: ~
+

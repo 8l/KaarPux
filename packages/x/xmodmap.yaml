@@ -1,0 +1,27 @@
+package:
+  name: xmodmap
+  version: 1.0.9
+  www: http://cgit.freedesktop.org/xorg/app/xmodmap/
+  short: Utility for modifying keymaps and button mappings
+
+download:
+  url: http://xorg.freedesktop.org/releases/individual/app
+  file_tar_bz2: ~
+  checksum: b7b0e5cc5f10d0fb6d2d6ea4f00c77e8ac0e847cc5a73be94cd86139ac4ac478
+
+version: ~
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+
+

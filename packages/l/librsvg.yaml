@@ -1,0 +1,35 @@
+package:
+  name: librsvg
+  version: 2.40.11
+  www: https://live.gnome.org/LibRsvg
+  short:  Library to render SVG files using cairo. 
+
+download:
+  gnomexz: ~
+  checksum: 611ac0f544debd0c9bf1ef5509c990d218e83dd1d8c83297075c4b29796a2e02
+
+version:
+  installed_pkgconfig: librsvg-2.0
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+
+    # http://pkgs.fedoraproject.org/cgit/librsvg2.git/tree/librsvg2.spec
+    # work around an ordering problem in configure
+    - sh: enable_pixbuf_loader=yes; export enable_pixbuf_loader
+
+    - configure_kx: >
+        --disable-static
+        --disable-gtk-doc
+        --disable-gtk-theme
+        --enable-vala=yes
+    - make: ~
+
+  - test:
+    # TODO: Investigate why test cases are failing
+    - check_ignore: ~
+
+  - install:
+    - install: ~

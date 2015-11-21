@@ -1,0 +1,24 @@
+package:
+  name: evince
+  version: 3.18.1
+  www: http://projects.gnome.org/evince/
+  short: |
+      Evince is a document viewer for multiple document formats.
+      The goal of evince is to replace the multiple document viewers that exist on the GNOME Desktop with a single simple application.
+
+download:
+  gnomexz: ~
+  checksum: 7b5023765e6d6fb98da582fe3adc4f268f87b2f35110634e12cdac40f7aa8c31
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - use_gcc: ~
+    - configure_kx_bash: --disable-gtk-doc --disable-static --enable-introspection --disable-schemas-compile
+    - make: ~
+
+  - install:
+    - install: ~

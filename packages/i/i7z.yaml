@@ -1,0 +1,20 @@
+package:
+  name: i7z
+  version: 0.27.2
+  www: https://code.google.com/p/i7z/
+  short:  better i7 (and now i3, i5) reporting tool for Linux
+
+download:
+  url: https://i7z.googlecode.com/files
+  file_tar_gz: ~
+  checksum: a7f72d65732c17eef0df4f284927fe744fc650075f2364c51c9497534d8f47f1
+
+version:
+  installed_na: ~
+  upstream: kxver_scrape_url('i7z', 'https://code.google.com/p/i7z/downloads/list')
+
+bootstrap_8:
+
+    - make: prefix=${KX_PREFIX}
+    - install: ~
+

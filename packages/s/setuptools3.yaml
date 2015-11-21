@@ -1,0 +1,30 @@
+package:
+  name: setuptools3
+  version: 18.4
+  www: http://pypi.python.org/pypi/setuptools
+  short: Download, build, install, upgrade, and uninstall Python packages -- easily!
+
+download:
+  url: http://pypi.python.org/packages/source/s/setuptools
+  file: setuptools-${KX_SETUPTOOLS3_VERSION}.tar.gz
+  dir: setuptools-${KX_SETUPTOOLS3_VERSION}
+  checksum: cdea5098e60b4ad83453d58723a61dc481ca8e2df251fe4ccbea9afa5a7d111f
+
+version:
+  installed_na: ~
+  upstream_pypi: setuptools
+
+linux:
+  - build:
+    - sh: python3 ./setup.py build
+  - test:
+    # Remove testcase failing due to dash
+    # FAIL: test_get_script_header_jython_workaround (setuptools.tests.test_resources.ScriptHeaderTests)
+    - sh: rm setuptools/tests/test_resources.py
+    - sh: python3 ./setup.py test
+  - install:
+    - sh: python3 ./setup.py install
+
+verify_cli: |
+  kx_cli_success /bin/easy_install --help
+

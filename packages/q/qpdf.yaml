@@ -1,0 +1,27 @@
+package:
+  name: qpdf
+  version: 5.1.3
+  www: http://qpdf.sourceforge.net/
+  short: command-line program that does structural, content-preserving transformations on PDF files.
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: d5164bdad3afc381568dbe8e1509a4a6a911d4d077f1fc20b9866ef8fad901d3
+
+version:
+  installed_pkgconfig: libqpdf
+  upstream: kxver_upstream_sourceforge("qpdf", "qpdf", "qpdf");
+
+linux:
+  - build:
+    - configure_kx: --enable-shared --disable-static
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success "qpdf --version" { qpdf }
+  # TODO: real verify_cli testcases

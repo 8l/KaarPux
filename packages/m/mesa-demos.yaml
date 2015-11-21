@@ -1,0 +1,24 @@
+package:
+  name: mesa-demos
+  version: 8.2.0
+  www: http://www.mesa3d.org/
+  short: Demos for MesaLib
+
+download:
+  url: ftp://ftp.freedesktop.org/pub/mesa/demos/${KX_MESA_DEMOS_VERSION}
+  file_tar_bz2: ~
+  checksum: e4bfecb5816ddd4b7b37c1bc876b63f1f7f06fda5879221a9774d0952f90ba92
+
+version:
+  installed_na: ~
+
+linux:
+  - build:
+    - configure_kx: >
+        --bindir=${KX_PREFIX}/bin/mesa_demos
+        --with-system-data-files
+        --disable-egl
+    - make: ~
+  # 'make check' does nothing
+  - install:
+    - install: ~

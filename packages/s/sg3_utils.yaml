@@ -1,0 +1,30 @@
+package:
+  name: sg3_utils
+  version: 1.37
+  www: http://sg.danny.cz/sg/
+  short: The Linux SCSI Generic (sg) Driver.
+
+download:
+  url: http://sg.danny.cz/sg/p/
+  file_tar_xz: ~
+  checksum: 6bbf198bc58b49e853cfd1a9aca0d405716173c1d083a690aa09b243afca5e5c
+
+version:
+  installed: "kxver_sh_pattern 'sg_modes --version', qr|^Version string: ([0-9.]+) |;"
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_success sg_ident --version
+  # sg3_utils comes with 50 different commands
+  # for now, we do not test them
+

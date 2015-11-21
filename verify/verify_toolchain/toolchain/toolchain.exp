@@ -1,0 +1,17 @@
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2013: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+#
+# Tests for verify_toolchain
+#
+
+kx_cli_success toolchain/toolchain
+kx_cli_match_success toolchain/toolchain { "ToolChain says the answer is 42" }
+kx_cli_success toolchain/ccstl
+kx_cli_match_success toolchain/ccstl { "!dlroW ,olleH" }
+

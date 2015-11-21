@@ -1,0 +1,640 @@
+#!/bin/sh
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2015: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+# ============================================================
+# Build KaarPux in a virtual machine
+# ============================================================
+
+set -o nounset
+set -o errexit
+KX_BASE="$(cd $(dirname "$0")/..; pwd -P)"
+
+# ============================================================
+
+KX_VIRTUAL_COMMANDS="create_swap_img|create_downloads_img|create_target_img|generate_ssh_key|create_host_img|launch_host|launch_download|launch_download_again|launch_build_bootstrap|launch_kaarpux|launch_build_final|launch_final_ssh|ec2_info"
+
+# ============================================================
+
+usage () {
+	P=$(basename "$0")
+	cat >> /dev/stderr <<-EOF
+		Usage:
+		$P: <configuration_file_name> ${KX_VIRTUAL_COMMANDS}...
+	EOF
+}
+
+# ============================================================
+
+usage_exit () {
+	echo "***" "$@" >> /dev/stderr
+	usage
+	exit 1
+}
+
+# ============================================================
+
+error_exit () {
+	echo "***" "$@" >> /dev/stderr
+	exit 1
+}
+
+
+# ============================================================
+# CHECK ARGS
+# ============================================================
+
+test "$#" -ge 2 || usage_exit "Please specify at least two arguments"
+
+export KX_KCONFIG=$(basename $1)
+export KX_KCONFIG_FILE="${KX_BASE}/../${KX_KCONFIG}"
+test -f "${KX_KCONFIG_FILE}" || error_exit "Configuration file [${KX_KCONFIG_FILE}] not found"
+
+. "${KX_BASE}/shinc/definitions.shinc"
+
+shift
+for COMMAND in "$@"; do
+	echo "${COMMAND}" | grep -Eqx "${KX_VIRTUAL_COMMANDS}" || usage_exit "Invalid command [${COMMAND}]"
+done
+
+
+# ============================================================
+# VARIABLES
+# ============================================================
+
+S="${KX_SSH_KEY_FILENAME}"
+S=$(eval echo "$S")
+
+if test x"${KX_BUILD_TYPE_KVM:-}" = xy; then
+
+	TARGET_IP="${KX_KVM_IP}"  # Will be overridden by EC2 etc
+
+	H="${KX_IMG_PATH}/${KX_HOST_IMG_FILENAME}"
+
+	C="${KX_IMG_PATH}/${KX_CLOUD_IMG_FILENAME}"
+
+	T="${KX_IMG_PATH}/${KX_TARGET_IMG_FILENAME}"
+
+	M="host_${KX_VM_TAG}.iso"
+
+	J="${KX_KVM_COMMAND} ${KX_KVM_SMP} ${KX_KVM_MEM} ${KX_KVM_VGA} ${KX_KVM_NET} --drive file=$H${KX_KVM_DRIVE_HOST_OPTIONS} --drive file=${KX_IMG_PATH}/${KX_SWAP_IMG_FILENAME}${KX_KVM_DRIVE_SWAP_OPTIONS}"
+
+	K="${KX_KVM_COMMAND} ${KX_KVM_SMP} ${KX_KVM_MEM} ${KX_KVM_VGA} ${KX_KVM_NET} --drive file=$H${KX_KVM_DRIVE_HOST_OPTIONS} --drive file=${KX_IMG_PATH}/${KX_SWAP_IMG_FILENAME}${KX_KVM_DRIVE_SWAP_OPTIONS} --drive file=${KX_IMG_PATH}/${KX_DOWNLOADS_IMG_FILENAME}${KX_KVM_DRIVE_DOWNLOADS_OPTIONS} --drive file=${KX_IMG_PATH}/${KX_TARGET_IMG_FILENAME}${KX_KVM_DRIVE_TARGET_OPTIONS}"
+
+	L="${KX_KVM_COMMAND} ${KX_KVM_SMP} ${KX_KVM_MEM} ${KX_KVM_VGA} ${KX_KVM_NET} --drive file=${KX_IMG_PATH}/${KX_TARGET_IMG_FILENAME}${KX_KVM_DRIVE_TARGET_OPTIONS} --drive file=${KX_IMG_PATH}/${KX_SWAP_IMG_FILENAME}${KX_KVM_DRIVE_SWAP_OPTIONS} --drive file=${KX_IMG_PATH}/${KX_DOWNLOADS_IMG_FILENAME}${KX_KVM_DRIVE_DOWNLOADS_OPTIONS}"
+
+fi
+
+K_USER_KX=kaarpux
+K_USER_ROOT=root
+
+# ============================================================
+# UTILITIES
+# ============================================================
+
+check_no_ping () {
+	echo ""
+	echo "===> check that [${TARGET_IP}] is not responding to ping"
+	ping -c1 -W5 ${TARGET_IP} && error_exit "[${TARGET_IP}] is responding to ping; another KVM running perhaps?"
+	echo "===> found [${TARGET_IP}] not responding to ping; OK"
+}
+
+# ============================================================
+
+wait_for_kvm () {
+	local P
+	P=$1
+
+	echo ""
+	echo "===> wait for kvm"
+	sleep 4
+
+	I=0
+	while true; do
+		sleep 1
+		I=$((I + 1))
+		ps -p $P || error_exit "could not start kvm"
+		ping -c1 -W$I ${TARGET_IP} && break
+		echo "===>   $I: still waiting to ping kvm"
+	done
+	echo "===> kvm running, guest is pingable"
+
+	echo "===> remove [${TARGET_IP}] from known hosts"
+	ssh-keygen -R ${TARGET_IP} || true
+
+	echo ""
+	echo "===> wait for ssh connectivity to kvm"
+	sleep 2
+
+	I=0
+	while true; do
+		I=$((I + 1))
+		echo "===> check ssh connectivity for [${K_USER_KX}]"
+		ssh -T -o "StrictHostKeyChecking=no" -i "$S" ${K_USER_KX}@${TARGET_IP} id && break
+		sleep 1
+		echo "===>   $I: still waiting for ssh"
+	done
+
+	echo "===> check ssh connectivity for [${K_USER_ROOT}]"
+	ssh -T -o "StrictHostKeyChecking=no" -i "$S" ${K_USER_ROOT}@${TARGET_IP} id ||
+		error_exit "no connectivity for [${K_USER_ROOT}]"
+
+	echo ""
+	echo "===> kvm is ready. pid=[$P]. ip=[${TARGET_IP}]."
+}
+
+# ============================================================
+
+wait_for_ec2 () {
+
+	echo ""
+	echo "===> wait for ssh connectivity to ec2"
+	sleep 2
+
+	I=0
+	while true; do
+		I=$((I + 1))
+		echo "===> check ssh connectivity for [${K_USER_KX}]"
+		ssh -T -o "StrictHostKeyChecking=no" -o ConnectTimeout=20 -o ConnectionAttempts=1 -i "$S" ${K_USER_KX}@${TARGET_IP} id && break
+		sleep 1
+		echo "===>   $I: still waiting for ssh"
+	done
+
+	echo "===> check ssh connectivity for [${K_USER_ROOT}]"
+	ssh -T -o "StrictHostKeyChecking=no" -i "$S" ${K_USER_ROOT}@${TARGET_IP} id ||
+		error_exit "no connectivity for [${K_USER_ROOT}]"
+
+	echo ""
+	echo "===> ec2 is ready. ip=[${TARGET_IP}]."
+}
+
+
+# ============================================================
+
+copy_and_unpack_tarball () {
+	echo ""
+	echo "===> creating tarball"
+	${KX_BASE}/make_dist.sh
+	echo "===> copying tarball to kvm"
+	scp -i "$S" ../dist/kaarpux.tar.gz ${K_USER_KX}@${TARGET_IP}:kaarpux.tar.gz || exit $?
+	echo "===> unpacking tarball on kvm"
+	ssh -T -i "$S" ${K_USER_KX}@${TARGET_IP} <<-EOF || exit $?
+		set -e
+		test -e kaarpux && mv kaarpux kaarpux_\$(date +%s)
+		mkdir kaarpux
+		cd kaarpux
+		tar xf ../kaarpux.tar.gz
+		EOF
+	echo "===> tarball unpacked on kvm"
+}
+
+# ============================================================
+
+copy_and_config () {
+	echo ""
+	echo "===> copying config file to kvm"
+	scp -i "$S" ${KX_KCONFIG_FILE} ${K_USER_KX}@${TARGET_IP}:kaarpux/${KX_KCONFIG} || exit $?
+	echo "===> config file copied to kvm"
+	echo "===> starting configuration"
+	ssh -T -i "$S" ${K_USER_KX}@${TARGET_IP} <<-EOF || exit $?
+		set -e
+		cd kaarpux
+		export KX_KCONFIG="${KX_KCONFIG}"
+		test "\${KX_KCONFIG}" = "kaarpux.conf" || ln -svf "\${KX_KCONFIG}" kaarpux.conf
+		master/make_scripts.sh
+		EOF
+	echo "===> configuration done"
+
+}
+
+# ============================================================
+
+identify_remote () {
+	echo "===> Identifying ${TARGET_IP}"
+	ssh -T -i "$S" ${K_USER_KX}@${TARGET_IP} -o StrictHostKeyChecking=no <<-EOF || exit $?
+		uname -a
+		lsb_relase -a || true
+		EOF
+}
+
+
+# ============================================================
+# MAIN
+# ============================================================
+
+cd "${KX_BASE}"
+
+for COMMAND in "$@"; do
+case "$COMMAND" in
+
+	# ============================================================
+	create_swap_img)
+	# ============================================================
+		echo ""
+		echo "===> creating swap image [${KX_SWAP_IMG_FILENAME}]"
+		if test x"${KX_BUILD_TYPE_KVM:-}" = xy; then
+			test ! -e "${KX_IMG_PATH}/${KX_SWAP_IMG_FILENAME}" || error_exit "File [${KX_IMG_PATH}/${KX_SWAP_IMG_FILENAME}] already exists"
+			qemu-img create -f raw "${KX_IMG_PATH}/${KX_SWAP_IMG_FILENAME}" "${KX_SWAP_IMG_GB}G"
+		elif test x"${KX_BUILD_TYPE_EC2:-}" = xy; then
+			export KX_PUBLIC_KEY="$(cat $S.pub)"
+			${KX_BASE}/libexec/ec2 "${KX_KCONFIG_FILE}" create_swap_img "${KX_BASE}/config/user-data"
+		else
+			error_exit "Unsupported build type"
+		fi
+		echo "===> swap image [${KX_SWAP_IMG_FILENAME}] created"
+		;;
+
+	# ============================================================
+	create_downloads_img)
+	# ============================================================
+		echo ""
+		echo "===> creating downloads image [${KX_DOWNLOADS_IMG_FILENAME}]"
+		if test x"${KX_BUILD_TYPE_KVM:-}" = xy; then
+			test ! -e "${KX_IMG_PATH}/${KX_DOWNLOADS_IMG_FILENAME}" || error_exit "File [${KX_IMG_PATH}/${KX_DOWNLOADS_IMG_FILENAME}] already exists"
+			qemu-img create -f raw "${KX_IMG_PATH}/${KX_DOWNLOADS_IMG_FILENAME}" "${KX_DOWNLOADS_IMG_GB}G"
+		elif test x"${KX_BUILD_TYPE_EC2:-}" = xy; then
+			export KX_PUBLIC_KEY="$(cat $S.pub)"
+			${KX_BASE}/libexec/ec2 "${KX_KCONFIG_FILE}" create_downloads_img "${KX_BASE}/config/user-data"
+		else
+			error_exit "Unsupported build type"
+		fi
+		echo "===> downloads image [${KX_DOWNLOADS_IMG_FILENAME}] created"
+		;;
+
+	# ============================================================
+	create_target_img)
+	# ============================================================
+		echo ""
+		echo "===> creating target image [${KX_TARGET_IMG_FILENAME}]"
+		if test x"${KX_BUILD_TYPE_KVM:-}" = xy; then
+			test ! -e "${KX_IMG_PATH}/${KX_TARGET_IMG_FILENAME}" || error_exit "File [${KX_IMG_PATH}/${KX_TARGET_IMG_FILENAME}] already exists"
+			qemu-img create -f raw "${KX_IMG_PATH}/${KX_TARGET_IMG_FILENAME}" "${KX_TARGET_IMG_GB}G"
+		elif test x"${KX_BUILD_TYPE_EC2:-}" = xy; then
+			export KX_PUBLIC_KEY="$(cat $S.pub)"
+			${KX_BASE}/libexec/ec2 "${KX_KCONFIG_FILE}" create_target_img
+		else
+			error_exit "Unsupported build type"
+		fi
+		echo "===> target image [${KX_TARGET_IMG_FILENAME}] created"
+		;;
+
+	# ============================================================
+	generate_ssh_key)
+	# ============================================================
+		echo ""
+		echo "===> generating ssh key"
+		test ! -e "$S" || error_exit "File [$S] already exists"
+		ssh-keygen -t rsa -b 4096 -N "" -f "$S" 
+		echo "===> ssh key [$S] generated"
+		;;
+
+	# ============================================================
+	create_host_img)
+	# ============================================================
+		echo ""
+		echo "===> creating host image ..."
+		if test x"${KX_BUILD_TYPE_KVM:-}" = xy; then
+			test ! -e "$H" || error_exit "File [$H] already exists"
+			echo "===>    creating cloud image"
+			test -e "$C" || wget -O "$C" "${KX_CLOUD_IMG_URL}/${KX_CLOUD_IMG_FILENAME}"
+			Z=$(sha256sum "$C" | cut -c1-64)
+			test "$Z" = "${KX_CLOUD_IMG_SHA256}" || error_exit "Downloaded file [$C] has wrong checksum"
+			cp -v "$C" "$H"
+			echo ""
+			echo "===>    creating cloud-data iso"
+			T=$(mktemp -dt "cloud-data-XXXXXX")
+			export KX_PUBLIC_KEY="$(cat $S.pub)"
+			export KX_SWAP_DEV
+		        export KX_CLOUD_HOSTNAME
+			envsubst '${KX_CLOUD_HOSTNAME}' < config/meta-data > "$T/meta-data"
+			envsubst '${KX_PUBLIC_KEY}:${KX_SWAP_DEV}' < config/user-data > "$T/user-data"
+	echo $T
+			ls -l $T
+			(
+				cd "$T"
+				genisoimage -joliet -rock -volid cidata -output "$M" user-data meta-data
+			)
+			echo ""
+			echo "===>    launching kvm to initialize the image"
+			echo "===>    (this may take some time, as many packages needs to be downloaded and installed)"
+			echo $J -cdrom "$T"/"$M"
+			$J -cdrom "$T"/"$M"
+			#	rm -rf $T
+		elif test x"${KX_BUILD_TYPE_EC2:-}" = xy; then
+			export KX_PUBLIC_KEY="$(cat $S.pub)"
+			${KX_BASE}/libexec/ec2 "${KX_KCONFIG_FILE}" create_host_img "${KX_BASE}/config/user-data"
+		fi		
+		echo "===> host image created"
+		;;
+
+	# ============================================================
+	launch_host_ssh)
+	# ============================================================
+		if test x"${KX_BUILD_TYPE_KVM:-}" = xy; then
+			check_no_ping
+			echo ""
+			echo "===> Launching KVM"
+			echo $J
+			$J &
+		elif test x"${KX_BUILD_TYPE_EC2:-}" = xy; then
+			export KX_PUBLIC_KEY="$(cat $S.pub)"
+			export TARGET_INSTANCE_FILE=$(mktemp -t "target-instance-XXXXXX")
+			export TARGET_IP_FILE=$(mktemp -t "target-ip-XXXXXX")
+			${KX_BASE}/libexec/ec2 "${KX_KCONFIG_FILE}" launch_host_img
+			TARGET_INSTANCE=$(cat ${TARGET_INSTANCE_FILE})
+			TARGET_IP=$(cat ${TARGET_IP_FILE})
+			rm ${TARGET_INSTANCE_FILE} ${TARGET_IP_FILE}
+			wait_for_ec2
+		else
+			error_exit "Unsupported build type"
+		fi
+		;;
+
+	# ============================================================
+	launch_download|launch_download_again)
+	# ============================================================
+		# same below (except format_downloads_disk)
+		if test x"${KX_BUILD_TYPE_KVM:-}" = xy; then
+			./make_dist.sh
+			check_no_ping
+			echo ""
+			echo "===> Launching KVM"
+			echo $K
+			$K &
+			wait_for_kvm $!
+		elif test x"${KX_BUILD_TYPE_EC2:-}" = xy; then
+			export KX_PUBLIC_KEY="$(cat $S.pub)"
+			export TARGET_INSTANCE_FILE=$(mktemp -t "target-instance-XXXXXX")
+			export TARGET_IP_FILE=$(mktemp -t "target-ip-XXXXXX")
+			${KX_BASE}/libexec/ec2 "${KX_KCONFIG_FILE}" launch_download_img
+			TARGET_INSTANCE=$(cat ${TARGET_INSTANCE_FILE})
+			TARGET_IP=$(cat ${TARGET_IP_FILE})
+			rm ${TARGET_INSTANCE_FILE} ${TARGET_IP_FILE}
+			wait_for_ec2
+		else
+			error_exit "Unsupported build type"
+		fi
+
+		identify_remote
+		copy_and_unpack_tarball
+		copy_and_config
+
+		if test x"${COMMAND}" = x"launch_download"; then
+			ssh -T -i "$S" root@${TARGET_IP} <<-EOF || exit $?
+				set -e
+				cd /home/kaarpux/kaarpux
+				master/bin/kx_sys_setup ${KX_KCONFIG} format_downloads_disk
+				EOF
+		fi
+		ssh -T -i "$S" root@${TARGET_IP} <<-EOF || exit $?
+			set -e
+			cd /home/kaarpux/kaarpux
+			master/bin/kx_sys_setup ${KX_KCONFIG} mount_downloads_final
+			EOF
+		ssh -T -i "$S" ${K_USER_KX}@${TARGET_IP} <<-EOF || exit $?
+			set -e
+			export KX_KCONFIG="${KX_KCONFIG}"
+			cd kaarpux
+			linux/download_packages_2.sh
+			EOF
+		ssh -T -i "$S" root@${TARGET_IP} <<-EOF || true
+			systemctl poweroff
+			EOF
+		if test x"${KX_BUILD_TYPE_EC2:-}" = xy; then
+			${KX_BASE}/libexec/ec2 "${KX_KCONFIG_FILE}" terminate_instance "${TARGET_INSTANCE}"
+		fi
+		;;
+
+
+	# ============================================================
+	launch_downloads_ssh)
+	# ============================================================
+		if test x"${KX_BUILD_TYPE_KVM:-}" = xy; then
+			./make_dist.sh
+			check_no_ping
+			echo ""
+			echo "===> Launching KVM"
+			echo $K
+			$K &
+			wait_for_kvm $!
+		elif test x"${KX_BUILD_TYPE_EC2:-}" = xy; then
+			export KX_PUBLIC_KEY="$(cat $S.pub)"
+			export TARGET_INSTANCE_FILE=$(mktemp -t "target-instance-XXXXXX")
+			export TARGET_IP_FILE=$(mktemp -t "target-ip-XXXXXX")
+			${KX_BASE}/libexec/ec2 "${KX_KCONFIG_FILE}" launch_downloads_img
+			TARGET_INSTANCE=$(cat ${TARGET_INSTANCE_FILE})
+			TARGET_IP=$(cat ${TARGET_IP_FILE})
+			rm ${TARGET_INSTANCE_FILE} ${TARGET_IP_FILE}
+			wait_for_ec2
+		else
+			error_exit "Unsupported build type"
+		fi
+
+		identify_remote
+		ssh -T -i "$S" root@${TARGET_IP} <<-EOF || exit $?
+			set -e
+			cd /home/kaarpux/kaarpux
+			master/bin/kx_sys_setup ${KX_KCONFIG} mount_downloads_final
+			EOF
+
+		echo "===> ssh ready on [${TARGET_IP}]"
+		;;
+
+	# ============================================================
+	launch_build_bootstrap)
+	# ============================================================
+		./make_dist.sh
+		if test x"${KX_BUILD_TYPE_KVM:-}" = xy; then
+			check_no_ping
+			echo ""
+			echo "===> Launching KVM"
+			echo $K
+			$K &
+			wait_for_kvm $!
+		elif test x"${KX_BUILD_TYPE_EC2:-}" = xy; then
+			export KX_PUBLIC_KEY="$(cat $S.pub)"
+			export TARGET_INSTANCE_FILE=$(mktemp -t "target-instance-XXXXXX")
+			export TARGET_IP_FILE=$(mktemp -t "target-ip-XXXXXX")
+			${KX_BASE}/libexec/ec2 "${KX_KCONFIG_FILE}" launch_host_img
+			TARGET_INSTANCE=$(cat ${TARGET_INSTANCE_FILE})
+			TARGET_IP=$(cat ${TARGET_IP_FILE})
+			rm ${TARGET_INSTANCE_FILE} ${TARGET_IP_FILE}
+			wait_for_ec2
+		else
+			error_exit "Unsupported build type"
+		fi
+
+		identify_remote
+		copy_and_unpack_tarball
+		copy_and_config
+		ssh -T -i "$S" root@${TARGET_IP} <<-EOF || exit $?
+			set -e
+			cd /home/kaarpux/kaarpux
+			master/bin/kx_sys_setup ${KX_KCONFIG} format_target_disk
+			master/bin/kx_sys_setup ${KX_KCONFIG} mount_target_disk
+			master/bin/kx_sys_setup ${KX_KCONFIG} prepare_bootstrap_dir
+			master/bin/kx_sys_setup ${KX_KCONFIG} mount_downloads_bootstrap
+			EOF
+		ssh -T -i "$S" ${K_USER_KX}@${TARGET_IP} <<-EOF || exit $?
+			set -e
+			echo ""
+			echo "===> configuring"
+			export KX_KCONFIG="${KX_KCONFIG}"
+			cd ${KX_MNT}/home/kaarpux/kaarpux
+			cp /home/kaarpux/kaarpux/${KX_KCONFIG} .
+			test "\${KX_KCONFIG}" = "kaarpux.conf" || ln -svf "\${KX_KCONFIG}" kaarpux.conf
+			cp -r /home/kaarpux/kaarpux/master .
+			master/make_scripts.sh
+			master/bin/kx_build ${KX_KCONFIG} downloads
+			EOF
+		ssh -T -i "$S" root@${TARGET_IP} <<-EOF || exit $?
+			set -e
+			echo ""
+			echo "===> building"
+			export KX_KCONFIG="${KX_KCONFIG}"
+			cd ${KX_MNT}/home/kaarpux/kaarpux
+			touch build.log
+			chown kaarpux:kaarpux build.log
+			master/bin/kx_build ${KX_KCONFIG} bootstrap
+			cp -rp /home/kaarpux/.ssh ${KX_MNT}/home/kaarpux/.ssh
+			cp -rp /root/.ssh ${KX_MNT}/root/.ssh
+			master/bin/kx_sys_setup ${KX_KCONFIG} grub_setup
+			EOF
+		ssh -T -i "$S" root@${TARGET_IP} <<-EOF || true
+			set -e
+			systemctl poweroff
+			EOF
+		if test x"${KX_BUILD_TYPE_EC2:-}" = xy; then
+			${KX_BASE}/libexec/ec2 "${KX_KCONFIG_FILE}" create_ami_from_bootstrap "${TARGET_INSTANCE}"
+		fi
+		;;
+
+	# ============================================================
+	launch_bootstrap_ssh)
+	# ============================================================
+		if test x"${KX_BUILD_TYPE_KVM:-}" = xy; then
+			check_no_ping
+			echo ""
+			echo "===> Launching KVM"
+			echo $K
+			$K &
+		elif test x"${KX_BUILD_TYPE_EC2:-}" = xy; then
+			export KX_PUBLIC_KEY="$(cat $S.pub)"
+			export KX_PUBLIC_KEY="$(cat $S.pub)"
+			export TARGET_INSTANCE_FILE=$(mktemp -t "target-instance-XXXXXX")
+			export TARGET_IP_FILE=$(mktemp -t "target-ip-XXXXXX")
+			${KX_BASE}/libexec/ec2 "${KX_KCONFIG_FILE}" launch_bootstrap_img
+			TARGET_INSTANCE=$(cat ${TARGET_INSTANCE_FILE})
+			TARGET_IP=$(cat ${TARGET_IP_FILE})
+			rm ${TARGET_INSTANCE_FILE} ${TARGET_IP_FILE}
+			wait_for_ec2
+		else
+			error_exit "Unsupported build type"
+		fi
+		;;
+
+
+	# ============================================================
+	launch_build_final)
+	# ============================================================
+
+		./make_dist.sh
+		if test x"${KX_BUILD_TYPE_KVM:-}" = xy; then
+			check_no_ping
+			echo ""
+			echo "===> Launching KVM"
+			echo $L
+			$L &
+			wait_for_kvm $!
+		elif test x"${KX_BUILD_TYPE_EC2:-}" = xy; then
+			export KX_PUBLIC_KEY="$(cat $S.pub)"
+			export KX_PUBLIC_KEY="$(cat $S.pub)"
+			export TARGET_INSTANCE_FILE=$(mktemp -t "target-instance-XXXXXX")
+			export TARGET_IP_FILE=$(mktemp -t "target-ip-XXXXXX")
+			${KX_BASE}/libexec/ec2 "${KX_KCONFIG_FILE}" launch_bootstrap_img
+			TARGET_INSTANCE=$(cat ${TARGET_INSTANCE_FILE})
+			TARGET_IP=$(cat ${TARGET_IP_FILE})
+			rm ${TARGET_INSTANCE_FILE} ${TARGET_IP_FILE}
+			wait_for_ec2
+		else
+			error_exit "Unsupported build type"
+		fi
+
+		identify_remote
+		copy_and_unpack_tarball
+		copy_and_config
+
+		ssh -T -i "$S" root@${TARGET_IP} <<-EOF || exit $?
+			cd /home/kaarpux/kaarpux
+			master/bin/kx_sys_setup ${KX_KCONFIG} mount_downloads_final
+			EOF
+		ssh -T -i "$S" ${K_USER_KX}@${TARGET_IP} <<-EOF || exit $?
+			set -e
+			cd /home/kaarpux/kaarpux
+			master/bin/kx_build ${KX_KCONFIG} downloads
+			EOF
+		ssh -T -i "$S" root@${TARGET_IP} <<-EOF || exit $?
+			set -e
+			export KX_KCONFIG="${KX_KCONFIG}"
+			cd /home/kaarpux/kaarpux
+			touch build.log
+			chown kaarpux:kaarpux build.log
+			master/bin/kx_build ${KX_KCONFIG} final
+			EOF
+		ssh -T -i "$S" root@${TARGET_IP} <<-EOF || true
+			set -e
+			systemctl poweroff
+			EOF
+		if test x"${KX_BUILD_TYPE_EC2:-}" = xy; then
+			${KX_BASE}/libexec/ec2 "${KX_KCONFIG_FILE}" create_ami_from_final "${TARGET_INSTANCE}"
+		fi
+		;;
+
+
+	# ============================================================
+	launch_kaarpux_ssh)
+	# ============================================================
+		if test x"${KX_BUILD_TYPE_KVM:-}" = xy; then
+			check_no_ping
+			echo ""
+			echo "===> Launching KVM"
+			echo $L
+			$L &
+		elif test x"${KX_BUILD_TYPE_EC2:-}" = xy; then
+			export KX_PUBLIC_KEY="$(cat $S.pub)"
+			export KX_PUBLIC_KEY="$(cat $S.pub)"
+			export TARGET_INSTANCE_FILE=$(mktemp -t "target-instance-XXXXXX")
+			export TARGET_IP_FILE=$(mktemp -t "target-ip-XXXXXX")
+			${KX_BASE}/libexec/ec2 "${KX_KCONFIG_FILE}" launch_kaarpux_img
+			TARGET_INSTANCE=$(cat ${TARGET_INSTANCE_FILE})
+			TARGET_IP=$(cat ${TARGET_IP_FILE})
+			rm ${TARGET_INSTANCE_FILE} ${TARGET_IP_FILE}
+			wait_for_ec2
+		else
+			error_exit "Unsupported build type"
+		fi
+		;;
+
+
+	# ============================================================
+	ec2_info)
+	# ============================================================
+		if test x"${KX_BUILD_TYPE_EC2:-}" = xy; then
+			${KX_BASE}/libexec/ec2 "${KX_KCONFIG_FILE}" ec2_info
+		else
+			usage_exit "Command [$COMMAND] is only available for KX_BUILD_TYPE_EC2"
+		fi
+		;;
+
+	# ============================================================
+	*)
+	# ============================================================
+		usage_exit "Command [$COMMAND] not implemented yet"
+		;;
+esac
+done

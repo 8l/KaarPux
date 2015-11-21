@@ -1,0 +1,12 @@
+diff -Naur qt-everywhere-opensource-src-5.3.2.ORIG/qtimageformats/src/plugins/imageformats/jp2/qjp2handler.pri qt-everywhere-opensource-src-5.3.2/qtimageformats/src/plugins/imageformats/jp2/qjp2handler.pri
+--- qt-everywhere-opensource-src-5.3.2.ORIG/qtimageformats/src/plugins/imageformats/jp2/qjp2handler.pri	2014-09-11 12:48:32.000000000 +0200
++++ qt-everywhere-opensource-src-5.3.2/qtimageformats/src/plugins/imageformats/jp2/qjp2handler.pri	2014-09-20 23:43:13.976455841 +0200
+@@ -4,7 +4,7 @@
+ SOURCES += $$PWD/qjp2handler.cpp
+ config_jasper {
+     msvc: LIBS += libjasper.lib
+-    else: LIBS += -ljasper
++    else: LIBS += -ljasper -ljpeg
+ } else {
+     include($$PWD/../../../3rdparty/jasper.pri)
+ }

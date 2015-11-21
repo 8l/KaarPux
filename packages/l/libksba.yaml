@@ -1,0 +1,27 @@
+package:
+  name: libksba
+  version: 1.3.3
+  www: http://www.gnupg.org/related_software/libksba/index.html
+  short: Library to make the tasks of working with X.509 certificates, CMS data and related objects more easy.
+
+download:
+  url: ftp://ftp.gnupg.org/gcrypt/libksba
+  file_tar_bz2: ~
+  checksum: 0c7f5ffe34d0414f6951d9880a46fcc2985c487f7c36369b9f11ad41131c7786
+  verify: sig
+  
+version:
+  installed: kxver_sh_trailing "ksba-config --version"
+  sensitive: 1
+
+linux:
+  - build:
+    - echo: "autogen"
+    - sh: ./autogen.sh
+    - configure_kx: ~
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+

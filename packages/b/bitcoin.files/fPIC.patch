@@ -1,0 +1,13 @@
+diff -Naur bitcoin-0.11.1.ORIG/configure.ac bitcoin-0.11.1/configure.ac
+--- bitcoin-0.11.1.ORIG/configure.ac	2015-10-12 20:58:31.000000000 +0200
++++ bitcoin-0.11.1/configure.ac	2015-10-16 10:37:02.947200988 +0200
+@@ -417,7 +417,8 @@
+ 
+   if test x$TARGET_OS != xwindows; then
+     # All windows code is PIC, forcing it on just adds useless compile warnings
+-    AX_CHECK_COMPILE_FLAG([-fPIE],[HARDENED_CXXFLAGS="$HARDENED_CXXFLAGS -fPIE"])
++    # AX_CHECK_COMPILE_FLAG([-fPIE],[HARDENED_CXXFLAGS="$HARDENED_CXXFLAGS -fPIE"])
++    AX_CHECK_COMPILE_FLAG([-fPIC],[HARDENED_CXXFLAGS="$HARDENED_CXXFLAGS -fPIC"])
+     AX_CHECK_LINK_FLAG([[-pie]], [HARDENED_LDFLAGS="$HARDENED_LDFLAGS -pie"])
+   fi
+ 

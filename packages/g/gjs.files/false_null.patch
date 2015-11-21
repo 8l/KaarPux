@@ -1,0 +1,37 @@
+diff -Naur gjs-1.40.1.ORIG/gi/boxed.cpp gjs-1.40.1/gi/boxed.cpp
+--- gjs-1.40.1.ORIG/gi/boxed.cpp	2014-04-14 23:02:11.000000000 +0200
++++ gjs-1.40.1/gi/boxed.cpp	2014-06-05 16:58:38.597397355 +0200
+@@ -549,7 +549,7 @@
+     jsval id_val;
+ 
+     if (!JS_IdToValue(context, id, &id_val))
+-        return JS_FALSE;
++        return NULL;
+ 
+     if (!JSVAL_IS_INT (id_val)) {
+         gjs_throw(context, "Field index for %s is not an integer",
+diff -Naur gjs-1.40.1.ORIG/gi/ns.cpp gjs-1.40.1/gi/ns.cpp
+--- gjs-1.40.1.ORIG/gi/ns.cpp	2014-04-11 20:59:49.000000000 +0200
++++ gjs-1.40.1/gi/ns.cpp	2014-06-05 17:00:56.988816038 +0200
+@@ -185,7 +185,7 @@
+     global = gjs_get_import_global(context);
+ 
+     if (!JS_HasProperty(context, global, gjs_ns_class.name, &found))
+-        return JS_FALSE;
++        return NULL;
+     if (!found) {
+         JSObject *prototype;
+         prototype = JS_InitClass(context, global,
+diff -Naur gjs-1.40.1.ORIG/gi/repo.cpp gjs-1.40.1/gi/repo.cpp
+--- gjs-1.40.1.ORIG/gi/repo.cpp	2014-04-14 23:02:11.000000000 +0200
++++ gjs-1.40.1/gi/repo.cpp	2014-06-05 17:01:23.885758606 +0200
+@@ -301,7 +301,7 @@
+     repo = JS_NewObject(context, &gjs_repo_class, NULL, global);
+     if (repo == NULL) {
+         gjs_throw(context, "No memory to create repo object");
+-        return JS_FALSE;
++        return NULL;
+     }
+ 
+     priv = g_slice_new0(Repo);
+

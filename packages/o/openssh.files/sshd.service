@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenSSH Daemon
+After=network.target
+Wants=sshd-keygen.service
+After=sshd-keygen.service
+
+[Service]
+ExecStart=/bin/sshd -D
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+

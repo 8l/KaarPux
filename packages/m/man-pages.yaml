@@ -1,0 +1,21 @@
+package:
+  name: man-pages
+  version: 4.02
+  www: http://www.kernel.org/doc/man-pages/
+  short: The Linux man-pages project documents the Linux kernel and C library interfaces that are employed by user-space programs.
+
+download:
+  kernelxz: /linux/docs/man-pages/Archive
+  checksum: 48aacb75d522dd31978682c4fd8bc68e43c9a409bc4c7a126810e7610dff0dd3
+
+version:
+  installed_na: ~
+
+bootstrap_4:
+  # No build
+  # No testsuite
+  - install: ~ 
+
+verify_cli: |
+  kx_cli_send_match_success { /bin/man 1 intro } { q } { "ntroduction to user commands" }
+

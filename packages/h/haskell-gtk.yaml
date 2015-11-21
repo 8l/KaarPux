@@ -1,0 +1,27 @@
+package:
+  name: haskell-gtk
+  version: 0.13.6
+  www: https://hackage.haskell.org/package/gtk
+  short: A Haskell interface to setlocale()This is the core library of the Gtk2Hs suite of libraries for Haskell based on Gtk+
+
+download:
+  url: http://hackage.haskell.org/packages/archive/gtk/${KX_HASKELL_GTK_VERSION}
+  file: gtk-${KX_HASKELL_GTK_VERSION}.tar.gz
+  dir: gtk-${KX_HASKELL_GTK_VERSION}
+  checksum: 4c74ab4affda49230c0f98bd67276d114484ac3857f7e8a22d1e66339dda43f6
+
+version: ~
+
+opt:
+
+  - build:
+    - sh: sed -e 's@gccProg, "--cppopts=-E"@gccProg, "--cppopts=-E", "--cppopts=-P"@' -i Gtk2HsSetup.hs
+    - sh: |
+        runhaskell Setup configure --ghc --prefix=${KX_PREFIX}
+        runhaskell Setup build
+ 
+  - install:
+    - sh: |
+        { flock -w 60 9;
+        runhaskell Setup install;
+        } 9</opt/kaarpux/${KX_GHC}/lib/${KX_GHC}/package.conf.d/package.cache

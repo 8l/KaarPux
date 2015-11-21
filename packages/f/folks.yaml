@@ -1,0 +1,36 @@
+package:
+  name: folks
+  version: 0.11.1
+  www: https://live.gnome.org/Folks
+  short: |
+      libfolks is a library that aggregates people from multiple sources
+      (eg, Telepathy connection managers for IM contacts, evolution data server for local contacts, libsocialweb for web service contacts, etc.)
+      to create metacontacts.
+
+download:
+  gnomexz: ~
+  checksum: 6740d9074be911959904b40e7264d298bb5622995098ddfa1751dcd2bc4c917d
+
+version:
+  installed_pkgconfig: ~
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx_bash: >
+        --disable-static
+        --enable-eds-backend
+        --disable-ofono-backend
+        --enable-telepathy-backend
+        --disable-zeitgeist
+        --disable-libsocialweb-backend
+        --disable-tests
+        --disable-fatal-warnings
+        --disable-schemas-compile
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

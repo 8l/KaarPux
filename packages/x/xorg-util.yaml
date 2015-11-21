@@ -1,0 +1,12 @@
+package:
+  name: xorg-util
+  version: 7.7
+
+xorg:
+  - util_modules: |
+      P f7a80575f3724ac3d9b19eaeab802892ece7e4b0061dd6425b4b789353e25425 makedepend-1.0.5.tar.bz2   return "n/a";
+      . 2835b11829ee634e19fa56517b4cfc52ef39acea0cd82e15f68096e27cbed0ba util-macros-1.19.0.tar.bz2   kxver_pkgconfig('xorg-macros');
+#      ff553c4646edcc9e76b7308991ad421a  imake-1.0.3.tar.bz2
+#     10546b5ddda3cdda7950bb56bf98e0ea  xorg-cf-files-1.0.3.tar.bz2
+#      b533c0771dbbaf9b041ff35bb941d3a2  gccmakedep-1.0.2.tar.bz2
+

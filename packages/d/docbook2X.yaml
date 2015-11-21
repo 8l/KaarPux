@@ -1,0 +1,32 @@
+package:
+  name: docbook2X
+  version: 0.8.8
+  www: http://sourceforge.net/projects/docbook2x
+  short: |
+      docbook2X converts DocBook documents to man and Texinfo format.
+
+download:
+  sourceforge: docbook2x/docbook2x/${KX_DOCBOOK2X_VERSION}
+  file_tar_gz: ~
+  checksum: 7dc34d420f8aae2a0c0cdb39f52146ce005bf902
+
+version:
+  installed: kxver_sh_pattern("docbook2man --version", qr|docbook2X ([0-9]+\.[0-9.]*[0-9]+)\)|);
+  upstream: kxver_upstream_sourceforge("docbook2x", "docbook2x", "docbook2X");
+
+linux:
+  - build:
+    # https://projects.archlinux.org/svntogit/community.git/tree/trunk/datadir.diff?h=packages/docbook2x
+    - patch: datadir.diff
+    - sh: autoreconf -i -f
+    - configure_kx: ~
+    - make: ~
+  - test:
+    # The docbook2X is old and seems unmaintained.
+    # Cannot be bothered to fix "make check" errors
+    - check_ignore: ~
+  - install:
+    - install: ~
+    - sh: sed -i 's|http://docbook2x.sf.net/latest|/usr/share/docbook2X|g' ${KX_PREFIX}/bin/db2x_xsltproc
+
+

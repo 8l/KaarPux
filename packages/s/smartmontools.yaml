@@ -1,0 +1,34 @@
+package:
+  name: smartmontools
+  version: 6.4
+  www: https://sourceforge.net/apps/trac/smartmontools/
+  short: |
+      The smartmontools package contains two utility programs (smartctl and smartd)
+      to control and monitor storage systems using
+      the Self-Monitoring, Analysis and Reporting Technology System (SMART)
+      built into most modern ATA and SCSI harddisks
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: eab75600c1eda9c34b13097db71138ab376f3dad8a6a4667fb4d1d081feb7a85
+  verify: asc
+
+version:
+  installed: kxver_sh_pattern "smartctl -V | head -1", qr|^smartctl ([0-9.]+) |;
+
+linux:
+
+  - build:
+    - use_gcc: ~
+    - configure_kx: ~
+    - make: ~
+
+  - test:
+    - use_gcc: ~
+    - check: ~
+ 
+  - install:
+    - use_gcc: ~
+    - install: ~
+

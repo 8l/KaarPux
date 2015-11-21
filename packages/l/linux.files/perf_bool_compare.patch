@@ -1,0 +1,12 @@
+diff -Naur linux-4.0.4.ORIG/tools/perf/builtin-report.c linux-4.0.4/tools/perf/builtin-report.c
+--- linux-4.0.4.ORIG/tools/perf/builtin-report.c	2015-05-17 18:55:21.000000000 +0200
++++ linux-4.0.4/tools/perf/builtin-report.c	2015-06-07 10:52:27.300641152 +0200
+@@ -766,7 +766,7 @@
+ 	 * 0/1 means the user chose a mode.
+ 	 */
+ 	if (((branch_mode == -1 && has_br_stack) || branch_mode == 1) &&
+-	    branch_call_mode == -1) {
++	    branch_call_mode) {
+ 		sort__mode = SORT_MODE__BRANCH;
+ 		symbol_conf.cumulate_callchain = false;
+ 	}

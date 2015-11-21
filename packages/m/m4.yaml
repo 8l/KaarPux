@@ -1,0 +1,30 @@
+package:
+  name: m4
+  version: 1.4.17
+  www: http://www.gnu.org/software/m4/
+  short: GNU M4 is an implementation of the traditional Unix macro processor.
+
+download:
+  gnu: ~
+  checksum: 8e4e1f963932136ed45dcd5afb0c6e237e96a6fcdcd2a2fa6755040859500d70
+
+version:
+  wiz_savannah: ~
+  changelog: NEWS
+
+bootstrap_3:
+  - sh: sed -i -e '/gets is a/d' lib/stdio.in.h
+  - configure_tools: ~
+  - make: ~
+  - install: ~ 
+
+bootstrap_7:
+  - sh: sed -i -e '/gets is a/d' lib/stdio.in.h
+  - configure_kx: ~
+  - make: ~
+  - check: ~
+  - install: ~ 
+
+verify_cli: |
+  kx_cli_send_match_success /bin/m4 { "define(hello, Hello World)" "hello, welcome to m4!" } { "Hello World, welcome to m4!" }
+

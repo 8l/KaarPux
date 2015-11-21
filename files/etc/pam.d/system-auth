@@ -1,0 +1,31 @@
+#%PAM-1.0
+#
+# pam.d default configuration
+#
+
+# set/unset environment variables
+auth        required       pam_env.so
+
+# standard Unix authentication module
+auth        sufficient     pam_unix.so
+
+# otherwise deny access and log a warning
+auth        required       pam_deny.so
+auth        required       pam_warn.so
+
+# standard Unix authentication module
+account     required       pam_unix.so
+
+# standard Unix authentication module
+session     required       pam_unix.so
+
+# register session with systemd
+session     optional      pam_systemd.so
+
+# standard Unix authentication module
+password    sufficient     pam_unix.so      sha512 rounds=100000 shadow
+
+# otherwise deny access and log a warning
+password    required       pam_deny.so
+password    required       pam_warn.so
+

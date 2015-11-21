@@ -1,0 +1,25 @@
+package:
+  name: requests
+  version: 2.8.1
+  www: http://docs.python-requests.org
+  short: HTTP library, written in Python, for human beings
+
+
+download:
+  url: https://pypi.python.org/packages/source/r/requests
+  file_tar_gz: ~
+  checksum: 84fe8d5bf4dcdcc49002446c47a146d17ac10facf00d9086659064ac43b6c25b
+
+version:
+  upstream_pypi: ~
+
+linux:
+  - build:
+    - python3: ~
+    - sh: python3 setup.py build
+  # No test suite
+  - install:
+    - python3: ~
+    - sh: python3 setup.py install --prefix=${KX_PREFIX}
+
+

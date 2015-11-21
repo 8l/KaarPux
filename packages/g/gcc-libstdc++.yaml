@@ -1,0 +1,30 @@
+package:
+  name: gcc-libstdc++
+  version: 5.2.0
+  www: http://www.gnu.org/software/gcc/
+  short: |
+      The Standard c++ library; part of gcc
+
+download:
+  no_download: ~
+
+version:
+  upstream_gnu: gcc
+
+bootstrap_1:
+  - echo: configure
+  - sh: >
+      CFLAGS="-g -O2 -fPIC"
+      CXXFLAGS="-g -O2 -fPIC"
+      ../${KX_GCC}/libstdc++-v3/configure
+          --host="${KX_TARGET}"
+          --prefix="${KX_TOOLS}"
+          --disable-multilib
+          --disable-shared
+          --disable-nls
+          --disable-libstdcxx-threads
+          --disable-libstdcxx-pch
+          --with-default-libstdcxx-abi=gcc4-compatible
+          --with-gxx-include-dir="${KX_TOOLS}/${KX_TARGET}/include/c++/${KX_GCC_LIBSTDC_PLUS_PLUS_VERSION}"
+  - make: ~
+  - install: ~

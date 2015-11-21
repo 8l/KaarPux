@@ -1,0 +1,21 @@
+package:
+  name: sushi
+  version: 3.18.0
+  short: Quick previewer for nautilus
+
+download:
+  gnomexz: ~
+  checksum: 7f4df92be950bf23aff28da49ce108766dd21a88efc14a9d0807e10225608e9c
+
+version:
+  installed_na: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static --disable-schemas-compile
+    - make: ~
+
+  - install:
+    - install: ~

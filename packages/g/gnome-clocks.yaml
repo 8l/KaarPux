@@ -1,0 +1,24 @@
+package:
+  name: gnome-clocks
+  version: 3.18.0
+  www: https://live.gnome.org/Design/Apps/Clock
+  short: A nice simple app to show the time, date, and alarms
+
+download:
+  gnomexz: ~
+  checksum: ca0818ec89e3539201da6b5388365e3d66df815198beccc90e2be44c7822baa0
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static --disable-schemas-compile
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

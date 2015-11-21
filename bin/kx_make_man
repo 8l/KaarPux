@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2015: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+# ============================================================
+# CREATE KAARPUX MANUAL PAGES
+# ============================================================
+
+set -o nounset
+set -o errexit
+KX_BASE="$(cd $(dirname "$0")/../..; pwd -P)"
+
+cd "${KX_BASE}/master/man"
+make BUILDDIR="${KX_BASE}" man

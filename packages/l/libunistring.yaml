@@ -1,0 +1,26 @@
+package:
+  name: libunistring
+  version: 0.9.4
+  www: http://www.gnu.org/software/libunistring/
+  short: functions for manipulating Unicode strings and for manipulating C strings according to the Unicode standard.
+
+download:
+  url: ftp://ftp.gnu.org/pub/gnu/libunistring
+  file_tar_gz: ~
+  checksum: c24a6a3838d9ad4a41a62549312c4226
+  verify: sig
+
+version:
+  installed: join(".", unpack("(A2)*", kxver_file_pattern("/include/unistring/version.h", qr|LIBUNISTRING_VERSION 0x([0-9]+)|)));
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

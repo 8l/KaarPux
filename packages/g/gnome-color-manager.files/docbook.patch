@@ -1,0 +1,45 @@
+diff -Naur gnome-color-manager-3.10.1.ORIG/man/gcm-calibrate.sgml gnome-color-manager-3.10.1/man/gcm-calibrate.sgml
+--- gnome-color-manager-3.10.1.ORIG/man/gcm-calibrate.sgml	2011-09-08 16:07:50.000000000 +0200
++++ gnome-color-manager-3.10.1/man/gcm-calibrate.sgml	2014-02-07 10:42:41.560267524 +0100
+@@ -1,4 +1,4 @@
+-<!doctype refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
++<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+   <!-- Please adjust the date whenever revising the manpage. -->
+   <!ENTITY date        "<date>11 April,2008</date>">
+   <!ENTITY package     "gcm-import">
+diff -Naur gnome-color-manager-3.10.1.ORIG/man/gcm-import.sgml gnome-color-manager-3.10.1/man/gcm-import.sgml
+--- gnome-color-manager-3.10.1.ORIG/man/gcm-import.sgml	2011-09-08 15:59:37.000000000 +0200
++++ gnome-color-manager-3.10.1/man/gcm-import.sgml	2014-02-07 10:42:35.957187804 +0100
+@@ -1,4 +1,4 @@
+-<!doctype refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
++<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+   <!-- Please adjust the date whenever revising the manpage. -->
+   <!ENTITY date        "<date>11 April,2008</date>">
+   <!ENTITY package     "gcm-import">
+diff -Naur gnome-color-manager-3.10.1.ORIG/man/gcm-inspect.sgml gnome-color-manager-3.10.1/man/gcm-inspect.sgml
+--- gnome-color-manager-3.10.1.ORIG/man/gcm-inspect.sgml	2011-09-08 16:02:11.000000000 +0200
++++ gnome-color-manager-3.10.1/man/gcm-inspect.sgml	2014-02-07 10:42:32.225134707 +0100
+@@ -1,4 +1,4 @@
+-<!doctype refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
++<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+   <!-- Please adjust the date whenever revising the manpage. -->
+   <!ENTITY date        "<date>11 April,2008</date>">
+   <!ENTITY package     "gcm-import">
+diff -Naur gnome-color-manager-3.10.1.ORIG/man/gcm-picker.sgml gnome-color-manager-3.10.1/man/gcm-picker.sgml
+--- gnome-color-manager-3.10.1.ORIG/man/gcm-picker.sgml	2011-09-08 16:01:46.000000000 +0200
++++ gnome-color-manager-3.10.1/man/gcm-picker.sgml	2014-02-07 10:42:29.122090561 +0100
+@@ -1,4 +1,4 @@
+-<!doctype refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
++<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+   <!-- Please adjust the date whenever revising the manpage. -->
+   <!ENTITY date        "<date>11 April,2008</date>">
+   <!ENTITY package     "gcm-import">
+diff -Naur gnome-color-manager-3.10.1.ORIG/man/gcm-viewer.sgml gnome-color-manager-3.10.1/man/gcm-viewer.sgml
+--- gnome-color-manager-3.10.1.ORIG/man/gcm-viewer.sgml	2011-09-08 15:59:40.000000000 +0200
++++ gnome-color-manager-3.10.1/man/gcm-viewer.sgml	2014-02-07 10:42:25.375037254 +0100
+@@ -1,4 +1,4 @@
+-<!doctype refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
++<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+   <!-- Please adjust the date whenever revising the manpage. -->
+   <!ENTITY date        "<date>11 April,2008</date>">
+   <!ENTITY package     "gcm-import">

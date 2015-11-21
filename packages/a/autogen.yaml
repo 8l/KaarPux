@@ -1,0 +1,26 @@
+package:
+  name: autogen
+  version: 5.18.4
+  www: http://www.gnu.org/software/autogen/
+  short: AutoGen is a tool designed to simplify the creation and maintenance of programs that contain large amounts of repetitious text.
+
+download:
+  url: ftp://ftp.gnu.org/pub/gnu/autogen/rel${KX_AUTOGEN_VERSION}
+  file_tar_xz: ~
+  checksum: 7fbaff0c25035aee5b96913de2c83d9a5cc973b8dc08d6b7489ecbcfd72eb84b
+  verify: sig
+
+version:
+  installed_sh_trailing: autogen -v
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

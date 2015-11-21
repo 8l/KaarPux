@@ -1,0 +1,38 @@
+package:
+  name: system-config-printer
+  version: 1.5.7
+  www: http://cyberelk.net/tim/software/system-config-printer/
+  short: configure a CUPS server (often the local machine) using the CUPS API.
+
+download:
+  url: http://cyberelk.net/tim/data/system-config-printer/${KX_SYSTEM_CONFIG_PRINTER_VERSION_MM}
+  file_tar_xz: ~
+  checksum: f6b57bbb356b40006e48c059fe5625d8c0ff4217fa10b9675c161527c4fcacef
+  verify: sig
+
+version:
+  upstream: kxver_scrape_url("system-config-printer", "http://pkgs.fedoraproject.org/repo/pkgs/system-config-printer/");
+
+linux:
+  - build:
+
+    # FIX WHITESPACE ERROR
+    # import cupshelpers
+    # File "//share/system-config-printer/scp-dbus-service.py", line 34, in <module>
+    # import cupshelpers
+    # File "/usr/lib/python3.4/site-packages/cupshelpers/__init__.py", line 47, in <module>
+    # from .cupshelpers import                                \
+    # File "/usr/lib/python3.4/site-packages/cupshelpers/cupshelpers.py", line 689
+    # for g in group.subgroups:
+    # ^
+    # TabError: inconsistent use of tabs and spaces in indentation
+    - patch: tab.patch
+
+    - python3: ~
+    - configure_kx: >
+        --with-udev-rules
+    - make: ~
+
+  - install:
+    - python3: ~
+    - install: ~

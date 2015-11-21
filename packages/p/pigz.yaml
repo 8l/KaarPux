@@ -1,0 +1,44 @@
+package:
+  name: pigz
+  version: 2.3.3
+  www: http://zlib.net/pigz/
+  doc: A parallel implementation of gzip for modern multi-processor, multi-core machines
+
+download:
+  url: http://zlib.net/pigz
+  file_tar_gz: ~
+  checksum: 4e8b67b432ce7907575a549f3e1cac4709781ba0f6b48afea9f59369846b509c
+
+version:
+  upstream: |
+      my $p = kxver_html_download("zlib.net", "/pigz/");
+      return kxver_scrape_this("pigz", $p);
+
+linux:
+  - build:
+    - sh: sed 's/-lpthread -lz/-lpthread -lz -lm/' -i Makefile
+    - make: ~
+  - test:
+    - test: ~
+  - install:
+    - sh: |
+        install -Dm755 pigz /bin
+        ln -svf /bin/pigz /bin/unpigz
+        install -Dm644 pigz.1 /share/man/man1/pigz.1
+
+verify_cli: |
+
+  kx_cli_success /bin/pigz -V
+
+  if [catch {
+    set filename "pigztest_[pid]_[clock microseconds].sh"
+    set file [open $filename [list RDWR CREAT EXCL TRUNC] 0700]
+    puts $file "echo 12345678 | pigz - | unpigz - | md5sum"
+    close $file
+  } reason] then {
+    fail "pigz test failed: $reason";
+  } else {
+    kx_cli_match_success "./$filename" "23cdc18507b52418db7740cbb5543e54"
+  }
+  catch { file delete "$filename" }
+

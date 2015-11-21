@@ -1,0 +1,53 @@
+package:
+  name: expect
+  version: 5.45
+  www: http://expect.nist.gov/
+  short: Expect is a tool for automating interactive applications such as telnet, ftp, passwd, fsck, rlogin, tip, etc.
+
+download:
+  sourceforge: ~
+  dir: expect5.45
+  file: expect5.45.tar.gz
+  checksum: 44e1a4f4c877e9ddc5a542dfa7ecc92b
+
+version:
+  installed_sh_trailing: expect -v
+  upstream: kxver_upstream_sourceforge("expect", "Expect", undef, qr|expect([0-9]+\.+[0-9\.]*[0-9]+).*/download|);
+
+bootstrap_3:
+  - doc: >
+      Force Expect's configure script to use /bin/stty instead of a /usr/local/bin/stty it may find on the host system.
+      This will ensure that our testsuite tools remain sane for the final builds of our toolchain
+  - sh: |
+      cp -v configure configure.orig
+      sed 's:/usr/local/bin:/bin:' configure.orig > configure
+      BIT64=""
+      test $(uname -m) = x86_64 && BIT64="--enable-64bit"
+  - configure_tools: >
+      ${BIT64}
+      --with-tcl=${KX_TOOLS}/lib
+      --with-tclinclude=${KX_TOOLS}/include
+      --with-x=no
+
+  - make: ~
+
+  - install: SCRIPTS=""
+
+bootstrap_7:
+  - sh: |
+      cp -v configure configure.orig
+      sed 's:/usr/local/bin:/bin:' configure.orig > configure
+      BIT64=""
+      test $(uname -m) = x86_64 && BIT64="--enable-64bit"
+  - configure_kx: >
+      ${BIT64}
+      --enable-threads
+      --enable-shared
+
+  - make: ~
+
+  - test: ~
+
+  - install: ~
+
+  - sh: ln -sf ${KX_PREFIX}/lib/expect${KX_EXPECT_VERSION_MM}/libexpect${KX_EXPECT_VERSION_MM}.so ${KX_PREFIX}/lib/libexpect${KX_EXPECT_VERSION_MM}.so

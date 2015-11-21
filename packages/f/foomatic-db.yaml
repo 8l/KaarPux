@@ -1,0 +1,30 @@
+package:
+  name: foomatic-db
+  # If version is updated, remember to change date in "dir" below as well
+  version: 20150825
+  www: http://www.linuxfoundation.org/collaborate/workgroups/openprinting
+
+download:
+  # The canonical source is:
+  # url: http://www.openprinting.org/download/foomatic/
+  # However, the tarball is updated daily, and old versions are NOT kept around
+  # So we take the tarball from Debian, which DOES seem to keep old versions around
+  url: http://cdn.debian.net/debian/pool/main/f/foomatic-db
+  file: foomatic-db_${KX_FOOMATIC_DB_VERSION}.orig.tar.xz
+  # The directory in the tarball is inconsistent with tarball name
+  dir: foomatic-db-20150819
+  checksum: 7d5d09a4cebb65911bfabd2d7bb5222b70fabc28b4046254f12d073bb59066ba
+
+version:
+  upstream: kxver_scrape_url(undef, $url, qr|foomatic-db_([0-9]+)\.orig|);
+
+linux:
+  - build:
+    - configure_kx: ~
+    - make: ~     
+
+  # No test suite
+
+  - install:
+    - install: ~
+

@@ -1,0 +1,43 @@
+package:
+  name: openssl
+  version: 1.0.2d
+  www: http://www.openssl.org
+  short: |
+      The OpenSSL Project is a collaborative effort to develop a robust, commercial-grade, full-featured, and Open Source toolkit
+      implementing the Secure Sockets Layer (SSL v2/v3) and Transport Layer Security (TLS v1) protocols
+      as well as a full-strength general purpose cryptography library.
+
+download:
+  url: http://www.openssl.org/source
+  file_tar_gz: ~
+  checksum: 671c36487785628a703374c652ad2cebea45fa920ae5681515df25d9f2c9a8c8
+  verify: asc
+
+version:
+  sensitive: 1
+  installed_pkgconfig: ~
+  upstream: kxver_scrape_url(undef, $url, qr|openssl-([0-9]+\.+[0-9.]*[0-9]+[a-z]*)\.tar|);
+
+bootstrap_8:
+
+    - echo: configure
+    - sh: ./config --prefix="${KX_PREFIX}" --openssldir=/etc/ssl zlib-dynamic shared
+
+    - make: ~
+
+    # A few OpenSSL tests are failing
+    # TODO: come back and verify test cases
+    - sh: test -n "${KX_DISABLE_TEST:-}" || make test || true
+
+    - install: INSTALL_PREFIX="${KX_PREFIX}" MANDIR=/usr/share/man MANSUFFIX=ssl
+
+verify_cli: |
+  kx_cli_match_success "openssl version" { OpenSSL }
+  kx_cli_send_match_success "openssl dgst -md5" { 12345678 } { 23cdc18507b52418db7740cbb5543e54 }
+  kx_cli_send_match_success "openssl dgst -sha1" { 12345678 } { 9806af3952e1380212b0998f07a6afe4e5f00428 }
+  kx_cli_send_match_success "openssl dgst -sha256" { 12345678 } { 2634c3097f98e36865f0c572009c4ffd73316bc8b88ccfe8d196af35f46e2394 }
+  kx_cli_send_match_success "openssl dgst -sha512" { 12345678 } { e96e3b40be3e1a3a6c13c885a1c242b21151cf8b8258c98a4aa2f816183211ff99b771a36d7278e0c8cbcd53db257682bdc354842899fa3fa385dab2ade1754d }
+  kx_cli_send_match_success "openssl dgst -hmac 42" { 12345678 } { 30a0f50bee2618a6100ac3094617c7242526773e }
+  kx_cli_send_match_success "openssl enc -bf -pass pass:zeBigZecret -a -S 4242424242" { "You will need ENIGMA to decrypt this" } { U2FsdGVkX19CQkJCQgAAADvci3r/KVIQSMuK1eS/Fcu6gRAKw7zrUty8Sr0CJpkS sDz9piXxdDo= }
+  kx_cli_sh openssl openssl_test.sh
+

@@ -1,0 +1,33 @@
+package:
+  name: make
+  version: 4.1
+  www: http://www.gnu.org/software/make/
+  short: Make is a tool which controls the generation of executables and other non-source files of a program from the program's source files.
+
+download:
+  gnu: ~
+  checksum: 0bc7613389650ee6a24554b52572a272f7356164fd2c4132b0bcf13123e4fca5
+
+version:
+  wiz_savannah: ~
+  changelog: NEWS
+
+bootstrap_3:
+  - configure_tools: --without-guile
+  - make: ~
+  - install: ~ 
+
+bootstrap_7:
+  - configure_kx: --without-guile
+  - make: ~
+  - sh: |
+      kx_step_echo CHECK
+      if ! make check; then
+      kx_step_echo REDO CHECK
+      sleep 10
+      make -k check
+      fi
+  - install: ~ 
+
+# Tested in "verify_toolchain"
+

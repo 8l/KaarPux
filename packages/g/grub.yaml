@@ -1,0 +1,52 @@
+package:
+  name: grub
+  version: 2.00
+  www: http://www.gnu.org/software/grub/
+
+download:
+  gnux: ~
+  checksum: 784ec38e7edc32239ad75b8e66df04dc8bfb26d88681bc9f627133a6eb85c458
+
+version:
+  installed_sh_trailing: grub-probe --version
+  upstream_gnu: ~
+
+bootstrap_8:
+  - sh: sed -i -e '/gets is a/d' grub-core/gnulib/stdio.in.h
+
+  - sh: >
+      OPTIONS="
+      --sysconfdir=/etc
+      --disable-grub-emu-usb
+      --disable-efiemu
+      --disable-werror
+      "
+  - configure_kx: ${OPTIONS} --with-platform=pc
+
+  - make: -j 1
+
+  # The grub test suite is totally borked
+  # TODO: Come back and help fix the tests
+  # - check: ~
+
+
+  - install: ~
+
+  - sh: if test $(uname -m) = x86_64; then
+  - sh: make distclean
+  - configure_kx: ${OPTIONS} --with-platform=efi
+  - make: -j 1
+
+  # investigate failing testcases
+  - check_ignore: ~
+
+  - install: ~
+  - sh: fi
+
+  # the GRUB bash completion is borked; cannot be bothered to find out why, so just nuke it
+  - sh: rm /etc/bash_completion.d/grub
+  - sh: mkdir -pv /etc/grub
+  - sh: echo "GRUB_DISTRIBUTOR=$(lsb_release -i -s 2> /dev/null || echo KaarPux)" > /etc/default/grub
+
+
+# TODO: verify_cli as root

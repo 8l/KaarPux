@@ -1,0 +1,36 @@
+package:
+  name: totem
+  version: 3.18.1
+  www: http://projects.gnome.org/totem/
+  short: Totem is the official movie player of the GNOME desktop environment based on GStreamer.
+
+download:
+  gnomexz: ~
+  checksum: d7816eae9606846c44fd508902eae10bdaed28e6d4f621531990d473184107a2
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - use_gcc: ~
+    - configure_kx_bash: -disable-gtk-doc --disable-static --disable-vegas-plugin --disable-schemas-compile
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+verify_gui: |
+    spawn totem totem
+    await togglebutton Search 5
+    application
+    await togglebutton Menu 5
+    altf4
+    desktop
+    away application totem 1
+
+# TODO: real verify_gui testcases: flash, webm, windows formats

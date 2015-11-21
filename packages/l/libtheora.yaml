@@ -1,0 +1,31 @@
+package:
+  name: libtheora
+  version: 1.1.1
+  www: http://theora.org/
+  short: Theora is a free and open video compression format.
+
+download:
+  url: http://downloads.xiph.org/releases/theora
+  file_tar_bz2: ~
+  checksum: 8dcaa8e61cd86eb1244467c0b64b9ddac04ae262
+
+version:
+  hold: 1
+  installed_pkgconfig: theora
+
+doc: |
+  <para>
+  This package is marked as <systemitem>on hold</systemitem>,
+  as 1.2 is still in beta (after all these years...)
+  </para>
+
+linux:
+  - build:
+    - sh: sed s/-fforce-addr// -i configure
+    - sh: sed s/png_sizeof/sizeof/ -i examples/png2theora.c
+    - configure_kx: --disable-static
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~

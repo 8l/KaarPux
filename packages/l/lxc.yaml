@@ -1,0 +1,33 @@
+package:
+  name: lxc
+  version: 1.1.4
+  www: http://linuxcontainers.org/
+  short: |
+      LXC is a userspace interface for the Linux kernel containment features.
+
+download:
+  url: https://github.com/lxc/lxc/archive
+  file_tar_gz: ~
+  dir: lxc-lxc-${KX_LXC_VERSION}
+  checksum: b087baf5ac4b94618388e6e759d9cdafcf5c98ed67bf9012ee9660076f9fb0d1
+  sig: asc
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_scrape_url("lxc", "https://linuxcontainers.org/downloads/");
+
+linux:
+  - build:
+    - use_gcc: ~
+    - sh: ./autogen.sh
+    - sh: sed -e 's/for name in docbook2x-man db2x_docbook2man/for name in docbook2x-man db2x_docbook2man docbook2man/' -i configure
+    - sh: sed -e 's/xdocbook2man/xfoobar/' -i configure
+    - configure_kx: ~
+    - make: ~
+  - test:
+    - use_gcc: ~
+    - check: ~
+  - install:
+    - use_gcc: ~
+    - install: ~
+

@@ -1,0 +1,23 @@
+package:
+  name: pyparsing
+  version: 2.0.3
+  www: http://pyparsing.wikispaces.com/
+  short: The pyparsing module is an alternative approach to creating and executing simple grammars, vs. the traditional lex/yacc approach, or the use of regular expressions. The pyparsing module provides a library of classes that client code uses to construct the grammar directly in Python code.
+
+version:
+  upstream: kxver_upstream_sourceforge("pyparsing", "pyparsing", "pyparsing");
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: 06e729e1cbf5274703b1f47b6135ed8335999d547f9d8cf048b210fb8ebf844f
+
+linux:
+  - build:
+    - sh: python setup.py build
+
+  # No test suite
+
+  - install:
+    - sh: python setup.py install
+

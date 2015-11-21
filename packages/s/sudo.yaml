@@ -1,0 +1,51 @@
+package:
+  name: sudo
+  version: 1.8.11p2
+  www: http://www.sudo.ws/
+  short: |
+      Sudo (su "do") allows a system administrator to delegate authority
+      to give certain users (or groups of users) the ability to run some (or all) commands
+      as root or another user while providing an audit trail of the commands and their arguments.
+
+download:
+  file_tar_gz: ~
+  url: http://www.sudo.ws/sudo/dist/
+  checksum: 8133849418fa18cf6b6bb6893d1855ff7afe21db8923234a00bf045c90fba1ad
+  verify: sig
+
+version:
+  installed_sh_trailing: sudo -V
+  upstream: kxver_scrape_url(undef, "http://www.sudo.ws/sudo/stable.html", qr|([0-9]+\.[0-9]+\.[0-9p]+)|)
+
+bootstrap_3:
+  - configure_tools: ~
+  - make: ~
+  - install: ~ 
+
+bootstrap_8:
+  # in chroot we are running as root user
+  # so tarball will be extracted with files owned by strange uid:gid
+  # which makes testsudoers/test3 fail
+  - sh: chown -R 0:0 .
+  - configure_kx: >
+      --with-ignore-dot
+      --enable-shell-sets-home
+      --with-pam
+      --with-logfac=auth
+      --without-sendmail
+  - make: ~
+  - echo: check
+  - sh: env LC_ALL=C make check
+  - install: ~ 
+  - echo: Post-install
+  - sh: |
+      cat >> /etc/sudoers << EOF_SUDOERS
+      Defaults secure_path = /bin
+      %sudoers ALL=(ALL) ALL
+      EOF_SUDOERS
+
+verify_cli: |
+  # TODO: real testcases
+  kx_cli_match_success "sudo -V" { Sudo Sudoers }
+  kx_cli_match_success "visudo -V" { visudo }
+

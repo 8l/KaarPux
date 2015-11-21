@@ -1,0 +1,47 @@
+package:
+  name: yelp
+  version: 3.18.1
+  www: https://live.gnome.org/Yelp
+  short: Yelp is the help viewer in Gnome. It's what happens when you hit F1.
+
+download:
+  gnomexz: ~
+  checksum: ba3a4eb4717c0ecf4a2e40eff0963fcd12c700c4fb80b83ecaad8b7032256880
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+
+
+    # Avoid "format string is not a string literal"
+    # in tests/test-settings.c
+    - sh: export CFLAGS="-Wno-format-nonliteral"
+    - configure_kx: --disable-gtk-doc --disable-static --disable-schemas-compile
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+verify_gui: |
+    spawn yelp yelp
+    find frame GNOMEHelp 7
+    application
+    find menubar _ 4
+    find menu Page 1
+    do click
+    find menuitem FindinPage 1
+    do click
+    application
+    find menubar _ 4
+    find menu Page 1
+    do click
+    find menuitem Close 1
+    do click
+    desktop
+    away application yelp 1

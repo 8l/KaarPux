@@ -1,0 +1,25 @@
+package:
+  name: at-spi2-core
+  version: 2.18.1
+  www: http://www.linuxfoundation.org/collaborate/workgroups/accessibility/atk/at-spi/at-spi_on_d-bus
+
+download:
+  gnomexz: ~
+
+  checksum: 57d555be4cc64905454687bf9bb7dc1e68531bee93befa77222d94ea083f01cf
+
+version:
+  installed_pkgconfig: atspi-2
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

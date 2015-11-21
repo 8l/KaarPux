@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>
+<head>
+<title>xorg-x11-apps.git - xorg-x11-apps</title>
+<meta name='generator' content='cgit v0.9.1'/>
+<meta name='robots' content='index, nofollow'/>
+<link rel='stylesheet' type='text/css' href='/cgit-data/cgit.css'/>
+<link rel='alternate' title='Atom feed' href='http://pkgs.fedoraproject.org/cgit/xorg-x11-apps.git/atom/luit-1.1.1-configure-define-XOPEN_SOURCE-to-600-on-linux.patch?h=master' type='application/atom+xml'/>
+</head>
+<body>
+<div id='cgit'><table id='header'>
+<tr>
+<td class='logo' rowspan='2'><a href='/cgit/'><img src='/cgit-data/cgit.png' alt='cgit logo'/></a></td>
+<td class='main'><a href='/cgit/'>index</a> : <a title='xorg-x11-apps.git' href='/cgit/xorg-x11-apps.git/'>xorg-x11-apps.git</a></td><td class='form'><form method='get' action=''>
+<select name='h' onchange='this.form.submit();'>
+<option value='f10'>f10</option>
+<option value='f11'>f11</option>
+<option value='f12'>f12</option>
+<option value='f13'>f13</option>
+<option value='f14'>f14</option>
+<option value='f15'>f15</option>
+<option value='f16'>f16</option>
+<option value='f17'>f17</option>
+<option value='f18'>f18</option>
+<option value='f19'>f19</option>
+<option value='f7'>f7</option>
+<option value='f8'>f8</option>
+<option value='f9'>f9</option>
+<option value='master' selected='selected'>master</option>
+</select> <input type='submit' name='' value='switch'/></form></td></tr>
+<tr><td class='sub'>xorg-x11-apps</td><td class='sub right'>Jesse Keating</td></tr></table>
+<table class='tabs'><tr><td>
+<a href='/cgit/xorg-x11-apps.git/'>summary</a><a href='/cgit/xorg-x11-apps.git/refs/'>refs</a><a href='/cgit/xorg-x11-apps.git/log/luit-1.1.1-configure-define-XOPEN_SOURCE-to-600-on-linux.patch'>log</a><a class='active' href='/cgit/xorg-x11-apps.git/tree/luit-1.1.1-configure-define-XOPEN_SOURCE-to-600-on-linux.patch'>tree</a><a href='/cgit/xorg-x11-apps.git/commit/luit-1.1.1-configure-define-XOPEN_SOURCE-to-600-on-linux.patch'>commit</a><a href='/cgit/xorg-x11-apps.git/diff/luit-1.1.1-configure-define-XOPEN_SOURCE-to-600-on-linux.patch'>diff</a><a href='/cgit/xorg-x11-apps.git/stats/luit-1.1.1-configure-define-XOPEN_SOURCE-to-600-on-linux.patch'>stats</a></td><td class='form'><form class='right' method='get' action='/cgit/xorg-x11-apps.git/log/luit-1.1.1-configure-define-XOPEN_SOURCE-to-600-on-linux.patch'>
+<select name='qt'>
+<option value='grep'>log msg</option>
+<option value='author'>author</option>
+<option value='committer'>committer</option>
+<option value='range'>range</option>
+</select>
+<input class='txt' type='text' size='10' name='q' value=''/>
+<input type='submit' value='search'/>
+</form>
+</td></tr></table>
+<div class='path'>path: <a href='/cgit/xorg-x11-apps.git/tree/'>root</a>/<a href='/cgit/xorg-x11-apps.git/tree/luit-1.1.1-configure-define-XOPEN_SOURCE-to-600-on-linux.patch'>luit-1.1.1-configure-define-XOPEN_SOURCE-to-600-on-linux.patch</a></div><div class='content'>blob: 4fa2c6a6002ecddbe1761b7d518e9447c2fa1acd (<a href='/cgit/xorg-x11-apps.git/plain/luit-1.1.1-configure-define-XOPEN_SOURCE-to-600-on-linux.patch'>plain</a>)
+<table summary='blob content' class='blob'>
+<tr><td class='linenumbers'><pre><a class='no' id='n1' name='n1' href='#n1'>1</a>
+<a class='no' id='n2' name='n2' href='#n2'>2</a>
+<a class='no' id='n3' name='n3' href='#n3'>3</a>
+<a class='no' id='n4' name='n4' href='#n4'>4</a>
+<a class='no' id='n5' name='n5' href='#n5'>5</a>
+<a class='no' id='n6' name='n6' href='#n6'>6</a>
+<a class='no' id='n7' name='n7' href='#n7'>7</a>
+<a class='no' id='n8' name='n8' href='#n8'>8</a>
+<a class='no' id='n9' name='n9' href='#n9'>9</a>
+<a class='no' id='n10' name='n10' href='#n10'>10</a>
+<a class='no' id='n11' name='n11' href='#n11'>11</a>
+<a class='no' id='n12' name='n12' href='#n12'>12</a>
+<a class='no' id='n13' name='n13' href='#n13'>13</a>
+<a class='no' id='n14' name='n14' href='#n14'>14</a>
+<a class='no' id='n15' name='n15' href='#n15'>15</a>
+<a class='no' id='n16' name='n16' href='#n16'>16</a>
+<a class='no' id='n17' name='n17' href='#n17'>17</a>
+<a class='no' id='n18' name='n18' href='#n18'>18</a>
+<a class='no' id='n19' name='n19' href='#n19'>19</a>
+<a class='no' id='n20' name='n20' href='#n20'>20</a>
+<a class='no' id='n21' name='n21' href='#n21'>21</a>
+<a class='no' id='n22' name='n22' href='#n22'>22</a>
+<a class='no' id='n23' name='n23' href='#n23'>23</a>
+<a class='no' id='n24' name='n24' href='#n24'>24</a>
+<a class='no' id='n25' name='n25' href='#n25'>25</a>
+<a class='no' id='n26' name='n26' href='#n26'>26</a>
+<a class='no' id='n27' name='n27' href='#n27'>27</a>
+<a class='no' id='n28' name='n28' href='#n28'>28</a>
+<a class='no' id='n29' name='n29' href='#n29'>29</a>
+<a class='no' id='n30' name='n30' href='#n30'>30</a>
+<a class='no' id='n31' name='n31' href='#n31'>31</a>
+<a class='no' id='n32' name='n32' href='#n32'>32</a>
+<a class='no' id='n33' name='n33' href='#n33'>33</a>
+<a class='no' id='n34' name='n34' href='#n34'>34</a>
+<a class='no' id='n35' name='n35' href='#n35'>35</a>
+<a class='no' id='n36' name='n36' href='#n36'>36</a>
+<a class='no' id='n37' name='n37' href='#n37'>37</a>
+</pre></td>
+<td class='lines'><pre><code>From c0b9f12ebb0a640e931e54c1f049016bdfdb9a07 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer &lt;peter.hutterer@who-t.net&gt;
+Date: Mon, 14 Jan 2013 09:42:00 +1000
+Subject: [PATCH] configure: define XOPEN_SOURCE to 600 on linux
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+posix_openpt() is only defined for 600 and higher.
+
+sys.c: In function ‘allocatePty’:
+sys.c:339:5: error: implicit declaration of function ‘posix_openpt’
+[-Werror=implicit-function-declaration]
+sys.c:339:5: warning: nested extern declaration of ‘posix_openpt’
+[-Wnested-externs]
+
+Signed-off-by: Peter Hutterer &lt;peter.hutterer@who-t.net&gt;
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git luit-1.1.1/configure.ac b/configure.ac
+index c214d85..67ef2c4 100644
+--- luit-1.1.1/configure.ac
++++ luit-1.1.1/configure.ac
+@@ -62,7 +62,7 @@ case $host_os in
+     linux*)
+         AC_CHECK_HEADERS([poll.h])
+         AC_CHECK_FUNCS([poll])
+-        OS_CFLAGS="-D_XOPEN_SOURCE=500"
++        OS_CFLAGS="-D_XOPEN_SOURCE=600"
+         ;;
+     *)
+         AC_CHECK_HEADERS([poll.h])
+-- 
+1.8.1
+
+</code></pre></td></tr></table>
+</div> <!-- class=content -->
+<div class='footer'>generated  by cgit v0.9.1 at 2013-06-17 21:00:13 (GMT)</div>
+</div> <!-- id=cgit -->
+</body>
+</html>

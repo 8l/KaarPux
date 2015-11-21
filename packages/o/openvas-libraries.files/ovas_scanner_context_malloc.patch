@@ -1,0 +1,19 @@
+Patch by Henrik Kaare Poulsen
+for KaarPux
+http://kaarpux.kaarposoft.dk/
+
+Allocate space for the ovas_scanner_context_s structure,
+not just a pointer to it.
+
+diff -Naur openvas-libraries-7.0.3.ORIG/misc/network.c openvas-libraries-7.0.3/misc/network.c
+--- openvas-libraries-7.0.3.ORIG/misc/network.c	2014-07-31 08:40:10.000000000 +0200
++++ openvas-libraries-7.0.3/misc/network.c	2014-08-17 12:16:56.109831801 +0200
+@@ -1164,7 +1164,7 @@
+   if (openvas_SSL_init () < 0)
+     return NULL;
+ 
+-  ctx = g_malloc0 (sizeof (ovas_scanner_context_t));
++  ctx = g_malloc0 (sizeof (struct ovas_scanner_context_s));
+   ctx->encaps = encaps;
+   ctx->priority = g_strdup (priority);
+ 

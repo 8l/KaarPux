@@ -1,0 +1,26 @@
+package:
+  name: spice-gtk
+  version: 0.30
+  www: http://spice-space.org/
+  short: The Spice project aims to provide a complete open source solution for interaction with virtualized desktop devices or easily enable your application to be extensible in JavaScript. 
+
+download:
+  url: http://spice-space.org/download/gtk/
+  file_tar_bz2: ~
+  checksum: e23323fa399efba17b3c18475ef10a29815851be5e7dbedd246b28ee8eb1379c
+
+version:
+  installed_sh_trailing: spicy --version
+
+linux:
+
+  - build:
+    # We do not need the static libraries,
+    # but building with --disable-static fails
+    - configure_kx: --disable-smartcard
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

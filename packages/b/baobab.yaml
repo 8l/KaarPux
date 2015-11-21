@@ -1,0 +1,27 @@
+package:
+  name: baobab
+  version: 3.18.1
+  www: http://www.marzocca.net/linux/baobab/
+  short: Disk Usage Analyzer (aka Baobab) is a graphical, menu-driven viewer that you can use to view and monitor your disk usage and folder structure.
+
+download:
+  gnomexz: ~
+  checksum: c2ac90426390e77147446a290c1480c49936c0a224f740b555ddaec2675b44b5
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static --disable-schemas-compile --disable-gtk-doc --enable-man-pages
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

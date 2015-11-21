@@ -1,0 +1,36 @@
+package:
+  name: cpio
+  version: 2.12
+  www: http://www.gnu.org/software/cpio/
+  short: GNU cpio copies files into or out of a cpio or tar archive.
+
+download:
+  gnu: ~
+  checksum: 70998c5816ace8407c8b101c9ba1ffd3ebbecba1f5031046893307580ec1296e
+
+version:
+  wiz_savannah: ~
+
+bootstrap_8:
+  - sh: sed -i -e '/gets is a/d' gnu/stdio.in.h
+  - configure_kx: CPIO_MT_PROG=mt --with-rmt=/bin/rmt     
+  - make: ~     
+  - check: ~
+  - install: ~     
+
+
+verify_cli: |
+  kx_cli_success /bin/cpio --version
+
+  if [catch {
+    set filename "cpiotest_[pid]_[clock microseconds].sh"
+    set file [open $filename [list RDWR CREAT EXCL TRUNC] 0700]
+    puts $file "echo $filename | cpio -o | cpio -t"
+    close $file
+  } reason] then {
+    fail "tar test failed: $reason";
+  } else {
+    kx_cli_match_success "./$filename" "$filename"
+  }
+  catch { file delete "$filename" }
+

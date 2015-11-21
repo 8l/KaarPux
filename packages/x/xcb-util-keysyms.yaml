@@ -1,0 +1,27 @@
+package:
+  name: xcb-util-keysyms
+  version: 0.4.0
+  www: http://xcb.freedesktop.org/
+  short: Utility libraries for XC Binding - Standard X key constants and conversion to/from keycodes
+
+download:
+  url: http://xcb.freedesktop.org/dist/
+  file_tar_bz2: ~
+  checksum: 0ef8490ff1dede52b7de533158547f8b454b241aa3e4dcca369507f66f216dd9
+
+version: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+
+

@@ -1,0 +1,59 @@
+package:
+  name: avahi
+  version: 0.6.31
+  www: http://avahi.org/
+  short: Avahi is a system which facilitates service discovery on a local network via the mDNS/DNS-SD protocol suite.
+
+doc: |
+  <para>
+  Used for discovering printers.
+  </para>
+
+download:
+  url: http://avahi.org/download
+  file_tar_gz: ~
+  checksum: 8372719b24e2dd75de6f59bb1315e600db4fd092805bd1201ed0cb651a2dab48
+
+version:
+  installed_sh_trailing: avahi-browse --version
+
+linux:
+
+  - build:
+    - patch: avahi-0.6.31-no-deprecations.patch
+    - echo: autogen
+    - sh: NOCONFIGURE=1 ./autogen.sh
+    # avahi is installed twice; first without gtk3 (as dependency to cups); later with gtk3
+    - sh: |
+        AVAHI_GTK3="--disable"
+        pkg-config --exists gtk+-3.0 && AVAHI_GTK3="--enable"
+    - configure_kx: >
+        --with-distro=none
+        --disable-qt3
+        --disable-qt4
+        --disable-gtk
+        ${AVAHI_GTK3}-gtk3
+        --disable-python
+        --disable-mono
+        --disable-static
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+
+    - echo: Adding [avahi] group and user
+    - sh: groupadd -fg ${KX_NETDEV_GID} netdev
+    - sh: groupadd -fg ${KX_AVAHI_GID} avahi
+    - sh: useradd -c "Avahi Daemon" -d /dev/null -u ${KX_AVAHI_UID} -g avahi -s /bin/false avahi || test "$?" = "9"
+    - sh: id avahi
+
+    - install: ~
+    - sh: |
+        mkdir -pv /etc/systemd/system/sockets.target.wants
+        ln -svf '/lib/systemd/system/avahi-daemon.service' '/etc/systemd/system/dbus-org.freedesktop.Avahi.service'
+        ln -svf '/lib/systemd/system/avahi-daemon.service' '/etc/systemd/system/multi-user.target.wants/avahi-daemon.service'
+        ln -svf '/lib/systemd/system/avahi-daemon.socket' '/etc/systemd/system/sockets.target.wants/avahi-daemon.socket'
+
+verify_cli: |
+  kx_cli_match_success "avahi-browse --version" { avahi-browse }

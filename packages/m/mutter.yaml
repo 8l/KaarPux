@@ -1,0 +1,23 @@
+package:
+  name: mutter
+  version: 3.18.1
+  www: https://live.gnome.org/GnomeShell/
+  short: Mutter is the window manager for which GNOME Shell is a plugin in GNOME 3, replacing Metacity.
+
+download:
+  gnomexz: ~
+  checksum: 4fdee7c9dc2db3a48f18723f47c3122aa5bddaddb8751701ce243e577e2a69a9
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-compile-warnings=maximum --disable-schemas-compile
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

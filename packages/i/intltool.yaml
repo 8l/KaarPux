@@ -1,0 +1,34 @@
+package:
+  name: intltool
+  version: 0.51.0
+  www: http://freedesktop.org/wiki/Software/intltool/
+  short: A set of tools to centralize translation of many different file formats using GNU gettext-compatible PO files. 
+
+download:
+  url: http://launchpad.net/intltool/trunk/${KX_INTLTOOL_VERSION}/+download
+  file_tar_gz: ~
+  checksum: 67c74d94196b153b774ab9f89b2fa6c6ba79352407037c8c14d5aeb334e959cd
+  verify: asc
+
+version:
+  installed_sh_trailing: intltoolize --version
+  upstream: kxver_scrape_url(undef, "https://launchpad.net/intltool/trunk", qr|intltool ([0-9]+\.+[0-9.\-]*[0-9]+)|)
+
+bootstrap_8:
+
+    - configure_kx: ~
+
+    - make: ~
+
+    - check: ~
+
+    - install: ~
+
+verify_cli: |
+  # TODO: Real testcases
+  kx_cli_match_success "/bin/intltool-extract --version" { intltool }
+  kx_cli_match_success "/bin/intltoolize --version" { intltool }
+  kx_cli_match_success "/bin/intltool-merge --version" { intltool }
+  kx_cli_match_success "/bin/intltool-prepare --version" { intltool }
+  kx_cli_match_success "/bin/intltool-update --version" { intltool }
+

@@ -1,0 +1,594 @@
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2015: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+# ============================================================
+# Kconfig file for KaarPux
+# ============================================================
+
+# See
+# https://www.kernel.org/doc/Documentation/kbuild/kconfig-language.txt
+
+mainmenu "KaarPux Configuration"
+
+
+# ============================================================
+choice BUILD_TYPE
+# ============================================================
+
+	prompt "Build type"
+	default BUILD_TYPE_KVM
+	help
+		How to build KaarPux
+
+	config BUILD_TYPE_LOCAL
+		bool LOCAL
+		help
+			Build KaarPux directly on local machine
+
+	config BUILD_TYPE_KVM
+		bool KVM
+		help
+			Build KaarPux in KVM (launched on local machine)
+
+	config BUILD_TYPE_EC2
+		bool EC2
+		help
+			Build KaarPux on Amazon EC2
+
+endchoice
+
+# ============================================================
+menu "Virtual host definitions"
+# ============================================================
+
+	depends on BUILD_TYPE_KVM || BUILD_TYPE_EC2
+
+	config VM_TAG
+		int "Tag for this VM"
+		range 10 99
+		default "53" if BUILD_TYPE_KVM
+		default "10" if BUILD_TYPE_EC2
+		help
+			Tag for this VM
+
+	config IMG_PATH
+		string "Path for image files"
+		depends on BUILD_TYPE_KVM
+		default "/kvm"
+		help
+			Path for image files
+
+	config SWAP_IMG_FILENAME
+		string "Image file for swap"
+		default "swap_%.img"
+		help
+			Image file for swap
+
+	config SWAP_IMG_GB
+		int "Image file size for swap (GB)"
+		default "16"
+		help
+			Image file size for swap (GB)
+
+	config DOWNLOADS_IMG_FILENAME
+		string "Image file for downloads"
+		default "downloads_%.img"
+		help
+			Image file for downloads
+
+	config DOWNLOADS_IMG_GB
+		int "Image file size for downloads (GB)"
+		default "16"
+		help
+			Image file size for downloads (GB)
+
+	config TARGET_IMG_FILENAME
+		string "Image file for target"
+		default "kx_%.img"
+		help
+			Image file for downloads
+
+	config TARGET_IMG_GB
+		int "Image file size for target (GB)"
+		default "32"
+		help
+			Image file size for target (GB)
+
+	config SSH_KEY_FILENAME
+		string "Filename (full path) to ssh key"
+		default "~/.ssh/id_kaarpux"
+		help
+			Filename (full path) to ssh key
+
+	config CLOUD_HOSTNAME
+		string "Hostname for cloud host"
+		default "atomic-%"
+		help
+			Hostname for cloud host
+
+	config CLOUD_IMG_URL
+		string "URL prefix for Cloud image"
+		default "http://download.fedoraproject.org/pub/fedora/linux/releases/21/Cloud/Images/x86_64"
+		depends on BUILD_TYPE_KVM
+		help
+			URL prefix for Cloud image
+
+	config CLOUD_IMG_FILENAME
+		string "Cloud image file name"
+		default "Fedora-Cloud-Base-20141203-21.x86_64.qcow2" if BUILD_TYPE_KVM
+		default "Fedora-Cloud-Base-20141203-21.x86_64-eu-west-1-HVM-0" if BUILD_TYPE_EC2
+		help
+			Cloud image file name
+
+	config CLOUD_IMG_SHA256
+		string "Checksum for cloud image file"
+		default "3a99bb89f33e3d4ee826c8160053cdb8a72c80cd23350b776ce73cd244467d86"
+		depends on BUILD_TYPE_KVM
+		help
+			Checksum for cloud image file
+
+	config HOST_ISO_FILENAME
+		string "Name of iso file for meta-data"
+		default "host_%.iso"
+		help
+			Name of iso file for meta-data
+
+
+	config HOST_IMG_FILENAME
+		string "Image file for host"
+		default "host_%.qcow2" if BUILD_TYPE_KVM
+		default "host_%.img" if BUILD_TYPE_EC2
+		help
+			Image file for host
+
+	config EC2_AVAILABILITY_ZONE
+		string "Amazon EC2 availability zone"
+		default "eu-west-1c"
+		depends on BUILD_TYPE_EC2
+		help 
+			Amazon EC2 availability zone,
+			such as eu-west-1c
+
+	config EC2_INSTANCE_TYPE_HOST
+		string "Amazon EC2 instance type for preparing host image"
+		default "m4.large"
+		depends on BUILD_TYPE_EC2
+		help 
+			Amazon EC2 instance type for preparing host image,
+			such as t2.small or m4.large
+
+	config EC2_INSTANCE_TYPE_DOWNLOADS
+		string "Amazon EC2 instance type for downloading tarballs"
+		default "m4.large"
+		depends on BUILD_TYPE_EC2
+		help 
+			Amazon EC2 instance type for downloading tarballs,
+			such as t2.small or m4.large
+
+	config EC2_INSTANCE_TYPE_BUILD
+		string "Amazon EC2 instance type for building kaarpux"
+		default "c4.4xlarge"
+		depends on BUILD_TYPE_EC2
+		help 
+			Amazon EC2 instance type for building kaarpux,
+			such as m4.large or c4.4xlarge
+
+	config EC2_INSTANCE_TYPE_KAARPUX
+		string "Amazon EC2 instance type for running kaarpux"
+		default "c4.large"
+		depends on BUILD_TYPE_EC2
+		help 
+			Amazon EC2 instance type for running the final kaarpux,
+			such as m4.large or c4.4xlarge
+
+	config EC2_NETWORK_INTERFACE_DESCRIPTION
+		string "Amazon EC2 Network Interface description"
+		default "KaarPux1"
+		depends on BUILD_TYPE_EC2
+		help 
+			Amazon EC2 Network Interface description
+
+	config EC2_ROOT_DEV
+		string "Amazon EC2 device name for root"
+		default "/dev/sda1"
+		depends on BUILD_TYPE_EC2
+		help 
+			Amazon EC2 device name for root
+
+	config EC2_SWAP_DEV
+		string "Amazon EC2 device name for swap"
+		default "/dev/sdb"
+		depends on BUILD_TYPE_EC2
+		help 
+			Amazon EC2 device name for swap
+
+	config EC2_DOWNLOADS_DEV
+		string "Amazon EC2 device name for downloads"
+		default "/dev/sdc"
+		depends on BUILD_TYPE_EC2
+		help 
+			Amazon EC2 device name for downloads
+
+	config EC2_KAARPUX_DEV
+		string "Amazon EC2 device name for the device on which KaarPux is to be build"
+		default "/dev/sdd"
+		depends on BUILD_TYPE_EC2
+		help 
+			Amazon EC2 device name for the device on which KaarPux is to be build
+
+	config EC2_AMI_HOST
+		string "Amazon EC2 name for host AMI"
+		default "host_%"
+		depends on BUILD_TYPE_EC2
+		help 
+			Amazon EC2 name for Amazon Machine Image running the host to create the bootstrap
+
+	config EC2_AMI_BOOTSTRAP
+		string "Amazon EC2 name for bootstrap AMI"
+		default "bootstrap_%"
+		depends on BUILD_TYPE_EC2
+		help 
+			Amazon EC2 name for Amazon Machine Image running the bootstrap to create the final KaarPux
+
+	config EC2_AMI_FINAL
+		string "Amazon EC2 name for final AMI"
+		default "kaarpux_%"
+		depends on BUILD_TYPE_EC2
+		help 
+			Amazon EC2 name for Amazon Machine Image running the final KaarPux
+
+	config KVM_COMMAND
+		string "KVM command"
+		default "qemu-system-x86_64 -cpu host -machine q35,accel=kvm  -m 48G -usb -device usb-audio"
+		depends on BUILD_TYPE_KVM
+		help
+			The basic qemu/KVM command issued to build KaarPux
+
+	config KVM_SMP
+		string "KVM processors"
+		default "-smp $(nproc)"
+		depends on BUILD_TYPE_KVM
+		help
+			qemu/KVM command argument for number of processors
+
+	config KVM_MEM
+		string "KVM memory"
+		default "-m $(($(grep MemTotal /proc/meminfo | awk '{ print $2 }') * 2 / 3 / 1024 ))"
+		depends on BUILD_TYPE_KVM
+		help
+			qemu/KVM command argument for megabytes-memory to allocate for guest
+
+	config KVM_VGA
+		string "KVM display"
+		default "-vga qxl -spice port=59%,addr=127.0.0.1,disable-ticketing"
+		depends on BUILD_TYPE_KVM
+		help
+			qemu/KVM command argument for qxl spice display
+
+	config KVM_MAC
+		string "KVM MAC address"
+		default "52:54:00:99:00:%"
+		depends on BUILD_TYPE_KVM
+		help
+			qemu/KVM command argument for guest mac address
+
+	config KVM_IP
+		string "KVM IP address"
+		default "192.168.99.%"
+		depends on BUILD_TYPE_KVM
+		help
+			qemu/KVM command argument for guest IP address.
+			The DNS server *MUST* allocate this IP address to the KX_KVM_MAC mac address.
+
+	config KVM_NET
+		string "KVM net"
+		default "-net nic,macaddr=${KX_KVM_MAC},model=virtio -net bridge"
+		depends on BUILD_TYPE_KVM
+		help
+			qemu/KVM command argument for networking
+
+	config KVM_DRIVE_HOST_OPTIONS
+		string "KVM drive options for host"
+		default ",if=virtio"
+		depends on BUILD_TYPE_KVM
+		help
+			qemu/KVM command argument additions for the host drive
+
+	config KVM_DRIVE_SWAP_OPTIONS
+		string "KVM drive options for swap"
+		default ",if=virtio,cache=unsafe"
+		depends on BUILD_TYPE_KVM
+		help
+			qemu/KVM command argument additions for the swap drive
+
+	config KVM_DRIVE_DOWNLOADS_OPTIONS
+		string "KVM drive options for downloads"
+		default ",if=virtio"
+		depends on BUILD_TYPE_KVM
+		help
+			qemu/KVM command argument additions for the downloads drive
+
+	config KVM_DRIVE_TARGET_OPTIONS
+		string "KVM drive options for target"
+		default ",if=virtio,cache=unsafe"
+		depends on BUILD_TYPE_KVM
+		help
+			qemu/KVM command argument additions for the target drive
+
+endmenu
+
+# ============================================================
+menu "Host definitions"
+# ============================================================
+
+	config MNT
+		string "KaarPux mountpoint"
+		default "/mnt/kxmnt"
+		help
+			path where the KaarPux disk will be mounted
+
+	config TOOLS
+		string "tools mountpoint"
+		default "/tools"
+		help
+			common path for host and target chroot
+
+	config SWAP_DEV
+		string "Device to use as swap"
+		default "/dev/vdb" if BUILD_TYPE_KVM
+		default "/dev/xvdb" if BUILD_TYPE_EC2
+
+	config DOWNLOADS_DEV
+		string "Device to place upstream downloads on"
+		default "/dev/vdc" if BUILD_TYPE_KVM
+		default "/dev/xvdc" if BUILD_TYPE_EC2
+
+	config KAARPUX_DEV
+		string "Device to format and place KaarPux on"
+		default "/dev/vdd" if BUILD_TYPE_KVM
+		default "/dev/xvdd" if BUILD_TYPE_EC2
+
+	config KAARPUX_PARTITION
+		string "Partition to place KaarPux on"
+		default "/dev/vdd1" if BUILD_TYPE_KVM
+		default "/dev/xvdd1" if BUILD_TYPE_EC2
+
+
+endmenu
+
+# ============================================================
+menu "Target definitions - KERNEL"
+# ============================================================
+
+	config GKERNEL
+		string "glibc kernel version"
+		default "3.0.0"
+		help
+			kernel version used when building glibc
+			should be set to the oldest of host and build kernel version
+	
+	config TARGET_POSTFIX
+		string "booststrap target name postfix"
+		default "kaarpux-linux-gnu"
+		help
+			the bootstrap target will be set to
+			$(uname -m)-${KX_TARGET_POSTFIX}
+
+endmenu
+
+# ============================================================
+menu "Target definitions - DISKS"
+# ============================================================
+
+	config FSTAB_DEV_ROOT
+		string "root file system device"
+		default "/dev/vda1" if BUILD_TYPE_KVM
+		default "/dev/xvda1" if BUILD_TYPE_EC2
+		default KAARPUX_DEV if BUILD_TYPE_LOCAL
+		help
+			path to device for root file system to put into /etc/fstab
+
+	config FSTAB_FSTYPE_ROOT
+		string "root file system type"
+		default "ext4"
+		help
+			file system type for root file system to put into /etc/fstab
+			
+	
+	config FSTAB_DEV_SWAP
+		string "swap partition"
+		default SWAP_DEV if BUILD_TYPE_LOCAL
+		default "#none"
+		help
+			If you have a swap partition, specify the complete path to the device file,
+			e.g. something like FSTAB_DEV_SWAP="/dev/vda2"
+
+endmenu
+
+# ============================================================
+menu "Target definitions - NETWORK"
+# ============================================================
+	
+	config NW_DEV
+		string "name of network device"
+		default "ens3"
+		help
+			see http://cgit.freedesktop.org/systemd/systemd/tree/src/udev/udev-builtin-net_id.c#n20
+			ens3 should be correct for KVM
+
+	config HOSTNAME
+		string "host name"
+		default "KaarPuxHost"
+
+	config DOMAINNAME
+		string "domain name"
+		default "example.lan"
+
+
+endmenu
+
+# ============================================================
+menu "Target definitions - HARDWARE"
+# ============================================================
+
+	choice HARDWARE_CLOCK
+		prompt "Hardware clock type"
+		default UTC
+		help
+			Hardware clock type
+
+		config HARDWARE_CLOCK_UTC
+			bool "UTC"
+			help
+				Hardware clock is set to UTC
+
+		config HARDWARE_CLOCK_LOCAL
+			bool "LOCAL"
+			help
+				Hardware clock is set to local time
+
+	endchoice
+
+
+endmenu
+
+# ============================================================
+menu "Target definitions - LOCALIZATION"
+# ============================================================
+	
+	config LOCALE
+		string "Local time zone definition"
+		default "Europe/Copenhagen"
+		help
+			Local time zone definition
+
+	config LOCALEDEF
+		string "Localization"
+		default "localedef -i da_DK -f UTF-8 da_DK.UTF-8"
+		help
+			A few default locales (english, french, german, ...) will be installed.
+			In addition, the locale defined here will be installed.
+
+			To see your current locale:
+			locale
+
+			<input-file>:
+			ls /usr/share/i18n/locales
+
+			<charmap>
+			ls /usr/share/i18n/charmaps/
+			But you probably want to stay with UTF-8
+
+			<name>
+			<input_file>.<charmap>
+
+	
+	config LANG
+		string "Language"
+		default "en_US.UTF-8"
+		help
+			Use the <input_file>.<charmap> from KX_LOCALEDEF
+			or a standard language such as en_US.UTF-8
+
+	config CONSOLE_KEYMAP
+		string "Keymap for Linux console"
+		default "dk-latin1"
+		help
+			Keymap for Linux console
+			find /usr/share/keymaps/i386/ -name "*.gz" | grep -v /include/ | cut -f7 -d/ | sort
+
+			Current keymap:
+			localectl status
+	
+	config XKB_LAYOUT
+		string "Keymap for X11"
+		default "dk"
+		help
+			cat /usr/share/X11/xkb/rules/base.lst
+			localectl list-x11-keymap-layouts
+
+			Current X11 keymap:
+			setxkbmap -query			
+	
+	config PAGESIZE
+		string "Page size for groff"
+		default "A4"
+		help
+			Default paper page size.
+			Set to A4 or letter.
+
+endmenu
+
+# ============================================================
+menu "Target definitions - KAARPUX USER"
+# ============================================================
+
+	config KX_UID
+		string "user-id for the kaarpux user"
+		default "1000"
+	
+	config KX_GID
+		string "group-id for the kaarpux user"
+		default "1000"
+
+endmenu			
+
+# ============================================================
+menu "Build settings"
+# ============================================================
+
+	config SYSTEMTAP
+		bool "Trace with systemtap"
+		default n
+		help
+			set to Y to enable tracing with systemtap
+
+	config DISABLE_TEST
+		bool "Disable testing"
+		default y
+		help
+			Most packages can be tested with "make check" or similar.
+			However, there are currently (KaarPux v 4.2.4)
+			a number of unresolved problems with testing.
+			So do not change unless you know what you are doing
+	
+	config KEEP_BUILD_DIRECTORIES
+		bool "Keeping build directories"
+		default n
+		help
+			When a package is installed, the directory used to build
+			it is deleted by default.
+			But you can keep the build directories with
+			KX_KEEP_BUILD_DIRECTORIES=y
+
+	config PARALLEL
+		bool "Build packages in parallel"
+		default y
+		help
+			Build packages in parallel
+
+	config USE_TMPFS
+		bool "Use temporary filesystem for build"
+		default y
+		help
+			Use tmpfs filesystem for build directories
+
+	config MALLOC_MALLOPT_KB
+		int "Tweak glibc's malloc"
+		default "0"
+		help
+			See man mallopt
+			If KX_MALLOC_MALLOPT_KB is set, the follwing variables will be exported in each build script:
+			MALLOC_MMAP_THRESHOLD_=$(( ${KX_MALLOC_MALLOPT_KB} * 1024 ))
+			MALLOC_TRIM_THRESHOLD_=$(( ${KX_MALLOC_MALLOPT_KB} * 1024 ))
+			MALLOC_TOP_PAD_=$(( ${KX_MALLOC_MALLOPT_KB} * 1024 ))
+			So, you could set e.g. KX_MALLOC_MALLOPT_KB=16384
+
+endmenu
+
+

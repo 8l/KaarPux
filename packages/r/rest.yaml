@@ -1,0 +1,26 @@
+package:
+  name: rest
+  version: 0.7.93
+  short: This library has been designed to make it easier to access web services that claim to be "RESTful".
+
+download:
+  gnomexz: ~
+  checksum: c710644455340a44ddc005c645c466f05c0d779993138ea21a62c6082108b216
+
+version:
+  installed_pkgconfig: rest-0.7
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --with-ca-certificates=/etc/ssl/certs/ca-bundle.crt
+    - make: ~
+
+  # The test cases are using internet URLs which are now defunct
+  # So for now we disable the test cases
+  # - test:
+  #   - check: ~
+
+  - install:
+    - install: ~

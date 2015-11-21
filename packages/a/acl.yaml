@@ -1,0 +1,39 @@
+package:
+  name: acl
+  version: 2.2.52
+  www: http://savannah.nongnu.org/projects/acl
+  short: Commands for Manipulating POSIX Access Control Lists
+
+download:
+  url: http://download.savannah.gnu.org/releases/acl/
+  file: acl-${KX_ACL_VERSION}.src.tar.gz
+  checksum: 179074bb0580c06c4b4137be4c5a92a701583277967acdb5546043c7874e0d23
+  verify: sig
+
+version:
+  installed_sh_trailing: getfacl --version
+  changelog: doc/CHANGES
+  source: http://git.savannah.gnu.org/cgit/acl.git
+
+bootstrap_7:
+
+    - configure_kx: ~
+
+    - make: ~
+
+    # No testsuite
+
+    - install: install-dev install-lib
+
+
+# ==========================================================
+
+verify_cli: |
+
+  kx_cli_match_success "/bin/getfacl --version" { getfacl  }
+  kx_cli_match_success "/bin/setfacl --version" { setfacl  }
+  kx_cli_success /bin/getfacl .
+  kx_cli_match_success "/bin/getfacl ." { file owner group  user group other }
+
+# TODO: better testcases
+

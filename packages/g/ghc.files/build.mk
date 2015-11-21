@@ -1,0 +1,11 @@
+BUILD_DOCBOOK_PDF = NO
+BUILD_DOCBOOK_PS = NO
+BUILD_DOCBOOK_HTML = NO
+HADDOCK_DOCS = NO
+GhcLibWays = v dyn
+GhcWithSMP = YES
+SRC_HC_OPTS = -O -H64m
+GhcStage1HcOpts = -O -fasm
+GhcStage2HcOpts = -O2 -fasm
+GhcHcOpts = -Rghc-timing
+GhcLibHcOpts = -O2

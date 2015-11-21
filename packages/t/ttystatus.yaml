@@ -1,0 +1,27 @@
+package:
+  name: ttystatus
+  version: 0.27
+  www: http://liw.fi/ttystatus/
+  short: progress and status updates on terminals for Python
+
+download:
+  url: http://code.liw.fi/debian/pool/main/p/python-ttystatus
+  file: python-ttystatus_${KX_TTYSTATUS_VERSION}.orig.tar.xz
+  dir: python-ttystatus-${KX_TTYSTATUS_VERSION}
+  checksum: 31d60135f479a6efaf9ca189cc0d034516fef1f38d75ced0bc25eab0a3a26918
+
+version:
+  installed_na: ~
+  upstream: kxver_scrape_url(undef, $url, qr|python-ttystatus_([0-9.]+)\.orig|);
+
+linux:
+
+  - build:
+    - sh: python setup.py build
+
+  # no test
+
+  - install:
+    - sh: python setup.py install
+
+# TODO: verify_cli

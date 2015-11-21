@@ -1,0 +1,27 @@
+package:
+  name: gpgme
+  version: 1.6.0
+  www: http://www.gnupg.org/related_software/gpgme/
+
+download:
+  url: ftp://ftp.gnupg.org/gcrypt/gpgme
+  file_tar_bz2: ~
+  checksum: b09de4197ac280b102080e09eaec6211d081efff1963bf7821cf8f4f9916099d
+  verify: sig
+
+version:
+  installed_config: ~
+
+linux:
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success "gpgme-config --libs" { lgpgme }

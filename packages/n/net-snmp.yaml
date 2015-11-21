@@ -1,0 +1,32 @@
+package:
+  name: net-snmp
+  version: 5.7.3
+  www: http://www.net-snmp.org/
+  short: Suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
+
+download:
+  sourceforge: ~
+  file_zip: ~
+  checksum: e8dfc79b6539b71a6ff335746ce63d2da2239062ad41872fff4354cafed07a3e
+  verify: asc
+
+version:
+  installed_sh_trailing: snmpget -V
+  upstream: kxver_upstream_sourceforge("net-snmp", "net-snmp", "net-snmp");
+
+linux:
+  - build:
+    - configure_kx: >
+        --disable-static
+        --with-defaults
+        --with-sys-contact="henrik@kaarposoft.dk"
+        --enable-new-features
+        --disable-debugging
+        --disable-deprecated
+    - make: -j1
+
+  - test:
+    - test: -j1
+
+  - install:
+    - install: ~

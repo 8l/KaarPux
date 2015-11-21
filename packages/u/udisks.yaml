@@ -1,0 +1,35 @@
+package:
+  name: udisks
+  version: 2.1.6
+  www: http://www.freedesktop.org/wiki/Software/udisks
+  short: |
+      The udisks project provides:
+      a daemon, udisksd, that implements well-defined D-Bus interfaces that can be used to query and manipulate storage devices,
+      AND a command-line tool, udisksctl, that can be used to query and use the daemon.
+
+download:
+  url: http://udisks.freedesktop.org/releases
+  file_tar_bz2: ~
+  checksum: dec5f5c85fa0f74f39336acbfba1770f9988c096be23873714543c304b09f46a
+  verify: sign
+
+version:
+  installed_pkgconfig: udisks2
+
+linux:
+
+  - build:
+    # abnormal_termination is killed with SIGILL (4), not SIGSEGV (11)
+    # so, ignore this
+    - patch: test.patch
+    - configure_kx: --disable-gtk-doc --disable-static --enable-compile-warnings=minimum
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_success /bin/udisksctl status

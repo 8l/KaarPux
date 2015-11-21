@@ -1,0 +1,36 @@
+package:
+  name: bridge-utils
+  version: 1.5
+  www: http://sourceforge.net/projects/bridge/
+  short: IEEE 802.1d ethernet bridging
+
+doc: |
+  <para>
+  Mainly included in KaarPux for use with virtualization (XEN and qemu).
+  </para>
+
+download:
+  sourceforge: bridge
+  file_tar_gz: ~
+  checksum: 19d2a58cd3a70f971aa931b40256174a847e60d6
+
+version:
+  installed: kxver_sh_trailing "brctl -V"
+  upstream: kxver_upstream_sourceforge "bridge", "bridge", "bridge-utils"
+
+linux:
+
+  - build:
+    # patch from Gentoo
+    - patch: bridge-utils-1.5-linux-3.8.patch
+    - echo: autoreconf
+    - sh: autoreconf
+    - configure_kx: ~
+    - make: ~
+
+  - install:
+    - install: ~
+    - install_pkg_file: 644 bridge@.service /etc/systemd/system/
+
+verify_cli: |
+  kx_cli_success brctl show

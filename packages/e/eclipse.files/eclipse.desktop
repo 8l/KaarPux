@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=Eclipse
+Comment=Eclipse
+Icon=eclipse
+Exec=eclipse
+Categories=Development;
+StartupNotify=true
+Terminal=false
+

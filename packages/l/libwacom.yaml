@@ -1,0 +1,25 @@
+package:
+  name: libwacom
+  version: 0.15
+  www: https://sourceforge.net/apps/mediawiki/linuxwacom/
+  short: The Linux Wacom Project manages the drivers, libraries, and documentation for configuring and running Wacom tablets under the Linux operating system.
+
+download:
+  sourceforge: linuxwacom
+  file_tar_bz2: ~
+  checksum: ab65c589d5d6de176c5280ebe9cc1e807b9fa6fce7224b88f280b19464bb7713
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_upstream_sourceforge("linuxwacom", "libwacom", "libwacom");
+
+linux:
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

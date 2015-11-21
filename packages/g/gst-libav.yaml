@@ -1,0 +1,31 @@
+package:
+  name: gst-libav
+  version: 1.6.0
+  
+download:
+  url: http://gstreamer.freedesktop.org/src/gst-libav/
+  file_tar_xz: ~
+  checksum: 6cca6cf73182a882768ef0c860af88c2fd2c77e2c81ce464a998ab4e6baa604c
+
+version:
+  installed_na: ~
+
+
+linux:
+
+  - build:
+    - configure_kx: >
+        --disable-gtk-doc
+        --disable-static
+        --disable-fatal-warnings
+        --with-libav-extra-configure="--enable-runtime-cpudetect"
+        --with-package-name="gst-libav"
+        --with-package-origin="http://kaarpux.kaarposoft.dk/packages/g/gst-libav.html"
+    - make: ~
+
+  - test:
+    - check: ~
+ 
+  - install:
+    - install: ~
+

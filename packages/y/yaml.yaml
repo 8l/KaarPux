@@ -1,0 +1,25 @@
+package:
+  name: yaml
+  version: 0.1.6
+  www: http://pyyaml.org/wiki/LibYAML
+  short: YAML 1.1 parser and emitter written in C
+
+download:
+  url: http://pyyaml.org/download/libyaml
+  file_tar_gz: ~
+  checksum: 7da6971b4bd08a986dd2a61353bc422362bd0edcc67d7ebaac68c95f74182749
+
+version:
+  installed_pkgconfig: yaml-0.1
+
+linux:
+  - build:
+    # http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-9130
+    - patch: libyaml-2b9156756423e967cfd09a61d125d883fca6f4f2.diff
+    - configure_kx: --disable-static
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+

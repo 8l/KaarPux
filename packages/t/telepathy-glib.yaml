@@ -1,0 +1,27 @@
+package:
+  name: telepathy-glib
+  version: 0.24.1
+  www: http://telepathy.freedesktop.org/wiki/
+  short: |
+      Telepathy exposes the available real-time communications capabilities of each protocol:
+      presence, contact rosters, text chat, voice and video over IP, file transfer and Telepathy Tubes.
+
+download:
+  url: http://telepathy.freedesktop.org/releases/telepathy-glib
+  file_tar_gz: ~
+  checksum: 9e0df1d8f857e0270cf0b32e2d1ca5a24aa7282873361785d573f72ad7f7d5eb
+  verify: asc
+
+version:
+  installed_pkgconfig: ~
+
+linux:
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-vala-bindings --disable-Werror
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

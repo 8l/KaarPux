@@ -1,0 +1,27 @@
+package:
+  name: libmtp
+  version: 1.1.10
+  www: http://libmtp.sourceforge.net/
+  short: |
+      libmtp is an Initiator implementation of the Media Transfer Protocol (MTP)
+      in the form of a library suitable primarily for POSIX compliant operating systems.
+
+download:
+  sourceforge: libmtp
+  file_tar_gz: ~
+  checksum: 1eee8d4c052fe29e58a408fedc08a532e28626fa3e232157abd8fca063c90305
+
+version:
+  # installed: kxver_sh_pattern("zip --version", qr|Zip ([0-9]+\.+[0-9.]*[0-9]+) \(|);
+  upstream: kxver_upstream_sourceforge("libmtp", "libmtp", "libmtp");
+
+linux:
+  - build:
+    - configure_kx: ~
+    - make: ~
+  # 'make check' does nothing
+  - install:
+    - install: ~
+    # fix broken udev rule
+    - sh: sed -i "/^Unable to open/d" /lib/udev/rules.d/69-libmtp.rules
+

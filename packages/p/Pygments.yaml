@@ -1,0 +1,20 @@
+package:
+  name: Pygments
+  version: 2.0.2
+  www: http://pygments.org/
+  short: Python syntax highlighter
+
+download:
+  url: https://pypi.python.org/packages/source/P/Pygments
+  file_tar_gz: ~
+  checksum: 7320919084e6dac8f4540638a46447a3bd730fca172afc17d2c03eed22cf4f51
+
+version:
+  upstream_pypi: ~
+
+linux:
+  - build:
+    - sh: python setup.py build
+  - install:
+    - sh: python setup.py install
+

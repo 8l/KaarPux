@@ -1,0 +1,20 @@
+package:
+  name: cups-pk-helper
+  version: 0.2.5
+  www: http://www.freedesktop.org/wiki/Software/cups-pk-helper
+  short: cups-pk-helper is a PolicyKit helper to configure cups with fine-grained privileges.
+
+download:
+  url:  http://www.freedesktop.org/software/cups-pk-helper/releases
+  file_tar_xz: ~
+  checksum: 19221eed65a1e1498d396f3f99a783a95b21b4385e63b57a1f16e8728b8ca118
+
+version: ~
+
+linux:
+  - build:
+    - configure_kx: ~
+    - make: ~
+  # 'make check' does nothing
+  - install:
+    - install: ~

@@ -1,0 +1,22 @@
+package:
+  name: atk
+  version: 2.18.0
+
+download:
+  gnomexz: ~
+  checksum: ce6c48d77bf951083029d5a396dd552d836fff3c1715d3a7022e917e46d0c92b
+
+version:
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

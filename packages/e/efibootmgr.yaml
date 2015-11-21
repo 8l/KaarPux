@@ -1,0 +1,25 @@
+package:
+  name: efibootmgr
+  version: 0.12
+  www: https://github.com/rhinstaller/efibootmgr
+  short: a Linux user-space application to modify the Intel Extensible Firmware Interface (EFI) Boot Manager
+
+download:
+  url: https://github.com/rhinstaller/efibootmgr/archive
+  file_tar_gz: ~
+  dir: efibootmgr-efibootmgr-${KX_EFIBOOTMGR_VERSION}
+  checksum: b180d7d6b377d24b0872869f2571e2700b618e4d7ebdc2133134a918efe2623b
+
+version:
+  upstream: kxver_scrape_url "efibootmgr", "https://github.com/rhinstaller/efibootmgr/releases"
+
+bootstrap_8:
+
+  - make: EXTRA_CFLAGS="-Os"
+  # No testsuite
+  - sh: |
+      install -D -m755 src/efibootmgr/efibootmgr /bin/efibootmgr
+      install -D -m644 src/man/man8/efibootmgr.8 /share/man/man8/efibootmgr.8
+
+verify_cli: |
+  kx_cli_success efibootmgr --version

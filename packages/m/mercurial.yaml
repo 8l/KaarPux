@@ -1,0 +1,26 @@
+package:
+  name: mercurial
+  version: 3.5.2
+  www: http://mercurial.selenic.com/
+  short: |
+      Mercurial is a free, distributed source control management tool.
+      It efficiently handles projects of any size and offers an easy and intuitive interface.
+
+download:
+  url: http://mercurial.selenic.com/release
+  file_tar_gz: ~
+  checksum: 23fdc038503911b21dc9e556118803f7b1d4150eb14933d2ea3d0ff0dc60ab5d
+
+version:
+  installed_sh_version: hg --version
+
+opt:
+
+  - build:
+    - make: build
+
+  - test:
+    - check: ~
+
+  - install:
+    - sh: make PREFIX="${KX_PREFIX}" install-bin

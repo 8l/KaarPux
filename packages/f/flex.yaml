@@ -1,0 +1,42 @@
+package:
+  name: flex
+  version: 2.5.39
+  www: http://flex.sourceforge.net
+  short: "Fast Lexical Analyzer: a tool for generating scanners"
+
+download:
+  sourceforge: ~
+  checksum: add2b55f3bc38cb512b48fad7d72f43b11ef244487ff25fc00aabec1e32b617f
+
+version: ~
+
+bootstrap_5:
+  - configure_kx: ~
+  - make: ~
+  - install: ~
+  - echo: post-install
+
+bootstrap_7:
+
+  # skip running three regression tests that require bison
+  - sh: sed -i -e '/test-bison/d' tests/Makefile.in
+
+  - configure_kx: ~
+  - make: ~
+  - check: ~
+  - install: ~
+  - echo: post-install
+  - doc: >
+      A few programs do not know about flex yet and try to run its predecessor, lex.
+      To support those programs, create a wrapper script named lex that calls flex in lex emulation mode
+  - sh: |
+      cat > /bin/lex << "EOF"
+      #!/bin/sh
+      exec /bin/flex -l "$@"
+      EOF
+
+verify_cli: |
+  kx_cli_success /bin/flex -V
+
+# TODO: Real testcase
+

@@ -1,0 +1,26 @@
+package:
+  name: dmidecode
+  version: 3.0
+  www: http://www.nongnu.org/dmidecode/
+  short: |
+      Dmidecode reports information about your system's hardware
+      as described in your system BIOS according to the SMBIOS/DMI standard
+
+download:
+  url: http://download.savannah.gnu.org/releases/dmidecode/
+  file_tar_xz: ~
+  checksum: 7ec35bb193729c1d593a1460b59d82d24b89102ab23fd0416e6cf4325d077e45
+  verify: sig
+
+version: ~
+
+linux:
+
+  - build:
+    - make: ~
+
+  # No test suite
+ 
+  - install:
+    - install: prefix=/
+

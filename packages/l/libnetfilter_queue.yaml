@@ -1,0 +1,33 @@
+package:
+  name: libnetfilter_queue
+  version: 1.0.2
+  www: http://www.netfilter.org/projects/libnetfilter_queue/
+  short: userspace library providing an API to packets that have been queued by the kernel packet filter. 
+
+doc: |
+  <para>
+  Included as a prerequisite to <xref linkend="pkg_conntrack-tools" />
+  </para>
+
+download:
+  url: http://www.netfilter.org/projects/libnetfilter_queue/files/
+  file_tar_bz2: ~
+  checksum: df09befac35cb215865b39a36c96a3fa
+  verify: sig
+
+version:
+  installed_pkgconfig: ~
+
+# TODO: building with clang does not export symbols
+
+linux:
+  - build:
+    - use_gcc: ~
+    - configure_kx: ~
+    - make: ~
+
+# No useful check target
+
+  - install:
+    - use_gcc: ~
+    - install: ~

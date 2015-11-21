@@ -1,0 +1,33 @@
+package:
+  name: gnome-terminal
+  version: 3.18.1
+
+download:
+  gnomexz: ~
+  checksum: 6eecc81f38c8019d9f49b8950cd814da88d84a8d98c9da98a57be06a1b9f4119
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static --disable-schemas-compile --disable-migration
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+verify_gui: |
+    find application gnometerminalserver 1
+    find frame _ 1
+    find menubar _ 4
+    find menu Edit 2
+
+    desktop
+    find application gnometerminalserver 1
+    find frame _ 1
+    find pagetablist _ 4

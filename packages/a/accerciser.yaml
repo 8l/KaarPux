@@ -1,0 +1,44 @@
+package:
+  name: accerciser
+  version: 3.14.0
+
+download:
+  gnomexz: ~
+  checksum: f5a5915d475e9241396414ccd167724c88807e77e69151cf0b40b32bd57d0574
+
+version:
+  upstream_gnome: ~
+  installed_na: ~
+
+linux:
+
+  - build:
+    - patch: accerciser_getLocalizedRoleName.patch
+    - configure_kx: --disable-schemas-compile --disable-gtk-doc --disable-static --enable-man-pages
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+verify_gui: |
+    spawn accerciser accerciser
+
+    await menubar _ 4
+    find menu View _ 2
+
+    application
+    await splitpane _ 4
+    await treetable _ 4
+    await tablecell accerciser 4
+
+    application
+    find menubar _ 4
+    find menu File 2
+    do click
+    await menuitem Quit 1
+    do click
+    desktop
+    away application accerciser 1

@@ -1,0 +1,41 @@
+package:
+  name: gawk
+  version: 4.1.3
+  www: http://www.gnu.org/software/gawk/
+  short:  The awk utility interprets a special-purpose programming language that makes it possible to handle simple data-reformatting jobs with just a few lines of code. 
+
+download:
+  gnux: ~
+  checksum: e3cf55e91e31ea2845f8338bedd91e40671fc30e4d82ea147d220e687abda625
+
+version:
+  wiz_savannah: ~
+  news: NEWS
+  changelog: ChangeLog
+
+bootstrap_3:
+  - configure_tools: ~
+  - make: ~
+  - install: ~ 
+
+bootstrap_7:
+  - configure_kx: ~
+  - make: ~
+  - check: ~ 
+  - install: ~ 
+
+verify_cli: |
+
+  kx_cli_send_match_success  { /bin/gawk "{print}" }  { "First line" "Second line" } { "First line" "Second line" }
+  kx_cli_send_match_success { /bin/gawk { { print $0 } } }  { "First line" "Second line" } { "First line" "Second line" }
+  kx_cli_send_match_success { /bin/gawk { { print $1 } } }  { "First\tline" "Second\tline" } { "First" "Second" }
+  kx_cli_send_match_success { /bin/gawk { { print toupper($0) } } }  { "First line" "Second line" } { "FIRST LINE" "SECOND LINE" }
+  kx_cli_send_match_success { /bin/gawk { /First/{ print $0 } } }  { "First line" "Second line" } { "First line" }
+
+  # TODO: Testcase to distinguish mawk from gawk
+
+  # TODO: Test other programs installed by gawk:
+  #       /bin/dgawk
+  #       /bin/igawk
+  #       /bin/pgawk
+

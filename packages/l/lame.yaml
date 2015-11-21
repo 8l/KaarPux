@@ -1,0 +1,25 @@
+package:
+  name: lame
+  version: 3.99.5
+  www: http://sourceforge.net/projects/lame/
+  short: Lame Aint an MP3 Encoder
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: 24346b4158e4af3bd9f2e194bb23eb473c75fb7377011523353196b19b9a23ff
+
+version:
+  installed: kxver_sh_version "lame --version"
+  upstream: kxver_upstream_sourceforge("lame", "lame", "lame");
+
+linux:
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+  # 'make check' does nothing
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success "lame -r /dev/null -" {  "MPEG-1 Layer III" }

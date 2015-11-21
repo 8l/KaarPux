@@ -1,0 +1,30 @@
+package:
+  name: alsa-lib
+  version: 1.0.29
+  www: http://www.alsa-project.org/
+  short: The Advanced Linux Sound Architecture (ALSA) provides audio and MIDI functionality to the Linux operating system.
+
+doc: |
+  <para>
+    In general we use <xref linkend="pkg_pulseaudio" /> as the sound system in KaarPux.
+    However, a few packages still depends on <application>alsa-lib</application>, so we still need to include it.
+    <xref linkend="pkg_pulseaudio" /> sets up <filename>/etc/asound.conf</filename>
+    so <application>alsa</application> will use <application>pulseaudio</application> as backend.
+  </para>
+
+download:
+  url: ftp://ftp.alsa-project.org/pub/lib
+  file_tar_bz2: ~
+  checksum: 73043c35eb9636be0f4af6a240235c213f12a25feb1f04aeeac8cb7e30fcbdd0
+
+version:
+  installed_pkgconfig: alsa
+
+linux:
+  - build:
+    - configure_kx: ~
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~

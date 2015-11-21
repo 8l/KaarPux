@@ -1,0 +1,22 @@
+package:
+  name: geocode-glib
+  version: 3.18.0
+  www: https://developer.gnome.org/geocode-glib/index.html
+  short: |
+      geocode functions for gnome.
+
+download:
+  gnomexz: ~
+  checksum: 8fb7f0d569e3e6696aaa1fdf275cb3094527ec5e9fa36fd88dd633dfec63495d
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static --enable-man-pages 
+    - make: ~
+
+  - install:
+    - install: ~

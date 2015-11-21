@@ -1,0 +1,24 @@
+package:
+  name: libbase58
+  version: 0.1.4
+  www: https://github.com/luke-jr/libbase58
+  short:  C implementation of Bitcoin's base58 encoding
+
+download:
+  full_url: https://github.com/luke-jr/libbase58/archive/v${KX_LIBBASE58_VERSION}.tar.gz
+  file: ${KX_LIBBASE58}.tar.gz
+  checksum: 97e8c3387fd4ed90208a8101e658743efbb6e21714e594f0828e6414f92c0b1d
+
+version:
+  installed_pkgconfig: libbase58
+  upstream: kxver_scrape_url(undef, "https://github.com/luke-jr/libbase58/releases", qr|v([0-9]+[0-9.\-_]*[0-9]+)\.tar|);
+
+opt:
+
+  - build:
+    - sh: ./autogen.sh
+    - configure_kx: ~
+    - make: ~
+
+  - install:
+    - install: ~

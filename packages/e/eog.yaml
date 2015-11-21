@@ -1,0 +1,29 @@
+package:
+  name: eog
+  version: 3.18.0
+  www: http://projects.gnome.org/eog/
+  short: |
+      The Eye of GNOME image viewer is the official image viewer for the GNOME Desktop environment.
+      With it, you can view single image files, as well as large image collections.
+
+download:
+  gnomexz: ~
+  checksum: 740b2942ea52fbcdbacb0988e07193113017e0607cf5779769c82723b1685e28
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --disable-schemas-compile
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

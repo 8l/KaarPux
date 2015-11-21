@@ -1,0 +1,28 @@
+package:
+  name: libical
+  version: 1.0.1
+  www: http://libical.github.io/libical/
+  short: Reference implementation of the icalendar data type and serialization format.
+
+download:
+  url: https://github.com/libical/libical/releases/download/v${KX_LIBICAL_VERSION}
+  file_tar_gz: ~
+  checksum: 089ce3c42d97fbd7a5d4b3c70adbdd82115dd306349c1f5c46a8fb3f8c949592
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_scrape_url(undef, "https://github.com/libical/libical/releases", qr|v([0-9]+[0-9.\-_]*[0-9]+)\.tar|);
+
+linux:
+  - build:
+    - sh: |
+        mkdir -pv build
+        cd build
+    - cmake_kx: -DCMAKE_BUILD_TYPE=Release ..
+    - make: -j1
+  - test:
+    - sh: cd build
+    - test: ~
+  - install:
+    - sh: cd build
+    - install: ~

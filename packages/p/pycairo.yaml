@@ -1,0 +1,32 @@
+package:
+  name: pycairo
+  version: 1.10.0
+  www: http://cairographics.org/pycairo/
+  short: A set of Python bindings for the cairo graphics library.
+
+download:
+  url: http://cairographics.org/releases/
+  file_tar_bz2: ~
+  checksum: 9aa4078e7eb5be583aeabbe8d87172797717f95e8c4338f0d4a17b683a7253be
+
+additional_downloads:
+  - http://waf.googlecode.com/files/waf-1.7.15.tar.bz2 waf-1.7.15.tar.bz2 a62272a3b4eb05b7e5842b4f9839cb98
+
+version:
+  installed_pkgconfig: py3cairo
+
+linux:
+  - build:
+    - python3: ~
+
+    # https://projects.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/python-cairo
+    - untar: $(pwd) ${KX_BASE}/../downloads/waf-1.7.15.tar.bz2
+    - sh: mv waf-1.7.15/waf ./
+    - sh: sed -e "s/ctx.\(tool_options\|check_tool\)(/ctx.load(/" -i wscript
+
+    - sh: python3 ./waf --version
+    - sh: python3 ./waf configure --prefix=/
+    - sh: python3 ./waf build ${KX_MAKE_J}
+  - install:
+    - sh: python3 ./waf install
+

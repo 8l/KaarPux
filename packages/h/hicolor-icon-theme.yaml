@@ -1,0 +1,26 @@
+package:
+  name: hicolor-icon-theme
+  version: 0.15
+  www: http://icon-theme.freedesktop.org/wiki/HicolorTheme
+  short: hicolor-icon-theme is the default icon theme that all icon themes automatically inherit from.
+
+download:
+  url:  http://icon-theme.freedesktop.org/releases/
+  file_tar_xz: ~
+  checksum: 9cc45ac3318c31212ea2d8cb99e64020732393ee7630fa6c1810af5f987033cc
+
+doc: |
+  <para>
+  Just installs <filename>/share/icons/hicolor/index.theme</filename>
+  and creates a lot of directories under <filename class="directory">/share/icons/hicolor/</filename>
+  </para>
+
+version:
+  installed_na: ~
+
+linux:
+  - build:
+    - configure_kx: ~
+  # No test suite
+  - install:
+    - install: ~

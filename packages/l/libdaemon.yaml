@@ -1,0 +1,24 @@
+package:
+  name: libdaemon
+  version: 0.14
+  www: http://0pointer.de/lennart/projects/libdaemon/
+  short: Lightweight C library that eases the writing of UNIX daemons. 
+
+download:
+  url:  http://0pointer.de/lennart/projects/libdaemon/
+  file_tar_gz: ~
+  checksum: 509dc27107c21bcd9fbf2f95f5669563
+
+version:
+  installed_pkgconfig: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

@@ -1,0 +1,48 @@
+package:
+  name: os-prober
+  version: 1.67
+  www: http://joeyh.name/code/os-prober/
+  short: |
+      os-prober is a spinoff of debian-installer.
+      One of the installer's features is that it can probe disks on the system for other operating systems,
+      and add them to the boot loader, so that installing Debian doesn't make your other installed OS hard to boot.
+
+download:
+  url: http://ftp.debian.org/debian/pool/main/o/os-prober/
+  file: os-prober_${KX_OS_PROBER_VERSION}.tar.xz
+  checksum: 69d5b5f5ab9182025fda9cfd9f09be20f28ed6fe7ea07c26664d5e571ed355aa
+
+version:
+  installed_na: ~
+
+bootstrap_8:
+  - make: ~
+  # No testsuite
+  - echo: install
+  - sh: |
+      cp -av os-prober linux-boot-prober /bin/
+
+      mkdir -pv /lib/os-prober/
+      cp -av newns /lib/os-prober/
+
+      mkdir -pv /share/os-prober/
+      cp -av common.sh /share/os-prober/
+
+      mkdir -pv /var/lib/os-prober
+
+      ARCH=x86
+
+      mkdir -pv /lib/os-probes/
+      mkdir -pv /lib/os-probes/mounted
+      mkdir -pv /lib/os-probes/init
+      mkdir -pv /lib/linux-boot-probes/
+      mkdir -pv /lib/linux-boot-probes/mounted
+
+      for probes in os-probes os-probes/mounted os-probes/init linux-boot-probes linux-boot-probes/mounted; do
+        cp -av $probes/common/* /lib/$probes; 
+        if [ -e "$probes/${ARCH}" ]; then 
+          cp -av "$probes/${ARCH}/"* /lib/$probes
+        fi 
+      done
+
+# TODO: verify_cli as root

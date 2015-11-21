@@ -1,0 +1,27 @@
+package:
+  name: xcb-util-wm
+  version: 0.4.1
+  www: http://xcb.freedesktop.org/
+  short: Utility libraries for XC Binding - client and window-manager helpers for ICCCM
+
+download:
+  url: http://xcb.freedesktop.org/dist/
+  file_tar_bz2: ~
+  checksum: 28bf8179640eaa89276d2b0f1ce4285103d136be6c98262b6151aaee1d3c2a3f
+
+version: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+
+

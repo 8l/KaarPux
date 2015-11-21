@@ -1,0 +1,35 @@
+package:
+  name: orc
+  version: 0.4.24
+  www: http://code.entropywave.com/orc/
+  short: Orc is a just-in-time compiler implemented as a library and set of associated tools for compiling and executing simple programs that operate on arrays of data.
+
+# The latest version on http://code.entropywave.com/download/orc/ is 0.4.18
+# http://gstreamer.freedesktop.org/src/orc/ has newer versions
+
+download:
+  url: http://gstreamer.freedesktop.org/src/orc/
+  file_tar_xz: ~
+  checksum: 338cd493b5247300149821c6312bdf7422a3593ae98691fc75d7e4fe727bd39b
+
+version:
+  installed_pkgconfig: orc-0.4
+
+linux:
+  - build:
+    # without use_gcc we get three test failures:
+    # cogorc_resample_horiz_1tap COMPILE FAILED
+    # cogorc_resample_horiz_2tap COMPILE FAILED
+    # FAIL: exec_opcodes_sys
+    - use_gcc: ~
+    - configure_kx: --disable-static
+    - make: ~
+  - test:
+    - use_gcc: ~
+    - check: ~
+  - install:
+    - use_gcc: ~
+    - install: ~
+
+verify_cli: |
+  kx_cli_sh orc orc_test.sh

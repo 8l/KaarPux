@@ -1,0 +1,210 @@
+package:
+  name: cups
+  version: 2.1.0
+  www: http://www.cups.org/
+  short: CUPS is the standards-based, open source printing system developed by Apple Inc. for Mac OS X and other UNIX-like operating systems.
+
+download:
+  url:  http://www.cups.org/software/${KX_CUPS_VERSION}
+  file: cups-${KX_CUPS_VERSION}-source.tar.bz2
+  checksum: ba0238418442b8d84e09a865d0df6a728a20399826c5b466b14b1e9ab8c6d2c9
+
+version:
+  installed_sh_trailing: cups-config --version
+  upstream: "kxver_scrape_url(undef, 'http://www.cups.org/', qr|Download CUPS v([0-9]+[0-9.]*[0-9]+)|);"
+
+linux:
+  - build:
+
+#    - use_gcc: ~
+
+    - todo: also look into cups-bjnp
+    - todo: also look into cups-pdf
+    - echo: Patch
+    - sh: sed -i 's#@CUPS_HTMLVIEW@#firefox#' desktop/cups.desktop.in
+
+    # ------------------------------
+
+    # Patches from Fedora
+    # http://pkgs.fedoraproject.org/cgit/cups.git/tree/
+
+    # Don't gzip man pages in the Makefile, let rpmbuild do it.
+    - patch: cups-no-gzip-man.patch
+
+    # Use the system pam configuration.
+    #%patch2 -p1 -b .system-auth
+
+    # Prevent multilib conflict in cups-config script.
+    #%patch3 -p1 -b .multilib
+
+    # Upstream patch 4 now corrected upstream
+
+    # Ignore rpm save/new files in the banners directory.
+    #%patch5 -p1 -b .banners
+
+    # Use compatibility fallback path for ServerBin.
+    #%patch6 -p1 -b .serverbin-compat
+
+    # Don't export SSLLIBS to cups-config.
+    - patch: cups-no-export-ssllibs.patch
+
+    # Allow file-based usb device URIs.
+    #%patch8 -p1 -b .direct-usb
+
+    # Add --help option to lpr.
+    #%patch9 -p1 -b .lpr-help
+
+    # Fix compilation of peer credentials support.
+    #%patch10 -p1 -b .peercred
+
+    # Maintain a cupsd.pid file.
+    - patch: cups-pid.patch
+
+    # Fix implementation of com.redhat.PrinterSpooler D-Bus object.
+    - patch: cups-eggcups.patch
+
+    # Increase driverd timeout to 70s to accommodate foomatic (bug #744715).
+    - patch: cups-driverd-timeout.patch
+
+    # Only enforce maximum PPD line length when in strict mode.
+    - patch: cups-strict-ppd-line-length.patch
+
+    # Re-open the log if it has been logrotated under us.
+    # KaarPux: We do not really need this, but without it, cups-journal.patch fails to apply
+    - patch: cups-logrotate.patch
+
+    # Support for errno==ENOSPACE-based USB paper-out reporting.
+    #%patch16 -p1 -b .usb-paperout
+
+    # Re-initialise the resolver on failure in httpAddrGetList() (bug #567353).
+    - patch: cups-res_init.patch
+
+    # Log extra debugging information if no filters are available.
+    - patch: cups-filter-debug.patch
+
+    # Allow the usb backend to understand old-style URI formats.
+    #%patch19 -p1 -b .uri-compat
+
+    # Fix temporary filename creation.
+    - patch: cups-str3382.patch
+
+    # Use mode 0755 for binaries and libraries where appropriate.
+    - patch: cups-0755.patch
+
+    # Add an SNMP query for HP's device ID OID (STR #3552).
+    - patch: cups-hp-deviceid-oid.patch
+
+    # Mark DNS-SD Device IDs that have been guessed at with "FZY:1;".
+    - patch: cups-dnssd-deviceid.patch
+
+    # Add an SNMP query for Ricoh's device ID OID (STR #3552).
+    #%patch24 -p1 -b .ricoh-deviceid-oid
+
+    # Add support for systemd socket activation (patch from Lennart
+    # Poettering).
+    - patch: cups-systemd-socket.patch
+
+    # patch26 now fixed upstream
+
+    # Use IP address when resolving DNSSD URIs (bug #948288).
+    - patch: cups-avahi-address.patch
+
+    # Return from cupsEnumDests() once all records have been returned.
+    - patch: cups-enum-all.patch
+
+    # Added IEEE 1284 Device ID for a Dymo device (bug #747866).
+    #%patch29 -p1 -b .dymo-deviceid
+
+    # Use IP_FREEBIND socket option when binding listening sockets (bug #970809).
+    - patch: cups-freebind.patch
+
+    # Don't link against libgcrypt needlessly.
+    - patch: cups-no-gcry.patch
+
+    # Added libusb quirk for Canon PIXMA MP540 (bug #967873).
+    #%patch32 -p1 -b .libusb-quirks
+
+    # Default to IPP/1.1 for now (bug #977813).
+    - patch: cups-use-ipp1.1.patch
+
+    # Don't use D-Bus from two threads (bug #979748).
+    - patch: cups-avahi-no-threaded.patch
+
+    # Fixes for jobs with multiple files and multiple formats.
+    - patch: cups-ipp-multifile.patch
+
+    # Increase web interface get-devices timeout to 10s (bug #996664).
+    - patch: cups-web-devices-timeout.patch
+
+    # Reverted upstream change to FINAL_CONTENT_TYPE in order to fix
+    # printing to remote CUPS servers (bug #1010580).
+    #%patch37 -p1 -b .final-content-type
+
+    # Set the default for SyncOnClose to Yes.
+    - patch: cups-synconclose.patch
+
+    # ------------------------------
+
+    # Do not rotate logfiles
+    - sh: sed -i -e '1iMaxLogSize 0' conf/cupsd.conf.in
+
+    # Let's look at the compilation command lines.
+    - sh: perl -pi -e "s,^.SILENT:,," Makedefs.in
+
+    # Log to the system journal by default (bug #1078781).
+    - sh: sed -i -e 's,^ErrorLog .*$,ErrorLog syslog,' conf/cups-files.conf.in
+
+    - echo: Reconfigure
+    - sh: |
+        aclocal -I config-scripts
+        autoconf -I config-scripts
+
+    # Put rc initd files in a corner; we do not want them
+    - sh: RCTMP=$(mktemp -d)
+
+    - configure_kx: >
+        --with-rcdir=$RCTMP
+        --with-systemdsystemunitdir=/lib/systemd/system
+        --with-system-groups="root lpadmin"
+        --with-cups-user=lp
+        --with-cups-group=lp
+        --enable-relro
+        --enable-pam=yes
+        --enable-raw-printing
+        --enable-dbus --with-dbusdir=/etc/dbus-1
+        --enable-ssl=yes --enable-gnutls
+        --enable-threads
+        --enable-avahi
+        --enable-webif
+        --with-xinetd=no
+        --enable-debug
+
+    - make: ~
+
+#  There are many failures and crashes in the test suite.
+#  TODO: Check if there are any real problems, or just a borked suite.
+#  BLFS says: This package does not have a working testsuite. 
+#  TODO: In any case, the suite is probably better run much later, after helper packages have been installed.
+  - test:
+    - check_ignore: ~
+
+  - install:
+    - sh: id lp || useradd -c "Print Service User" -d /dev/null -g lp -s /bin/false -u ${KX_LP_GID} lp
+    - install: ~
+    - sh: |
+        touch /etc/cups/client.conf
+        echo "# see 'man client.conf'" >> /etc/cups/client.conf
+        echo "ServerName /var/run/cups/cups.sock" >> /etc/cups/client.conf
+        chgrp lp /etc/cups/client.conf
+    - sh: |
+        mkdir -pv /etc/systemd/system/printer.target.wants
+        mkdir -pv /etc/systemd/system/sockets.target.wants
+        ln -svf '/lib/systemd/system/org.cups.cupsd.service' '//etc/systemd/system/printer.target.wants/cups.service'
+        ln -svf '/lib/systemd/system/org.cups.cupsd.socket' '//etc/systemd/system/sockets.target.wants/cups.socket'
+        ln -svf '/lib/systemd/system/org.cups.cupsd.path' '//etc/systemd/system/multi-user.target.wants/cups.path'
+
+
+verify_cli: |
+  kx_cli_success lpstat
+  kx_cli_success lpinfo
+  kx_cli_success cupsctl

@@ -1,0 +1,5 @@
+Makefile.PL
+MANIFEST
+README
+t/Mozilla-CA.t
+lib/Mozilla/CA.pm

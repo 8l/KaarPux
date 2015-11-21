@@ -1,0 +1,21 @@
+package:
+  name: dosfstools
+  version: 3.0.26
+  www: http://www.daniel-baumann.ch/software/dosfstools/
+  short: utilities for making and checking MS-DOS FAT filesystems
+
+download:
+  url: http://www.daniel-baumann.ch/files/software/dosfstools
+  file_tar_xz: ~
+  checksum: 468442fe8cd93961047d5cd67f7b67793126575103a67cd131330512b4893e75
+  verify: sig
+
+version: ~
+
+linux:
+  - build:
+    - make: ~
+  # No test suite
+  - install:
+    - install: PREFIX=/
+

@@ -1,0 +1,29 @@
+package:
+  name: gegl
+  version: 0.2.0
+  www: http://www.gegl.org/
+  short: GEGL (Generic Graphics Library) is a graph based image processing framework.
+
+doc: |
+  <para>
+    GEGL provides infrastructure to do demand based cached non destructive image editing on larger than RAM buffers.
+    Through babl it provides support for a wide range of color models and pixel storage formats for input and output.
+  </para>
+
+download:
+  url: http://ftp.gimp.org/pub/gegl/0.2
+  checksum: df2e6a0d9499afcbc4f9029c18d9d1e0dd5e8710a75e17c9b1d9a6480dd8d426
+
+version:
+  installed_pkgconfig: gegl-0.2
+  upstream: kxver_scrape_url(undef, "https://git.gnome.org/browse/gegl/tree/NEWS", qr|GEGL ([0-9][0-9.]+[0-9])|);
+  
+opt:
+  - build:
+    - configure_kx: --disable-docs --disable-gtk-doc-html
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+

@@ -1,0 +1,51 @@
+package:
+  name: vim
+  # If updating version, also remember to update dir: vim?? below
+  version: 7.4
+  www: http://www.vim.org
+  short: The Vim package, which is an abbreviation for VI IMproved, contains a vi clone with extra features as compared to the original vi. 
+
+download:
+  url: ftp://ftp.vim.org/pub/vim/unix
+  checksum: d0f5a6d2c439f02d97fa21bd9121f4c5abb1f6cd8b5a79d3ca82867495734ade
+  dir: vim74
+
+version:
+  installed: kxver_sh_pattern("vim --version", qr|Vi IMproved ([0-9]+[0-9.]*[0-9]+) \(|);
+
+bootstrap_8:
+  - echo: pre-configure
+  - doc: Change the default location of the vimrc configuration file to /etc
+  - sh: 'echo ''#define SYS_VIMRC_FILE "/etc/vimrc"'' >> src/feature.h'
+  - configure_kx: --enable-multibyte
+  - make_repeat: ~
+  # test suite 'make test' does not work without a terminal,
+  # and is interactive anyway.
+  - install: ~
+  - echo: post-install
+  - doc: >
+      Many users are used to using vi instead of vim.
+      To allow execution of vim when users habitually enter vi, create a symlink for both the binary and the man page in the provided languages
+  - sh: |
+      ln -sfv vim /bin/vi
+      for L in  /share/man/man1/vim.1 /share/man/*/man1/vim.1; do
+          ln -sfv vim.1 $(dirname $L)/vi.1
+      done
+  - install_file: /etc/vimrc
+
+verify_cli: |
+
+  kx_cli_match_success "/bin/vim --version" { VIM }
+
+  if [catch {
+    set filename "vimtest_[pid]_[clock microseconds].sh"
+    set file [open $filename [list RDWR CREAT EXCL TRUNC] 0700]
+    puts $file "echo 12345678 | /bin/xxd | /bin/xxd -r | md5sum"
+    close $file
+  } reason] then {
+    fail "xxd test failed: $reason";
+  } else {
+    kx_cli_match_success "./$filename" "23cdc18507b52418db7740cbb5543e54"
+  }
+  catch { file delete "$filename" }
+

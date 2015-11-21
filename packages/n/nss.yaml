@@ -1,0 +1,159 @@
+package:
+  name: nss
+  version: 3.20.1
+  www: https://developer.mozilla.org/en-US/docs/NSS
+  changelog: https://developer.mozilla.org/en-US/docs/NSS/NSS_${KX_NSS_VERSION}_release_notes
+  short: |
+      Mozilla Network Security Services (NSS) is a set of libraries
+      designed to support cross-platform development of security-enabled client and server applications.
+
+download:
+  url: http://archive.mozilla.org/pub/mozilla.org/security/nss/releases/NSS_${KX_NSS_VERSION_USCORE}_RTM/src
+  file_tar_gz: ~
+  checksum: ad3c8f11dfd9570c2d04a6140d5ef7c2bdd0fe30d6c9e5548721a4251a5e8c97
+
+doc: |
+    <para>
+      If the <systemitem>nss</systemitem> package is updated,
+      you may want to update <xref linkend="pkg_certdata" /> as well.
+    </para>
+
+version:
+  sensitive: 1
+  installed_pkgconfig: ~
+  upstream: |
+      my $v = kxver_scrape_url(undef, "http://archive.mozilla.org/pub/mozilla.org/security/nss/releases/", qr|NSS_([0-9]+[0-9_]*[0-9]+)_RTM|);
+      $v =~ s|_|.|g;
+      return $v;
+  wiz_url: | 
+      my ($pkg_ver, $pkg, $ver) = @_;
+      my $veru = $ver;
+      $veru =~ s|\.|_|g;
+      my $file = "nss-${ver}.tar.gz";
+      my $url = "http://archive.mozilla.org/pub/mozilla.org/security/nss/releases/NSS_${veru}_RTM/src";
+      return ($file, "$url/$file");
+
+linux:
+
+  - build:
+    - sh: cd nss
+    - sh: |
+
+        BUILD_OPT=1
+        export BUILD_OPT
+        PKG_CONFIG_ALLOW_SYSTEM_LIBS=1
+        export PKG_CONFIG_ALLOW_SYSTEM_LIBS
+        PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1
+        export PKG_CONFIG_ALLOW_SYSTEM_CFLAGS
+        NSS_USE_SYSTEM_SQLITE=1
+        export NSS_USE_SYSTEM_SQLITE
+        NSS_ENABLE_ECC=1
+        export NSS_ENABLE_ECC
+        NSPR_INCLUDE_DIR=`pkg-config --cflags-only-I nspr | sed 's/-I//'`
+        export NSPR_INCLUDE_DIR
+        NSPR_LIB_DIR=`pkg-config --libs-only-L nspr | sed 's/-L.//'`
+        export NSPR_LIB_DIR
+        USE_SYSTEM_ZLIB=1
+        export USE_SYSTEM_ZLIB
+        ZLIB_LIBS=-lz
+        export ZLIB_LIBS
+        USE_64=""
+        test $(uname -m) = x86_64 && USE_64=1
+        export USE_64
+
+    - make: -j 1
+
+    - echo:  "Create NSS pkgconfig file and nss-config file"
+    - get_pkg_file: nss.pc.in
+    - get_pkg_file: nss-config.in
+    - sh: |
+        DIST=`ls -d1 ../dist/L*|tr -d '\n'`
+        mkdir -pv ${DIST}/lib/pkgconfig
+        NSS_VMAJOR=`grep "NSS_VMAJOR" lib/nss/nss.h | awk '{print $3}'`
+        NSS_VMINOR=`grep "NSS_VMINOR" lib/nss/nss.h | awk '{print $3}'`
+        NSS_VPATCH=`grep "NSS_VPATCH" lib/nss/nss.h | awk '{print $3}'`
+    - sh: >
+        sed
+        -e s,@PREFIX@,${KX_PREFIX},
+        -e s,@NSS_VMAJOR@,${NSS_VMAJOR},g
+        -e s,@NSS_VMINOR@,${NSS_VMINOR},
+        -e s,@NSS_VPATCH@,${NSS_VPATCH},
+        < nss.pc.in > ${DIST}/lib/pkgconfig/nss.pc
+    - sh: >
+        sed
+        -e s,@PREFIX@,${KX_PREFIX},
+        -e s,@NSS_VMAJOR@,${NSS_VMAJOR},
+        -e s,@NSS_VMINOR@,${NSS_VMINOR},
+        -e s,@NSS_VPATCH@,${NSS_VPATCH},
+        < nss-config.in > ${DIST}/bin/nss-config
+
+  - test:
+    - sh: cd nss/tests
+    # Update expired certificate
+    - get_pkg_file: PayPalEE.cert
+    - sh: mv -f PayPalEE.cert libpkix/certs/
+    # Same config as build
+    - sh: |
+        BUILD_OPT=1
+        export BUILD_OPT
+        USE_64=""
+        test $(uname -m) = x86_64 && USE_64=1
+        export USE_64
+    # Fake host and doman to force use of 127.0.0.1
+    - sh: |
+        HOST=127
+        export HOST
+        DOMSUF=0.0.1
+        export DOMSUF
+    # Keep test script happy
+    - sh: |
+        NSS_BUILD_SOFTOKEN_ONLY=0
+        export NSS_BUILD_SOFTOKEN_ONLY
+    # And finally do the test
+    - sh: ./all.sh
+
+  - install:
+
+    - sh: cd dist
+
+# -------------------
+    - echo:  "Install NSS headers"
+    - sh: |
+        rm -rf                         "${KX_PREFIX}/include/nss"
+        install -v -m755 -d            "${KX_PREFIX}/include/nss"
+        install -v -m644 public/nss/*  "${KX_PREFIX}/include/nss"
+        install -v -m644 private/nss/* "${KX_PREFIX}/include/nss"
+
+# -------------------
+    - echo:  "Install NSS libraries"
+    - sh: |
+        cd Linux*
+        install -v -m755 lib/*.so      "${KX_PREFIX}/lib"
+        install -v -m644 lib/*.chk     "${KX_PREFIX}/lib"
+        install -v -m644 lib/libcrmf.a "${KX_PREFIX}/lib"
+
+
+# -------------------
+    - echo:  "Install NSS binaries"
+    - sh: |
+        install -v -m755 bin/*		"${KX_PREFIX}/bin"
+
+# -------------------
+    - echo:  "Install NSS pkgconfig file"
+    - sh: | 
+        install -v -m755 lib/pkgconfig/* "${KX_PREFIX}/lib/pkgconfig"
+
+# -------------------
+    - echo:  "Install manual pages"
+    - sh: |
+        cd ../..
+        cd nss/doc
+        install -v -m644 nroff/*     "${KX_PREFIX}/man/man1"
+
+
+# ==========================================================
+
+verify_cli: |
+
+  kx_cli_success nss-config --version
+

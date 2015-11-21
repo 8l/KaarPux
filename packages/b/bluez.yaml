@@ -1,0 +1,28 @@
+package:
+  name: bluez
+  version: 5.35
+  www: http://www.bluez.org/
+  short: Official Linux Bluetooth protocol stack
+
+download:
+  kernelxz: /linux/bluetooth
+  checksum: 1afee054644a8b1753ac98d7ad5cd95681a38f5c4cbb1b4bb3ceaa078bf8f0e2
+
+version:
+  installed_pkgconfig: ~
+
+linux:
+
+  - build:
+    - sh: sed -e "s/-lreadline/-lreadline -lncurses/" -i.bak Makefile.in Makefile.tools
+    - configure_kx: --enable-library
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success "sdptool -h" { SDP tool }

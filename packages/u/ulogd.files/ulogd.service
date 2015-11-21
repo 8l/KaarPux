@@ -1,0 +1,11 @@
+[Unit]
+Description=iptables userspace logging
+Before=multi-user.target
+
+[Service]
+ExecStart=/bin/ulogd
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+
+[Install]
+WantedBy=network.target

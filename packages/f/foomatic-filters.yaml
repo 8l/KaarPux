@@ -1,0 +1,21 @@
+package:
+  name: foomatic-filters
+  version: 4.0.17
+  www: http://www.linuxfoundation.org/collaborate/workgroups/openprinting
+
+download:
+  url: http://www.openprinting.org/download/foomatic/
+  file_tar_gz: ~
+  checksum: a2e2e53e502571e88eeb9010c45a0d54671f15707ee104f5c9c22b59ea7a33e3
+
+version: ~
+
+linux:
+  - build:
+    - configure_kx: ~
+    - make: ~     
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+

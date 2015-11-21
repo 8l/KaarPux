@@ -1,0 +1,34 @@
+package:
+  name: ibus
+  version: 1.5.10
+
+download:
+  url: https://github.com/ibus/ibus/archive
+  file: ${KX_IBUS_VERSION}.tar.gz
+  checksum: d9319253978569a625d2796339cafea72e79be6aabb2147cebb1c5cfe80fff43
+
+version:
+  upstream: kxver_scrape_url(undef, "https://github.com/maxmind/geoip-api-c/releases", qr|/release/tag([0-9]+[0-9.\-_]*[0-9]+)\.tar|);
+
+linux:
+
+  - build:
+    - sh: ./autogen.sh
+    - configure_kx: >
+        --disable-gtk-doc
+        --disable-static
+        --enable-man-pages
+        --disable-tests
+        --disable-gtk2
+        --disable-gconf
+        --disable-dconf
+        --disable-memconf
+        --disable-ui
+        --disable-schemas-compile
+        --with-python=python3
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

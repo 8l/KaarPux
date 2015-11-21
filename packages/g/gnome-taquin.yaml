@@ -1,0 +1,20 @@
+package:
+  name: gnome-taquin
+  version: 3.18.1.1
+
+download:
+  url: https://download.gnome.org/sources/gnome-taquin/${KX_GNOME_TAQUIN_VERSION_MM}
+  file_tar_xz: ~
+  checksum: 36091fc3f71f2cc29583cb9777da06e5fc595d0a3f282c3244386c8e0dbe98c4
+
+version:
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages 
+    - make: ~
+
+  - install:
+    - install: ~

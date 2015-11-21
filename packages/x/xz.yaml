@@ -1,0 +1,43 @@
+package:
+  name: xz
+  version: 5.2.2
+  www: http://tukaani.org/xz
+  short: XZ Utils is free general-purpose data compression software with high compression ratio.
+
+download:
+  url: http://tukaani.org/xz
+  checksum: 6ff5f57a4b9167155e35e6da8b529de69270efb2b4cf3fbabf41a4ee793840b5
+  verify: sig
+
+version:
+  upstream: kxver_scrape_url 0, "http://tukaani.org/xz/", qr|xz-([0-9]+\.[0-9]+\.[0-9]+)\.tar|;
+
+bootstrap_3:
+  - configure_tools: --disable-static
+  - make: ~
+  - install: ~ 
+
+bootstrap_7:
+  - configure_kx: --disable-static
+  - make: ~
+  - check: ~
+  - install: ~
+
+verify_cli: |
+
+  kx_cli_success /bin/xz --version
+
+  if [catch {
+    set filename "xztest_[pid]_[clock microseconds].sh"
+    set file [open $filename [list RDWR CREAT EXCL TRUNC] 0700]
+    puts $file "echo 12345678 | xz - | unxz - | md5sum"
+    close $file
+  } reason] then {
+    fail "xz test failed: $reason";
+  } else {
+    kx_cli_match_success "./$filename" "23cdc18507b52418db7740cbb5543e54"
+  }
+  catch { file delete "$filename" }
+
+  # TODO: Test other commands installed by xz
+

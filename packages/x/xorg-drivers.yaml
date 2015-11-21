@@ -1,0 +1,24 @@
+package:
+  name: xorg-drivers
+  version: 7.7
+
+xorg:
+
+  - driver_modules: |
+      P 792329b531afc6928ccda94e4b51a5520d4ddf8ef9a00890a5d0d31898acefec xf86-input-evdev-2.9.2.tar.bz2 kxver_pkgconfig('xorg-evdev')
+#      . 3361e1a65d9b84c464752fd612bdf6087622c6dd204121715366a170e5c3ccd7  xf86-video-cirrus-1.5.2.tar.bz2
+      . 48c6690b6751c76f53de64f8dbeaa9d6c62dbcfe890c768fd87167951247d44f xf86-video-mga-1.6.4.tar.bz2
+#      . 8b2d295f1842d07304a75da1cfb9bf139b320a6539970eaf8d5ecc010cd36ee0  xf86-video-r128-6.9.2.tar.bz2
+#      . 041d4205c9222c1780fba6e0e397a559aed393b7a7991b58fa79ba8cccc54a44 xf86-video-savage-2.3.7.tar.bz2
+      . f84fe2b2787f3ea9419eac3aa86462b929a551b3dbc4de550cc83b67f3216848 xf86-video-nouveau-1.0.11.tar.bz2
+#      . c8ba3d2cead3620dba2cbf5defb7f1759b2b96f4fe209f4bf6976832b6763c54  xf86-video-vmware-13.0.2.tar.bz2
+      . 56f84fcbc515685529ad8e10bca1072731d9c096b97c5d35ddc95cd589b98680  xf86-video-dummy-0.3.7.tar.bz2
+
+# The following are in separate packages, as patching (sed) or GCC is necessary:
+# vesa
+# fbdev
+# ati
+# intel
+
+# xf86-video-qxl is installed much later,
+# as it needs spice libraries to build Xspice

@@ -1,0 +1,25 @@
+package:
+  name: guile
+  version: 2.0.11
+  www: http://www.gnu.org/software/guile/
+  short: Guile is the GNU Ubiquitous Intelligent Language for Extensions, the official extension language for the GNU operating system.
+
+download:
+  url: ftp://ftp.gnu.org/pub/gnu/guile
+  file_tar_xz: ~
+  checksum: aed0a4a6db4e310cbdfeb3613fa6f86fddc91ef624c1e3f8937a6304c69103e2
+
+version:
+  installed_sh_trailing: guile -v
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

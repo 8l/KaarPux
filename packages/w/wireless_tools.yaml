@@ -1,0 +1,27 @@
+package:
+  name: wireless_tools
+  version: 29
+  www: http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html
+  short: manipulate Wireless Extensions
+
+download:
+  url: http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux
+  file: wireless_tools.${KX_WIRELESS_TOOLS_VERSION}.tar.gz
+  dir: wireless_tools.${KX_WIRELESS_TOOLS_VERSION}
+  checksum: 6fb80935fe208538131ce2c4178221bab1078a1656306bce8909c19887e2e5a1
+
+version:
+  installed_sh_trailing: iwconfig --version
+  upstream: kxver_scrape_url(undef, "http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html", qr|wireless_tools.([0-9.]+)\.tar|);
+
+linux:
+  - build:
+    - sh: sed '/BUILD_STATIC =/d' -i Makefile
+    - make: BINDIR=${KX_PREFIX}/bin LIBDIR=${KX_PREFIX}/lib
+  # No test suite
+  - install:
+    - install: >
+        INSTALL_DIR=${KX_PREFIX}/bin
+        INSTALL_LIB=${KX_PREFIX}/lib
+        INSTALL_INC=${KX_PREFIX}/include
+        INSTALL_MAN=${KX_PREFIX}/share/man

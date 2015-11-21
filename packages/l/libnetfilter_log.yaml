@@ -1,0 +1,27 @@
+package:
+  name: libnetfilter_log
+  version: 1.0.1
+  www: http://www.netfilter.org/projects/libnetfilter_log/
+  short: libnetfilter_log is a userspace library providing interface to packets that have been logged by the kernel packet filter. 
+
+doc: |
+  <para>
+  Included as a prerequisite to <xref linkend="pkg_ulogd" />
+  </para>
+
+download:
+  url: ftp://ftp.netfilter.org/pub/libnetfilter_log
+  file_tar_bz2: ~
+  checksum: 0b95bcb1ad15eea906fa3607cd6c2290bd48d5bd
+  verify: sig
+
+version:
+  installed_pkgconfig: ~
+
+bootstrap_8:
+
+    - configure_kx: ~
+    - make: ~
+    - check: ~
+    - install: ~
+

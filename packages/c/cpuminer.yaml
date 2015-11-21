@@ -1,0 +1,33 @@
+package:
+  name: cpuminer
+  version: 2.4.2
+  www: http://sourceforge.net/projects/cpuminer/
+  short: Miner of crypto currencies.
+
+download:
+  sourceforge: ~
+  file: pooler-cpuminer-${KX_CPUMINER_VERSION}.tar.gz
+  checksum: 16541f15cdd7ae080fea7ef826386ea402b4704206bef28b47ed16e1baf345b7
+
+version:
+  installed: kxver_sh_trailing "minerd --version"
+  upstream: kxver_upstream_sourceforge("cpuminer", undef, "pooler-cpuminer");
+
+doc: |
+      ----
+      Note
+      ----
+
+      Miners for crypto currencies are included just for the proof-of-concept.
+      Mining with CPU / GPU is probably not profitable...
+
+opt:
+
+  - build:
+    - use_gcc: ~
+    - configure_kx: >
+        CFLAGS="-I/opt/include -O3"
+    - make: ~
+
+  - install:
+    - install: ~

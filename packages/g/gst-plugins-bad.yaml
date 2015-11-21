@@ -1,0 +1,32 @@
+package:
+  name: gst-plugins-bad
+  version: 1.6.0
+  
+download:
+  url: http://gstreamer.freedesktop.org/src/gst-plugins-bad
+  file_tar_xz: ~
+  checksum: d8ff26128d4ecd2ffeb28e14843808d2d971b09056b7cee6f08afcae01fc0f49
+
+version:
+  installed_pkgconfig: gstreamer-plugins-bad-1.0
+
+linux:
+
+  - build:
+    - configure_kx: >
+        --disable-gtk-doc
+        --disable-static
+        --disable-fatal-warnings
+        --with-package-name="gst-plugins-bad"
+        --with-package-origin="http://kaarpux.kaarposoft.dk/packages/g/gst-plugins-bad.html"
+
+    - make: ~
+
+  - test:
+
+    # TODO: fix elements/camerabin
+    - check_ignore: ~
+ 
+  - install:
+    - install: ~
+

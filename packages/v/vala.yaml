@@ -1,0 +1,27 @@
+package:
+  name: vala
+  version: 0.30.0
+  www: https://live.gnome.org/Vala
+  short: |
+      Vala is a new programming language that aims to bring modern programming language features to GNOME developers
+      without imposing any additional runtime requirements and without using a different ABI compared to applications and libraries written in C. 
+
+download:
+  gnomexz: ~
+  checksum: 61f0337b000f7ed6ef8c1fea87e0047d9bd7c0f91dd9c5b4eb70fd3fb883dedf
+
+version:
+  installed_sh_trailing: valac --version
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static --enable-vapigen
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

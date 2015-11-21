@@ -1,0 +1,32 @@
+package:
+  name: libtool
+  version: 2.4.6
+  www: http://www.gnu.org/software/libtool/
+  short: |
+      GNU libtool is a generic library support script.
+      Libtool hides the complexity of using shared libraries behind a consistent, portable interface.
+
+download:
+  gnuz: ~
+  checksum: e3bd4d5d3d025a36c21dd6af7ea818a2afcd4dfc1ea5a17b39d7854bcd0c06e3
+  dir: libtool-${KX_LIBTOOL_VERSION}
+
+version:
+  wiz_savannah: ~
+  changelog: NEWS
+
+bootstrap_8:
+  - patch: ignore_runpath-in-lalib.patch
+
+  # FIXES "120: ltdl dryrun FAILED (mdemo.at:748)"
+  - patch: test_dryrun_make_config.patch
+
+  # configure --disable-static breaks test suite
+  - configure_kx: ~
+  - make: ~
+  - check: ~
+  - install: ~
+
+verify_cli: |
+  kx_cli_match_success "libtool --config" { "libtool.m4" "version_type" }
+

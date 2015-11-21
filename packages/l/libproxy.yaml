@@ -1,0 +1,31 @@
+package:
+  name: libproxy
+  version: 0.4.11
+  www: https://code.google.com/p/libproxy/
+  short:  Library that provides automatic proxy configuration management. 
+
+download:
+  url: http://libproxy.googlecode.com/files/
+  file_tar_gz: ~
+  checksum: dc3f33de54163718f82b3e7c496a7de97f8862578414b8ecaad3cbfe4821864b
+
+
+version:
+  installed_pkgconfig: libproxy-1.0
+  upstream: kxver_scrape_url("libproxy", "http://code.google.com/p/libproxy/");
+
+linux:
+  - build:
+      # Patch from ArchLinux
+      # https://projects.archlinux.org/svntogit/packages.git/tree/trunk/libproxy-0.4.7-unistd.patch?h=packages/libproxy
+    - patch: libproxy-0.4.7-unistd.patch
+    - sh: | 
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=${KX_PREFIX}
+        make
+  # No test suite
+  - install:
+    - sh: |
+        cd build
+        make install

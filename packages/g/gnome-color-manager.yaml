@@ -1,0 +1,28 @@
+package:
+  name: gnome-color-manager
+  version: 3.18.0
+  www: http://projects.gnome.org/gnome-color-manager/
+  short: |
+      session framework for the GNOME desktop environment
+      that makes it easy to manage easy to manage, install and generate color profiles.
+
+download:
+  gnomexz: ~
+  checksum: 83d06f3b76b89b6c56bd6e4f792e15c67b561682fa9d59b60cbf716f6130a435
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - patch: docbook.patch
+    - configure_kx_posix: --disable-static --enable-man-pages 
+    - make: ~
+
+  # Test fails, at it expects files to be already installed
+  # Gcm:ERROR:gcm-self-test.c:274:gcm_test_exif_func: assertion failed (error == NULL):
+  # Failed to execute child process "//libexec/gcm-helper-exiv" (No such file or directory) (g-exec-error-quark, 8)
+
+  - install:
+    - install: ~

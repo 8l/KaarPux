@@ -1,0 +1,26 @@
+package:
+  name: ed
+  version: 1.12
+  www: http://www.gnu.org/software/ed/
+  short: A line-oriented text editor
+
+download:
+  url: http://ftp.gnu.org/gnu/ed
+  file: ${KX_ED}.tar.lz
+  checksum: d2655743144a0f6071a619dea2e142d75d2335b3dbfe8d4a643984a10e0a802f
+
+version:
+  news: NEWS
+  changelog: ChangeLog
+
+linux:
+  - build:
+    - configure_kx: ~
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~     
+
+verify_cli: |
+  kx_cli_success ed --version

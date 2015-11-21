@@ -1,0 +1,33 @@
+package:
+  name: vte290
+  version: 0.36.3
+  www: http://developer.gnome.org/vte/
+  short: Terminal emulator widget used by GNOME terminal.
+
+doc: |
+  <para>
+    This is an old version to be deprecated.
+    Use <xref linkend="pkg_vte" /> instead.
+  </para>
+
+download:
+  url: ftp://ftp.gnome.org/pub/gnome/sources/vte/${KX_VTE290_VERSION_MM}/
+  file: vte-${KX_VTE290_VERSION}.tar.xz
+  dir: vte-${KX_VTE290_VERSION}
+  checksum: 54e5b07be3c0f7b158302f54ee79d4de1cb002f4259b6642b79b1e0e314a959c
+
+version:
+  installed_pkgconfig: vte-2.90
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages --with-gtk=3.0 --enable-introspection=yes
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

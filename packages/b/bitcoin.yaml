@@ -1,0 +1,36 @@
+package:
+  name: bitcoin
+  version: 0.11.1
+  www: https://github.com/bitcoin/bitcoin
+  short: Bitcoin wallet.
+
+download:
+  url: https://github.com/bitcoin/bitcoin/archive
+  file: v${KX_BITCOIN_VERSION}.tar.gz
+  checksum: 6b238ab46bb10c7a83237dfd69b09c95f08043bbe0b478f9c256b9536186b8d2
+
+version:
+  installed_na: ~
+  upstream: kxver_scrape_url(undef, "https://github.com/bitcoin/bitcoin/releases", qr|v([0-9]+[0-9.\-_]*[0-9]+)\.tar|);
+
+opt:
+
+  - build:
+    - use_gcc: ~
+    - patch: fPIC.patch
+    - sh: ./autogen.sh
+    - configure_kx_bash: >
+        --with-incompatible-bdb
+        --without-daemon
+        --without-miniupnpc
+        --without-qrencode
+    - make_repeat: ~
+
+  - install:
+    - use_gcc: ~
+    - sh: |
+        make install
+        sed -e "s:/usr:${KX_PREFIX}:" -i contrib/debian/bitcoin-qt.desktop
+        install -Dm644 share/pixmaps/bitcoin128.png "${KX_PREFIX}/share/pixmaps/bitcoin128.png"
+        install -Dm644 contrib/debian/bitcoin-qt.desktop "${KX_PREFIX}/share/applications/bitcoin.desktop"
+

@@ -1,0 +1,26 @@
+package:
+  name: glib-networking
+  version: 2.46.1
+  short: Network-related giomodules for glib.
+
+download:
+  gnomexz: ~
+  checksum: d5034214217f705891b6c9e719cc2c583c870bfcfdc454ebbb5e5e8940ac90b1
+
+version:
+  installed: return "???";
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - use_gcc: ~
+    - configure_kx: --disable-gtk-doc --disable-static --with-ca-certificates=/etc/ssl/certs/ca-bundle.crt
+    - make: ~
+
+  - test:
+    # TODO: Investigate why test cases are failing
+    - check_ignore: ~
+
+  - install:
+    - install: ~

@@ -1,0 +1,29 @@
+package:
+  name: libaio
+  version: 0.3.110
+  www: http://lse.sourceforge.net/io/aio.html
+  short: |
+      AIO enables even a single application thread to overlap I/O operations with other processing,
+      by providing an interface for submitting one or more I/O requests in one system call (io_submit()) without waiting for completion,
+      and a separate interface (io_getevents()) to reap completed I/O operations associated with a given completion group.
+
+download:
+  url: http://ftp.de.debian.org/debian/pool/main/liba/libaio
+  file: libaio_${KX_LIBAIO_VERSION}.orig.tar.gz
+  checksum: e019028e631725729376250e32b473012f7cb68e1f7275bfc1bbcdd0f8745f7e
+
+version:
+  installed_na: ~
+  upstream: kxver_scrape_url(undef, $url, qr|libaio_([0-9.]+)\.orig|);
+
+linux:
+
+  - build:
+    - sh: make PREFIX=/
+
+  # No test suite
+
+  - install:
+    - install: PREFIX=/
+
+# TODO: verify_cli

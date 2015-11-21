@@ -1,0 +1,22 @@
+package:
+  name: gnome-font-viewer
+  version: 3.16.2
+
+download:
+  gnomexz: ~
+  checksum: f5367417d926d1dbe175aceb8eb4d2733d723a237428f130edd4b4023c0dc1cf
+
+version:
+  installed_na: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

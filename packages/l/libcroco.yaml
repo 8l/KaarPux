@@ -1,0 +1,23 @@
+package:
+  name: libcroco
+  version: 0.6.8
+  short: |
+      Libcroco is a general CSS parsing and manipulation library written in C for the GNOME project.
+      It provides a CSS2 parser (SAC and CSSOM API), and a CSS2 selection engine.
+      It uses Libxml2 as underlying XML platform and the GLib as a portability layer.
+
+download:
+  gnomexz: ~
+  checksum: ea6e1b858c55219cefd7109756bff5bc1a774ba7a55f7d3ccd734d6b871b8570
+
+version:
+  installed_pkgconfig: libcroco-0.6
+  upstream_gnome: ~
+
+linux:
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static
+    - make: ~
+  # 'make check' does nothing
+  - install:
+    - install: ~

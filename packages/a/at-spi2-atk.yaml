@@ -1,0 +1,24 @@
+package:
+  name: at-spi2-atk
+  version: 2.18.1
+
+download:
+  url: https://download.gnome.org/sources/at-spi2-atk/${KX_AT_SPI2_ATK_VERSION_MM}
+  file_tar_xz: ~
+  checksum: c4b15f9386d34d464ddad5f6cc85669742c016df87141ceee93513245979c12d
+
+version:
+  installed_na: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages 
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

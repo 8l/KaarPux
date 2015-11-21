@@ -1,0 +1,25 @@
+package:
+  name: libgee
+  version: 0.18.0
+  www: https://wiki.gnome.org/Projects/Libgee
+  short: GObject collection library
+
+download:
+  gnomexz: ~
+  checksum: 4ad99ef937d071b4883c061df40bfe233f7649d50c354cf81235f180b4244399
+
+version:
+  installed_pkgconfig: gee-0.8
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

@@ -1,0 +1,35 @@
+package:
+  name: ghc
+  version: 7.8.4
+  www: http://www.haskell.org/ghc/
+  short: Compiler and interactive environment for the functional language Haskell
+
+download:
+  url: http://www.haskell.org/ghc/dist/${KX_GHC_VERSION}
+  file: ghc-${KX_GHC_VERSION}-src.tar.xz
+  checksum: c319cd94adb284177ed0e6d21546ed0b900ad84b86b87c06a99eac35152982c4
+
+version:
+  upstream: kxver_scrape_url(undef, "http://www.haskell.org/ghc/dist", qr|href="([0-9]+[0-9.]*[0-9]+)/"|);
+
+doc: |
+  <para>
+    This package version needs to be in sync with <xref linkend="pkg_haskell-platform" />.
+  </para>
+  <para>
+    We are building this source package using the precompiled <xref linkend="pkg_ghc-binary" />
+  </para>
+
+opt:
+
+  - build:
+    - use_gcc: ~
+    - install_pkg_file: 644 build.mk mk/
+    - configure_kx_bash: >
+        --with-ghc=$(cd ..; pwd -P)/ghc-${KX_GHC_BINARY_VERSION}-x86_64/bin/ghc
+        --with-system-libffi
+        --with-ffi-includes=/usr/lib/${KX_LIBFFI}/include
+    - make_repeat: ~
+
+  - install:
+    - install: ~

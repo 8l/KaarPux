@@ -1,0 +1,29 @@
+package:
+  name: git
+  version: 2.6.1
+  www: http://git-scm.com/
+  short: Git is a free and open source distributed version control system designed to handle everything from small to very large projects with speed and efficiency.
+
+download:
+  url: https://www.kernel.org/pub/software/scm/git/
+  file_tar_xz: ~
+  checksum: fc7c727745d5eb0d796a16dc7c4b999c184830110e0aeb592c788597cc8e9ccd
+  verify: tar.xz.sign
+
+version:
+  source: https://github.com/git/git
+  news: https://raw.github.com/git/git/master/Documentation/RelNotes/${KX_GIT_VERSION}.txt
+
+linux:
+  - build:
+    - configure_kx: --with-gitconfig=/etc/gitconfig
+    - make: ~
+    - make: man
+  - test:
+    - test: ~
+  - install:
+    - install: ~     
+    - make: install-man
+
+verify_cli: |
+  kx_cli_match_success "git --version" { git version }

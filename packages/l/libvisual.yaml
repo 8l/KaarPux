@@ -1,0 +1,24 @@
+package:
+  name: libvisual
+  version: 0.4.0
+  www: https://sourceforge.net/projects/libvisual/
+  short: |
+      Libvisual is a library that comes between applications and audio visualisation plugins
+      and provides every application that wants to draw visualisation a clean and easy to use API.
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: f4e78547c79ea8a8ad111cf8b85011bb
+
+version:
+  installed_pkgconfig: libvisual-0.4
+  upstream: kxver_upstream_sourceforge("libvisual", "libvisual", "libvisual");
+
+linux:
+  - build:
+    - configure_kx: ~
+    - make: ~
+  # 'make check' does nothing
+  - install:
+    - install: ~

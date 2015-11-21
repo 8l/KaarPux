@@ -1,0 +1,34 @@
+package:
+  name: ldns
+  version: 1.6.17
+  www: http://www.nlnetlabs.nl/projects/ldns/
+  short: |
+      The goal of ldns is to simplify DNS programming,
+      it supports recent RFCs like the DNSSEC documents,
+      and allows developers to easily create software conforming to current RFCs,
+      and experimental software for current Internet Drafts.
+
+doc: |
+    <para>
+    We are using <systemitem>ldns</systemitem> to avoid pulling in all of
+    <ulink url="https://www.isc.org/software/bind">bind</ulink>.
+    </para>
+
+download:
+  url: http://www.nlnetlabs.nl/downloads/ldns/
+  file_tar_gz: ~
+  checksum: 8b88e059452118e8949a2752a55ce59bc71fa5bc414103e17f5b6b06f9bcc8cd
+
+version:
+  installed: kxver_sh_version "drill -v"
+
+bootstrap_8:
+
+    - patch: perl_defined_array.patch
+    - configure_kx: --disable-static --with-drill
+    - make: ~
+    - install: ~
+    - sh: ln -svf /bin/drill /bin/dig
+
+verify_cli: |
+  kx_cli_match_success "drill google.com" { "ANSWER SECTION" "google.com" "AUTHORITY SECTION" }

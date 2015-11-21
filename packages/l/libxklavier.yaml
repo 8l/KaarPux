@@ -1,0 +1,21 @@
+package:
+  name: libxklavier
+  version: 5.2.1
+  www: http://freedesktop.org/wiki/Software/LibXklavier
+  short: Library providing high-level API for X Keyboard Extension known as XKB.
+
+download:
+  gnomexz: ~
+  checksum: a7a1ca8ae493fb652e3456a6b3a0b07514447161aab41feed96b968f2d338b5e
+
+version:
+  installed_pkgconfig: ~
+  upstream_gnome: ~
+
+linux:
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  - install:
+    - install: ~

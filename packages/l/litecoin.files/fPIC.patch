@@ -1,0 +1,13 @@
+diff -Naur litecoin-0.10.2.2.ORIG/configure.ac litecoin-0.10.2.2/configure.ac
+--- litecoin-0.10.2.2.ORIG/configure.ac	2015-06-15 10:51:30.000000000 +0200
++++ litecoin-0.10.2.2/configure.ac	2015-10-16 10:54:18.466544145 +0200
+@@ -424,7 +424,8 @@
+ 
+   if test x$TARGET_OS != xwindows; then
+     # All windows code is PIC, forcing it on just adds useless compile warnings
+-    AX_CHECK_COMPILE_FLAG([-fPIE],[HARDENED_CXXFLAGS="$HARDENED_CXXFLAGS -fPIE"])
++    # AX_CHECK_COMPILE_FLAG([-fPIE],[HARDENED_CXXFLAGS="$HARDENED_CXXFLAGS -fPIE"])
++    AX_CHECK_COMPILE_FLAG([-fPIC],[HARDENED_CXXFLAGS="$HARDENED_CXXFLAGS -fPIC"])
+     AX_CHECK_LINK_FLAG([[-pie]], [HARDENED_LDFLAGS="$HARDENED_LDFLAGS -pie"])
+   fi
+ 

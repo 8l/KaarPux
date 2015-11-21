@@ -1,0 +1,24 @@
+package:
+  name: gnome-shell
+  version: 3.18.1
+
+download:
+  gnomexz: ~
+  checksum: 14a15215b3e29a25b94f69c58a6565e3a8cb2259b1ca242b906af78172bf3845
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx_bash: >
+        --disable-gtk-doc
+        --enable-compile-warnings=minimum
+        --disable-schemas-compile
+    - make: V=1
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

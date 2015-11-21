@@ -1,0 +1,75 @@
+#!/bin/sh
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2015: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+# ============================================================
+# TRY TO INSTALL PACKAGES NECESSARY TO BOOTSTRAP KAARPUX
+# ============================================================
+
+set -o nounset
+set -o errexit
+
+if command -V lsb_release >/dev/null 2>&1; then
+	lsb_release -as
+	DISTRO=$(lsb_release -is)
+	VER=$(lsb_release -rs)
+elif test -f /etc/fedora-release; then
+	DISTRO=$(cut -d' ' -f1 /etc/fedora-release)
+	VER=$(cut -d' ' -f3 /etc/fedora-release)
+
+else
+	echo "*** Could not identify distro" > /dev/stderr
+	exit 1
+fi
+
+echo "DISTRO=[${DISTRO}] VER=[${VER}]"
+
+if test $(id -u) != 0 ; then
+	echo "*** Must be run as root" > /dev/stderr
+	exit 1
+fi
+
+case "${DISTRO}" in
+	KaarPux)
+		echo "No extra packages necessary"
+		;;
+	Ubuntu)
+		echo "Trying to install packages for [${DISTRO}]"
+		apt-get --yes install libyaml-tiny-perl
+		apt-get --yes install parallel
+		apt-get --yes install libncurses5-dev
+		apt-get --yes install patch
+		;;
+	Debian)
+		echo "Trying to install packages for [${DISTRO}]"
+		apt-get install make
+		apt-get install gcc
+		apt-get install libyaml-tiny-perl
+		apt-get install parallel
+		;;
+	Mint)
+		echo "Trying to install packages for [${DISTRO}]"
+		# TODO: Maybe build-essential is too much. Can we find a subset?
+		apt-get install build-essential
+		apt-get install parallel
+		;;
+	Fedora)
+		echo "Trying to install packages for [${DISTRO}]"
+		dnf -y -v groupinstall "C Development Tools and Libraries"
+		dnf -y -v install ncurses-devel
+		dnf -y -v install patch
+		dnf -y -v install perl-YAML-Tiny
+		dnf -y -v install parallel
+		;;
+	*)
+		echo "*** Unsupported distro [${DISTRO}]" > /dev/stderr
+		exit 1
+		;;
+esac
+
+

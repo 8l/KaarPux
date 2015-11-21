@@ -1,0 +1,25 @@
+package:
+  name: mpc
+  version: 1.0.2
+  www: http://www.multiprecision.org/
+  short: GNU Mpc is a C library for the arithmetic of complex numbers with arbitrarily high precision and correct rounding of the result.
+
+lfs:
+  - http://www.linuxfromscratch.org/lfs/view/development/chapter06/mpc.html
+
+download:
+  file_tar_gz: ~
+  url: http://www.multiprecision.org/mpc/download
+  checksum: b561f54d8a479cee3bc891ee52735f18ff86712ba30f036f8b8537bae380c488
+  verify: sig
+
+version:
+  installed: kxver_header_file("MPC", "/include/mpc.h", "PATCHLEVEL");
+  upstream: kxver_scrape_url(undef, "http://www.multiprecision.org/index.php?prog=mpc&page=download", qr|mpc/download/mpc-([0-9]+\.+[0-9.\-]*[0-9]+).tar|);
+
+bootstrap_5:
+  - configure_kx: --disable-static
+  - make: ~
+  - check: ~ 
+  - install: ~ 
+

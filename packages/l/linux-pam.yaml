@@ -1,0 +1,44 @@
+package:
+  name: linux-pam
+  version: 1.2.1
+  www: http://www.linux-pam.org/
+  short: Pluggable Authentication Modules for Linux
+
+download:
+  url: http://www.linux-pam.org/library
+  file: Linux-PAM-${KX_LINUX_PAM_VERSION}.tar.bz2
+  dir: Linux-PAM-${KX_LINUX_PAM_VERSION}
+  checksum: 342b1211c0d3b203a7df2540a5b03a428a087bd8a48c17e49ae268f992b334d9
+
+version:
+  installed_na: ~
+  upstream: kxver_scrape_url("Linux-PAM", "http://www.linux-pam.org/library/");
+
+bootstrap_8:
+  - configure: >
+      --sbindir=/lib/security
+      --docdir=/share/doc/${KX_LINUX_PAM}
+      --enable-read-both-confs
+  - make: ~
+
+  - sh: if -z "${KX_DISABLE_TEST}"; then
+  - echo: Testing
+  # To test the results, a configuration file must be created.
+  - sh: |
+      install -v -m755 -d /etc/pam.d
+      cat > /etc/pam.d/other << "EOF_LINUX_PAM"
+      auth     required       pam_deny.so
+      account  required       pam_deny.so
+      password required       pam_deny.so
+      session  required       pam_deny.so
+      EOF_LINUX_PAM
+  - sh: make check
+  - sh: rm -rfv /etc/pam.d
+  - sh: fi
+
+  - install: ~
+  - echo: Post-install
+  - sh: |
+      chmod -v 4755 /lib/security/unix_chkpwd
+      mv -v /lib/security/pam_tally /bin
+

@@ -1,0 +1,17 @@
+
+
+# KaarPux additions
+
+HostKey /etc/ssh/ssh_host_rsa_key
+
+PermitRootLogin without-password
+UsePAM yes
+IgnoreRhosts yes
+
+X11Forwarding yes
+X11DisplayOffset 10
+X11UseLocalhost yes
+XAuthLocation /bin/xauth
+
+PrintLastLog no
+

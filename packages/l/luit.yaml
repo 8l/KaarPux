@@ -1,0 +1,30 @@
+package:
+  name: luit
+  version: 1.1.1
+  www: http://cgit.freedesktop.org/xorg/app/luit/
+  short: Convert terminal i/o from legacy encodings to UTF-8
+
+download:
+  url: http://xorg.freedesktop.org/releases/individual/app
+  file_tar_bz2: ~
+  checksum: 30b0e787cb07a0f504b70f1d6123930522111ce9d4276f6683a69b322b49c636
+
+version:
+  installed_na: ~
+
+linux:
+
+  - build:
+    - patch: luit-1.1.1-configure-define-XOPEN_SOURCE-to-600-on-linux.patch
+    - sh: autoreconf --verbose --force --install
+    - configure_kx: ~
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+
+

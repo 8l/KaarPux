@@ -1,0 +1,23 @@
+package:
+  name: zope.interface
+  version: 4.1.3
+  www: https://pypi.python.org/pypi/zope.interface
+  short: |
+      Interfaces are a mechanism for labeling objects as conforming to a given API or contract.
+      This is a separate distribution of the zope.interface package used in Zope 3.
+
+download:
+  url: https://pypi.python.org/packages/source/z/zope.interface
+  file_tar_gz: ~
+  checksum: 2e221a9eec7ccc58889a278ea13dcfed5ef939d80b07819a9a8b3cb1c681484f
+
+version:
+  upstream_pypi: ~
+
+linux:
+  - build:
+    - sh: python2 ./setup.py build
+  # No test suite available
+  - install:
+    - sh: python2 ./setup.py install
+

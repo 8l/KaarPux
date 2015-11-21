@@ -1,0 +1,30 @@
+package:
+  name: gnome-desktop
+  version: 3.18.1
+  www: http://developer.gnome.org/gnome-desktop/
+  short: |
+      The libgnome-desktop library contains APIs that can be useful for a few applications,
+      but which do not belong to GTK+ because of the limited use case.
+
+download:
+  gnomexz: ~
+  checksum: ecabbc41f551b7db2686260d35f43fbce4527dc111dd799dbf6395ffa1af772b
+
+version:
+  installed_pkgconfig: gnome-desktop-3.0
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: >
+        --disable-gtk-doc
+        --disable-static
+        --with-gnome-distributor=KaarPux
+        --disable-desktop-docs
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

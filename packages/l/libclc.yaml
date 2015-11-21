@@ -1,0 +1,33 @@
+package:
+  name: libclc
+  # 6d784075bc56815b0fc493690572c893979abbdd => 2015-10-06
+  version: 6d784075bc56815b0fc493690572c893979abbdd
+  www: http://libclc.llvm.org/
+  short: |
+       implementation of the library requirements of the OpenCL C programming language,
+       as specified by the OpenCL 1.1 Specification.
+
+download:
+  url: https://github.com/llvm-mirror/libclc/archive
+  file: ${KX_LIBCLC_VERSION}.tar.gz
+  checksum: 180947a7c43926b16e072f7a5dcf06b990b928e23807641ec00407813c7e51c2
+
+linux:
+  - prepare_and_build:
+    - echo: Unpacking
+    - sh: |
+        cd ${KX_BASE}/build/linux
+        rm -rf libclc-${KX_LIBCLC_VERSION}
+        mkdir -p libclc-${KX_LIBCLC_VERSION}
+    - untar: $(pwd) ${KX_BASE}/../downloads/${KX_LIBCLC_VERSION}.tar.gz
+    - echo: Configure
+    - sh: |
+        cd libclc-${KX_LIBCLC_VERSION}
+        ./configure.py --prefix="${KX_PREFIX}"
+    - make: ~
+
+  # No test suite
+
+  - install:
+    - install: ~
+

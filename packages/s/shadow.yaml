@@ -1,0 +1,124 @@
+package:
+  name: shadow
+  version: 4.2.1
+  www: http://pkg-shadow.alioth.debian.org/
+  short: Programs for handling passwords in a secure way.
+
+download:
+  url: http://pkg-shadow.alioth.debian.org/releases/
+  file_tar_xz: ~
+  checksum: 3b0893d1476766868cd88920f4f1231c4795652aa407569faff802bcda0f3d41
+  verify: sig
+
+version:
+  installed_na: ~
+
+bootstrap_7:
+
+  - echo: pre-configuring
+
+  # disable the installation of the groups program and its man pages, as Coreutils provides a better version
+  - sh: |
+      sed -i 's/groups$(EXEEXT) //' src/Makefile.in
+      find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
+
+  - configure_kx: --sysconfdir=/etc --with-group-name-max-length=48
+
+  - make: ~
+
+  - check: ~
+
+  - install: ~
+
+  - echo: configuring login.defs
+
+  # /var/spool/mail -> /var/mail
+  - sh: |
+      sed -i -e 's@/var/spool/mail@/var/mail@' /etc/login.defs
+
+  # better password encryption
+  - sh: |
+      sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' /etc/login.defs
+      echo "SHA_CRYPT_MIN_ROUNDS 10000" >> /etc/login.defs
+
+  - echo: Enable
+  - sh: |
+      pwconv
+      grpconv
+
+
+
+bootstrap_8:
+
+  - echo: pre-configuring
+
+  # disable the installation of the groups program and its man pages, as Coreutils provides a better version
+  - sh: |
+      sed -i 's/groups$(EXEEXT) //' src/Makefile.in
+      find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
+
+  - configure_kx: --sysconfdir=/etc --with-group-name-max-length=48
+
+  - make: ~
+
+  - check: ~
+
+  - install: ~
+
+  # allow subuids and subgids
+  - sh: touch /etc/subuid
+  - sh: touch /etc/subgid
+
+  # avoid creating mail dir
+  - sh: sed -i 's/yes/no/' /etc/default/useradd
+
+  - echo: configuring login.defs
+
+  - sh: |
+      cp /etc/login.defs /etc/login.defs.ORIG
+
+  # /var/spool/mail -> /var/mail
+  - sh: |
+      sed -i -e 's@/var/spool/mail@/var/mail@' /etc/login.defs
+
+  # better password encryption
+  - sh: |
+      sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' /etc/login.defs
+      echo "SHA_CRYPT_MIN_ROUNDS 10000" >> /etc/login.defs
+
+  # let PAM handle most things
+  - sh: |
+      for FUNCTION in LASTLOG_ENAB MAIL_CHECK_ENAB \
+                      PORTTIME_CHECKS_ENAB CONSOLE \
+                      MOTD_FILE NOLOGINS_FILE PASS_MIN_LEN \
+                      SU_WHEEL_ONLY MD5_CRYPT_ENAB \
+                      CONSOLE_GROUPS ENVIRON_FILE \
+                      ULIMIT ENV_TZ ENV_HZ ENV_SUPATH \
+                      ENV_PATH QMAIL_DIR MAIL_DIR MAIL_FILE \
+                      CHFN_AUTH FAILLOG_ENAB QUOTAS_ENAB FTMP_FILE \
+                      OBSCURE_CHECKS_ENAB CRACKLIB_DICTPATH \
+                      PASS_CHANGE_TRIES PASS_ALWAYS_WARN ISSUE_FILE
+      do
+          sed -i "s/^$FUNCTION/# &/" /etc/login.defs
+      done
+      echo "SHA_CRYPT_MIN_ROUNDS 10000" >> /etc/login.defs
+
+  - echo: Configuring /etc/environment
+  - sh: cp "${KX_BASE}/../master/files/etc/environment" "/etc"
+
+  - echo: Renaming unused files
+  - sh: |
+      if test -f /etc/login.access; then
+          mv -v /etc/login.access /etc/login.access.NOUSE
+      fi
+      if test -f /etc/limits; then
+          mv -v /etc/limits /etc/limits.NOUSE
+      fi
+
+# TODO: For now all we are really verifying is that a single
+#       executable from shadow is installd.
+#       We should test more ...
+
+verify_cli: |
+  kx_cli_match_success /bin/lastlog { Username Port From Latest }
+

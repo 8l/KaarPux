@@ -1,0 +1,33 @@
+package:
+  name: libtasn1
+  version: 4.7
+  www: http://www.gnu.org/software/libtasn1/
+  short: ASN.1 library
+
+download:
+  url: http://mirrors.kernel.org/gnu/libtasn1/
+  file_tar_gz: ~
+  checksum: a40780dc93fc6d819170240e8ece25352058a85fd1d2347ce0f143667d8f11c9
+  verify: sig
+
+version:
+  installed_pkgconfig: ~
+  wiz_savannah: ~
+  changelog: NEWS
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_success asn1Coding "--version"
+
+# TODO: verify_cli: real testcases

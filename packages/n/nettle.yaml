@@ -1,0 +1,30 @@
+package:
+  name: nettle
+  version: 2.7.1
+  www: http://www.lysator.liu.se/~nisse/nettle/
+  short: |
+      Nettle is a cryptographic library that is designed to fit easily in more or less any context:
+      In crypto toolkits for object-oriented languages (C++, Python, Pike, ...),
+      in applications like LSH or GNUPG, or even in kernel space. 
+
+download:
+  url: http://www.lysator.liu.se/~nisse/archive/
+  file_tar_gz: ~
+  checksum: bc71ebd43435537d767799e414fce88e521b7278d48c860651216e1fc6555b40
+  verify: sig
+
+version:
+  installed_pkgconfig: nettle
+  # GnuTLS does not work with nettle 3.*; only 2.7.1
+  hold: 1
+
+linux:
+  - build:
+    # We do not need the static libraries,
+    # but building with --disable-static fails
+    - configure_kx: ~
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~

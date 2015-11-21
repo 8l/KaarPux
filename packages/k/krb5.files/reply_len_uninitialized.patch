@@ -1,0 +1,12 @@
+diff -Naur krb5-1.13.1.ORIG/src/lib/krb5/ccache/cc_kcm.c krb5-1.13.1/src/lib/krb5/ccache/cc_kcm.c
+--- src.ORIG/lib/krb5/ccache/cc_kcm.c	2015-02-12 04:16:43.000000000 +0100
++++ src/lib/krb5/ccache/cc_kcm.c	2015-03-05 06:44:52.354153316 +0100
+@@ -377,7 +377,7 @@
+ kcmio_call(krb5_context context, struct kcmio *io, struct kcmreq *req)
+ {
+     krb5_error_code ret;
+-    size_t reply_len;
++    size_t reply_len=0;
+ 
+     if (k5_buf_status(&req->reqbuf) != 0)
+         return ENOMEM;

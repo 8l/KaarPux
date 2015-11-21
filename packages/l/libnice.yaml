@@ -1,0 +1,23 @@
+package:
+  name: libnice
+  version: 0.1.8
+  www: http://nice.freedesktop.org/wiki/
+  short: | 
+      Implementation of the IETF's Interactive Connectivity Establishment (ICE) standard (RFC 5245)
+      and the Session Traversal Utilities for NAT (STUN) standard (RFC 5389). 
+
+download:
+  url: http://nice.freedesktop.org/releases
+  file_tar_gz: ~
+  checksum: 9da7f09909902d535389d929c3e4d69129528fb18438a6c8565ec812d9904ddf
+  verify: asc
+
+version:
+  installed_pkgconfig: nice
+
+linux:
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --disable-gupnp
+    - make: ~
+  - install:
+    - install: ~

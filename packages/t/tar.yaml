@@ -1,0 +1,55 @@
+package:
+  name: tar
+  version: 1.28
+  www: http://www.gnu.org/software/tar/
+  short: The Tar program provides the ability to create tar archives, as well as various other kinds of manipulation.
+
+download:
+  gnu: ~
+  checksum: 60e4bfe0602fef34cd908d91cf638e17eeb09394d7b98c2487217dc4d3147562
+
+version:
+  wiz_savannah: ~
+  changelog: NEWS
+
+bootstrap_3:
+  # Fix an incompatibility between this package and Glibc-2.16.0:
+  - sh: sed -i -e '/gets is a/d' gnu/stdio.in.h
+
+  - configure_tools: ~
+  - make: ~
+  - install: ~ 
+
+bootstrap_7:
+  # Fix an incompatibility between this package and Glibc-2.16.0:
+  - sh: sed -i -e '/gets is a/d' gnu/stdio.in.h
+
+  # Avoid bash-specific redirections
+  - sh: sed -e 's:&> /dev/null:1>/dev/null 2>\&1:' -i tests/testsuite
+
+  - echo: configuring
+  - sh: >
+      FORCE_UNSAFE_CONFIGURE=1
+      ./configure
+        --prefix=''
+        --libexecdir=/bin
+  - make: ~
+  - check: ~
+  - install: ~ 
+
+
+verify_cli: |
+  kx_cli_success /bin/tar --version
+
+  if [catch {
+    set filename "tartest_[pid]_[clock microseconds].sh"
+    set file [open $filename [list RDWR CREAT EXCL TRUNC] 0700]
+    puts $file "tar cf - $filename | tar tf -"
+    close $file
+  } reason] then {
+    fail "tar test failed: $reason";
+  } else {
+    kx_cli_match_success "./$filename" "$filename"
+  }
+  catch { file delete "$filename" }
+

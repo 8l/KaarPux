@@ -1,0 +1,139 @@
+package:
+  name: systemd
+  version: 227
+  www: http://www.freedesktop.org/wiki/Software/systemd
+  short: |
+      System and service manager for Linux.
+      Replaces the sysvinit init program.
+
+download:
+  url: https://github.com/systemd/systemd/archive
+  file: v${KX_SYSTEMD_VERSION}.tar.gz
+  dir: ${KX_SYSTEMD_NAME}-${KX_SYSTEMD_VERSION}
+  checksum: 6766e8489e359f3d608a9f032eb1f52d7c55d76d0f9171837cf2b3284b2b904b
+
+version:
+  upstream: kxver_scrape_url(undef, "https://github.com/systemd/systemd/releases", qr|v([0-9]+)\.tar|);
+  installed_pkgconfig: libsystemd-daemon
+
+bootstrap_8:
+
+    # https://github.com/poettering/systemd/commit/417800228f69db9ff37f4193d11508757dd09308
+    # core ignore -.slice and init.scope when isolating 
+    - patch: 417800228f69db9ff37f4193d11508757dd09308.patch
+
+    - sh: ./autogen.sh
+
+    - configure_kx: >
+        --with-sysvinit-path=
+        --with-sysvrcnd-path=
+        --enable-compat-libs
+        --without-python
+        --disable-manpages
+        --disable-gudev
+        --disable-ima
+        --disable-selinux
+        --disable-gcrypt
+        --disable-audit
+        --disable-libcryptsetup
+        --disable-qrencode
+        --disable-microhttpd
+        --disable-sysusers
+        --with-dbuspolicydir=/etc/dbus-1/system.d
+        --with-dbussessionservicedir=/share/dbus-1/services
+        --with-dbussystemservicedir=/share/dbus-1/system-services
+
+    # TODO: remove --enable-compat-libs when dbus is ready for it
+
+    - make: ~
+
+    # Many systemd testcases fail, as we are not yet in a "real" system
+    # TODO: come back and see if we can fix the system or test cases
+    # - check: ~
+
+    # Add users and groups for systemd
+    - sh: |
+        getent group systemd-journal || groupadd -r -g ${KX_SYSTEMD_JOURNAL_ID} systemd-journal
+
+        getent group systemd-timesync  || groupadd -r -g ${KX_SYSTEMD_TIMESYNC_ID} systemd-timesync
+        getent group systemd-network   || groupadd -r -g ${KX_SYSTEMD_NETWORK_ID} systemd-network
+        getent group systemd-resolve   || groupadd -r -g ${KX_SYSTEMD_RESOLVE_ID} systemd-resolve
+        getent group systemd-bus-proxy || groupadd -r -g ${KX_SYSTEMD_BUSPROXY_ID} systemd-bus-proxy
+
+        getent passwd systemd-timesync  || useradd -r -l -u ${KX_SYSTEMD_TIMESYNC_ID} -g ${KX_SYSTEMD_TIMESYNC_ID} -d /dev/null -s /bin/false -c "systemd timesync" systemd-timesync
+        getent passwd systemd-network   || useradd -r -l -u ${KX_SYSTEMD_NETWORK_ID} -g ${KX_SYSTEMD_NETWORK_ID} -d /dev/null -s /bin/false -c "systemd network" systemd-network
+        getent passwd systemd-resolve   || useradd -r -l -u ${KX_SYSTEMD_RESOLVE_ID} -g ${KX_SYSTEMD_RESOLVE_ID} -d /dev/null -s /bin/false -c "systemd resolve" systemd-resolve
+        getent passwd systemd-bus-proxy || useradd -r -l -u ${KX_SYSTEMD_BUSPROXY_ID} -g ${KX_SYSTEMD_BUSPROXY_ID} -d /dev/null -s /bin/false -c "systemd bus-proxy" systemd-bus-proxy
+
+    - install: ~
+
+    # Use systemd as init process
+    - sh: [ -f /sbin/init ] && mv -v /sbin/init /sbin/init.`date +%s`
+    - sh: cp -v /usr/lib/systemd/systemd /sbin/init
+
+    # Make sure we have a unique name for this machine
+    - sh: systemd-machine-id-setup
+
+    # Make sure logs are persisted to disk
+    - sh: |
+        mkdir -pv /var/log/journal/
+        chown root:systemd-journal /var/log/journal
+        chmod 2755 /var/log/journal
+
+    # We do not use remote journals
+    - sh: ln -svf /dev/null /etc/tmpfiles.d/systemd-remote.conf
+
+    # Do not start services we do not want
+    - sh: |
+        ln -svf /dev/null /etc/systemd/system/sys-kernel-debug.mount
+        ln -svf /dev/null /etc/systemd/system/auditd.service
+        ln -svf /dev/null /etc/systemd/system/syslog.service
+        ln -svf /dev/null /etc/systemd/system/plymouth-start.service
+        ln -svf /dev/null /etc/systemd/system/plymouth-quit-wait.service
+        ln -svf /dev/null /etc/systemd/system/systemd-sysusers.service
+
+    # Default to multiuser (not graphical) login
+    - sh: |
+        ln -svf /usr/lib/systemd/system/multi-user.target /etc/systemd/system/default.target
+
+    # Let systemd handle logging (instead of using syslog)
+    - sh: | 
+        cat >> /etc/systemd/journald.conf << EOF
+        ForwardToSyslog=no
+        ForwardToConsole=yes
+        ImportKernel=yes
+        EOF
+
+    # Start DHCP automatically
+    - install_pkg_file: 644 50-dhcp.network /etc/systemd/network/
+    - sh: ln -svf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+
+
+verify_cli: |
+  kx_cli_match_success /bin/hostnamectl { Architecture: }
+  kx_cli_match_success "/bin/journalctl --this-boot --no-pager" { kernel }
+  kx_cli_match_success /bin/localectl { "System Locale" }
+  kx_cli_match_success /bin/loginctl { SESSION UID USER SEAT }
+  kx_cli_match_success "/bin/systemctl --no-pager" { loaded active loaded active loaded active loaded active loaded active loaded active }
+  kx_cli_match_success /bin/timedatectl { "Local time" "Universal time" DST }
+
+# TODO:
+# Test other systemd functions
+# /bin/systemd-analyze
+# /bin/systemd-ask-password
+# /bin/systemd-cat
+# /bin/systemd-cgls
+# /bin/systemd-cgtop
+# /bin/systemd-coredumpctl
+# /bin/systemd-delta
+# /bin/systemd-detect-virt
+# /bin/systemd-inhibit
+# /bin/systemd-machine-id-setup
+# /bin/systemd-notify
+# /bin/systemd-nspawn
+# /bin/systemd-stdio-bridge
+# /bin/systemd-tmpfiles
+# /bin/systemd-tty-ask-password-agent
+# /bin/udevadm
+
+

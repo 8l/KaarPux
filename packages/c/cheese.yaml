@@ -1,0 +1,22 @@
+package:
+  name: cheese
+  version: 3.18.1
+  www: http://projects.gnome.org/cheese
+  short: Photobooth-inspired GNOME application for taking pictures and videos from a webcam
+
+download:
+  gnomexz: ~
+  checksum: fc9d8798b1f0c6b35731f063869a32c6910bab6d0386b9ea36386ebda0d57177
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - use_gcc: ~
+    - configure_kx: --disable-gtk-doc --disable-static --disable-schemas-compile
+    - make: ~
+
+  - install:
+    - install: ~

@@ -1,0 +1,36 @@
+package:
+  name: dash
+  version: 0.5.8
+
+download:
+  url: http://gondor.apana.org.au/~herbert/dash/files
+  file_tar_gz: ~
+  checksum: c6db3a237747b02d20382a761397563d813b306c020ae28ce25a1c3915fac60f
+
+version: ~
+
+bootstrap_3:
+  - configure_tools: ~ 
+  - make: ~     
+  - install: ~     
+  - sh: ln -vsf dash "${KX_TOOLS}/bin/sh"
+
+bootstrap_6:
+  - configure_kx: ~ 
+  - make: ~     
+  # No testsuite
+  - install: ~     
+  - sh: ln -vsf dash "/bin/sh"
+
+#TODO: REMOVE
+linux:
+  - build:
+    - configure_kx: ~ 
+    - make: ~     
+  - install:
+    - install: ~     
+#    - echo:  "Setting dash to be default sh"
+#    - sh: ln -svf /bin/dash /bin/sh
+
+
+

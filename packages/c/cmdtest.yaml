@@ -1,0 +1,27 @@
+package:
+  name: cmdtest
+  version: 0.16
+  www: http://liw.fi/cmdtest/
+  short: black box tests Unix command line tools
+
+download:
+  url: http://code.liw.fi/debian/pool/main/c/cmdtest/
+  file: cmdtest_${KX_CMDTEST_VERSION}.orig.tar.xz
+  checksum: 3cd0e18f638b78a76f78e84d48996ee7436f598832fc3e28380ac03db35afec6
+
+version:
+  installed_na: ~
+  upstream: kxver_scrape_url(undef, $url, qr|cmdtest_([0-9.]+)\.orig|);
+
+linux:
+
+  - build:
+    - sh: python setup.py build
+
+  - test:
+    - sh: python setup.py check
+
+  - install:
+    - sh: python setup.py install
+
+# TODO: verify_cli

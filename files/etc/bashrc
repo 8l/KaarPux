@@ -1,0 +1,12 @@
+# Do not do anything for non-interactive shells
+[ -z "$PS1" ] && return
+
+# Do not do anything for login-shells; /etc/profile has already been run
+shopt -q login_shell && return
+
+# Source the profile scripts
+for script in /etc/profile.d/* ; do
+        if [ -r $script ] ; then
+                . $script
+        fi
+done

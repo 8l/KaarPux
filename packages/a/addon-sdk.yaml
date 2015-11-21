@@ -1,0 +1,32 @@
+package:
+  name: addon-sdk
+  version: 1.17
+  short: Firefox add-on SDK
+  www: https://developer.mozilla.org/en-US/Add-ons/SDK
+
+doc: |
+  <para>
+    Using the Add-on SDK you can create Firefox add-ons using standard Web technologies: JavaScript, HTML, and CSS.
+    The SDK includes JavaScript APIs which you can use to create add-ons, and tools for creating, running, testing, and packaging add-ons.
+  </para>
+  <para>
+    We are not really installing <application>addon-sdk</application>;
+    just using it for building <xref linkend="pkg_privacybadgerfirefox" />.
+  </para>
+
+download:
+  url: https://ftp.mozilla.org/pub/mozilla.org/labs/jetpack
+  file_tar_gz: ~
+  checksum: bb2d5d7c295a9d627cb02a4c5bb1123bf3e86ef01826c8246aeaf7912b52870c
+
+version:
+  installed_na: ~
+
+opt:
+
+  - build:
+    - echo: "No build."
+
+  - install_keep:
+    - echo: "No Install. Only used for bootstrapping."
+

@@ -1,0 +1,44 @@
+package:
+  name: busybox
+  version: 1.24.0
+  www: http://busybox.net/
+  short: |
+      BusyBox combines tiny versions of many common UNIX utilities into a single small executable.
+      It provides replacements for most of the utilities you usually find in GNU fileutils, shellutils, etc.
+
+doc: |
+  <para>
+  Mainly included in KaarPux for use in the Linux kernel initramfs.
+  </para>
+
+download:
+  url: http://busybox.net/downloads
+  file_tar_bz2: ~
+  checksum: 022628b99d0980d56afe959ba28875d50b40492cf674e70e9cd21ef745be2de3
+  verify: sign
+
+version: 
+  installed: |
+    my $txt=`busybox|head -1`;
+    $txt =~ m|^BusyBox v([0-9\.]+) |;
+    return $1;
+
+bootstrap_8:
+  - echo: configure
+  - get_pkg_file: config
+  - sh: cp config .config
+  - make: busybox
+  # TODO: investigate failing testcases - presumably due to chroot
+  # testing hangs if run with systemtap
+  - sh: if test -z "${KX_SYSTEMTAP:-}"; then
+  - check_ignore: ~
+  - sh: fi
+
+  - echo: "install"
+  - sh: cp busybox /bin
+
+verify_cli: |
+  kx_cli_match_success "/bin/busybox --list" { blkid cat chmod dd echo env find ln mkdir mknod mount pivot_root }
+  kx_cli_match_success "/bin/busybox uptime" { load average }
+  kx_cli_match_success "/bin/busybox kill -l" { HUP INT QUIT TERM }
+  kx_cli_match_success "/bin/busybox mount" { rootfs }

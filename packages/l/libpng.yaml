@@ -1,0 +1,34 @@
+package:
+  name: libpng
+  version: 1.6.18
+  www: http://libpng.sourceforge.net/index.html
+  short: Reference library for supporting the Portable Network Graphics (PNG) format.
+
+download:
+  sourceforge: ~
+  file_tar_xz: ~
+  checksum: 2e10c13b7949883ac961db6177c516d778184432d440317e9f0391305c360963
+  verify: asc
+
+additional_downloads:
+  - http://sourceforge.net/projects/libpng-apng/files/libpng16/${KX_LIBPNG_VERSION}/libpng-${KX_LIBPNG_VERSION}-apng.patch.gz/download libpng-${KX_LIBPNG_VERSION}-apng.patch.gz e76b364033a229fc96b8867af4d774497c7201c5
+
+version:
+  sensitive: 1
+  installed_pkgconfig: ~
+  upstream: kxver_scrape_url(undef, "http://libpng.sourceforge.net/index.html", qr|>The latest released versions are .* libpng-(1\.[6-9]\.[0-9.]+)<|);
+
+linux:
+
+  - build:
+    - echo: patch
+    - sh: gzip -cd ../../../../downloads/libpng-${KX_LIBPNG_VERSION}-apng.patch.gz | patch -p1
+    - configure_kx: --sysconfdir=/etc --localstatedir=/var
+    - make: ~
+
+  - test:
+    - check: ~
+ 
+  - install:
+    - install: ~
+

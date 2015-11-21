@@ -1,0 +1,48 @@
+package:
+  name: provider_for_google_calendar
+  version: 1.0.4
+  www: https://addons.mozilla.org/en-US/thunderbird/addon/provider-for-google-calendar/
+  short: Allows bidirectional access to Google Calendar (from Thunderbird/Lightning).
+
+download:
+  url: https://addons.mozilla.org/thunderbird/downloads/file/300140
+  file: provider_for_google_calendar-${KX_PROVIDER_FOR_GOOGLE_CALENDAR_VERSION}-tb+sm.xpi
+  checksum: 6bb8af70514801027d86ae89ec1a50b0b3608775c15263a38ddbfc7daa5f34c7
+
+version:
+  installed: |
+    my $tbver = $package_versions{'thunderbird'}{'kxversion'};
+    return kxver_mozilla_addon_installed "/opt/lib/thunderbird-${tbver}/extensions/{a62ef8ec-5fdc-40c2-873c-223b8a6925cc}"
+  upstream: kxver_scrape_url(undef, "https://addons.mozilla.org/en-US/thunderbird/addon/provider-for-google-calendar/versions/", qr|version[-_]([0-9]+[0-9.\-_]*[0-9]+)|);
+  wiz_url: |
+      my ($pkg_ver, $pkg, $ver) = @_;
+      my $u="https://addons.mozilla.org/en-US/thunderbird/addon/provider-for-google-calendar/versions/";
+      my $v = kxver_get($u) or print "*** Could not download [${u}]\n";
+      my $file = kxver_scrape_this(undef, $v, qr|https://addons.mozilla.org/thunderbird/downloads/file/[0-9]+/(provider_for_google_calendar-$ver-tb\+sm.xpi)|);
+      my $url = kxver_scrape_this(undef, $v, qr|(https://addons.mozilla.org/thunderbird/downloads/file/[0-9]+)/provider_for_google_calendar-$ver-tb\+sm.xpi|);
+      print "*** *** url: $url\n";
+      return ($file, "$url/$file");
+opt:
+  - prepare_and_build:
+    - sh: |
+        cd ${KX_BASE}/build/opt
+        rm -rf "${KX_PROVIDER_FOR_GOOGLE_CALENDAR}"
+        D="${KX_PROVIDER_FOR_GOOGLE_CALENDAR}/{a62ef8ec-5fdc-40c2-873c-223b8a6925cc}"
+        mkdir -pv "$D"
+        F="${KX_BASE}/../downloads/${KX_PROVIDER_FOR_GOOGLE_CALENDAR_FILE}"
+        kx_untar "$D" "$F"
+
+  - install:
+    #
+    # Note that we install into the THUNDERBIRD directory directly,
+    # as this is the only place THUNDERBIRD will look for extensions.
+    # So if THUNDERBIRD is re-installed, we loose the extension!
+    #
+    - sh: |
+        # This will not work:
+        # D="${KX_PREFIX}/lib/${KX_THUNDERBIRD}/extensions/"
+        D="/opt/kaarpux/${KX_THUNDERBIRD}/lib/${KX_THUNDERBIRD}/extensions/"
+        mkdir -pv "$D"
+        cp -rp * "$D"
+
+

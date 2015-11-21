@@ -1,0 +1,31 @@
+package:
+  name: lesscss
+  version: 1.4.2
+  www: http://lesscss.org/
+  short: |
+      Less is a CSS pre-processor,
+      meaning that it extends the CSS language,
+      adding features that allow variables, mixins, functions and many other techniques
+      that allow you to make CSS that is more maintainable, themable and extendable.
+
+download:
+  url: https://github.com/less/less.js/archive
+  file: v${KX_LESSCSS_VERSION}.tar.gz
+  dir: less.js-${KX_LESSCSS_VERSION}
+  checksum: da1dc5a08bcc9d110a50b0e4d8b6d220fc039ff82665569acf9269842f7523bb
+
+version:
+  installed_na: ~
+  upstream: kxver_scrape_url(undef, "https://raw.githubusercontent.com/less/less.js/master/CHANGELOG.md", qr|# ([0-9][0-9.]+[0-9])|);
+
+opt:
+  - build:
+    # Make lesscss work with Mozilla SpiderMonkey, not rhino
+    - patch: rhino2SpiderMonkey.patch
+    - make: rhino
+  # Can not run testsuite, as we do not have 'node'
+  - install:
+    - sh: | 
+        mkdir -pv ${KX_PREFIX}/share/lesscss
+        cp dist/less-rhino-${KX_LESSCSS_VERSION}.js ${KX_PREFIX}/share/lesscss/less-rhino.js
+

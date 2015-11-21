@@ -1,0 +1,140 @@
+package:
+  name: llvm
+  version: 3.7.0
+  www: http://llvm.org/
+  short: The LLVM Project is a collection of modular and reusable compiler and toolchain technologies.
+
+doc: |
+  <para>
+  We currently install <systemitem>llvm</systemitem> and try to build most 
+  non-bootstrap packages with it.
+  </para><para>
+  First, we build <systemitem>llvm</systemitem> under <systemitem>gcc</systemitem>,
+  then we build <systemitem>llvm</systemitem> under the previously build
+  <systemitem>llvm</systemitem>,
+
+  </para>
+
+# ############################################################
+
+download:
+  url: http://llvm.org/releases/${KX_LLVM_VERSION}
+  file: llvm-${KX_LLVM_VERSION}.src.tar.xz
+  checksum: ab45895f9dcdad1e140a3a79fd709f64b05ad7364e308c0e582c5b02e9cc3153
+  dir: llvm-${KX_LLVM_VERSION}.src
+  verify: sig
+
+additional_downloads:
+  - http://llvm.org/releases/${KX_LLVM_VERSION}/cfe-${KX_LLVM_VERSION}.src.tar.xz cfe-${KX_LLVM_VERSION}.src.tar.xz 4ed740c5a91df1c90a4118c5154851d6a475f39a91346bdf268c1c29c13aa1cc
+  - http://llvm.org/releases/${KX_LLVM_VERSION}/compiler-rt-${KX_LLVM_VERSION}.src.tar.xz compiler-rt-${KX_LLVM_VERSION}.src.tar.xz 227fa998520bc94974a428dc8e7654d9bdf277e5bc70d4064ebc05691bd62b0b
+  - http://llvm.org/releases/${KX_LLVM_VERSION}/polly-${KX_LLVM_VERSION}.src.tar.xz polly-${KX_LLVM_VERSION}.src.tar.xz 3e5f3f4dc141c7d25b36b910d48c7da74ecc92f10cea5b568c909623d6067edf
+
+# ############################################################
+
+version:
+  installed_sh_trailing: llvm-config --version
+  upstream: kxver_scrape_url(undef, "http://llvm.org/releases", qr|', '([0-9]+\.+[0-9.]*[0-9]+)'],|);
+  wiz_yaml: |
+      print "AAA\n";
+      my ($pkg, $ver, $dir, $file, $url) = @_;
+      my @add = ();
+      my $ddir = Cwd::abs_path(dirname(__FILE__) . "/downloads");
+      chdir($ddir);
+      for my $f ('cfe-${KX_LLVM_VERSION}.src.tar.xz', 'compiler-rt-${KX_LLVM_VERSION}.src.tar.xz', 'polly-${KX_LLVM_VERSION}.src.tar.xz') {
+        my $fn = kxver_replace_version($f, $pkg, $ver); 
+        my $u = kxver_replace_version('http://llvm.org/releases/${KX_LLVM_VERSION}/', $pkg, $ver) . $fn;
+
+        if (-r $fn) {
+          print "[${fn}] already found in [${ddir}]\n\n";
+        } else {
+          system("wget ${u}") == 0 or die "*** could not download [${u}]\n";
+        }
+        my $s = `sha256sum ${fn} | cut -d' ' -f1`;
+        push(@add, '  - http://llvm.org/releases/${KX_LLVM_VERSION}/' . "${f} ${f} ${s}");
+      }
+      print "\n\nadditional_downloads:\n";
+      for my $a (@add) {
+        print $a;
+      }
+
+# ############################################################
+
+linux:
+
+  - build:
+    - echo: Unpacking
+    - untar: $(pwd) ${KX_BASE}/../downloads/cfe-${KX_LLVM_VERSION}.src.tar.xz
+    - sh: mv cfe-${KX_LLVM_VERSION}.src tools/clang
+    - untar: $(pwd)  ${KX_BASE}/../downloads/compiler-rt-${KX_LLVM_VERSION}.src.tar.xz
+    - sh: mv compiler-rt-${KX_LLVM_VERSION}.src projects/compiler-rt
+    - untar: $(pwd)  ${KX_BASE}/../downloads/polly-${KX_LLVM_VERSION}.src.tar.xz
+    - sh: mv polly-${KX_LLVM_VERSION}.src tools/polly
+
+    # make configure in polly more Posix compliant
+    - sh: sed '/test/s|==|=|' -i tools/polly/lib/External/isl/configure
+
+    - sh: |
+        cd ..
+        mkdir llvm-${KX_LLVM_VERSION}.build1
+        cd llvm-${KX_LLVM_VERSION}.build1
+    - echo: configure
+    - sh: >
+        ../llvm-${KX_LLVM_VERSION}.src/configure ${KX_CONFIG}
+        --enable-optimized
+        --enable-shared
+        --enable-libffi
+        --disable-expensive-checks
+        --disable-docs
+        --disable-jit
+        --enable-polly
+        --enable-targets=host
+        --enable-bindings=none
+    - make: TOOL_VERBOSE=1
+
+  - test:
+    - sh: cd ../llvm-${KX_LLVM_VERSION}.build1
+    - make: check
+
+  - install_keep:
+    - sh: cd ../llvm-${KX_LLVM_VERSION}.build1
+    - install: ~
+    - sh: |
+        cd ..
+        test -n "${KX_KEEP_BUILD_DIRECTORIES:-}" || rm -rf llvm-${KX_LLVM_VERSION}.build1
+
+# ############################################################
+
+  - build2:
+    - sh: |
+        cd ..
+        mkdir llvm-${KX_LLVM_VERSION}.build2
+        cd llvm-${KX_LLVM_VERSION}.build2
+
+        CC=clang; export CC
+        CXX=clang++; export CXX
+
+    - echo: configure
+    - sh: >
+        bash ../llvm-${KX_LLVM_VERSION}.src/configure ${KX_CONFIG}
+        --enable-optimized
+        --disable-assertions
+        --enable-shared
+        --enable-libffi
+        --disable-expensive-checks
+        --enable-docs
+        --enable-polly
+        --enable-targets=host,x86,x86_64,r600
+    - make: TOOL_VERBOSE=1
+
+  - test2:
+    - sh: cd ../llvm-${KX_LLVM_VERSION}.build2
+    - make: check-all
+
+  - install2:
+    - sh: cd ../llvm-${KX_LLVM_VERSION}.build2
+    - install: ~
+    - sh: |
+        cd ..
+        test -n "${KX_KEEP_BUILD_DIRECTORIES:-}" || rm -rf llvm-${KX_LLVM_VERSION}.build2
+
+# TODO: verify_cli: testcases

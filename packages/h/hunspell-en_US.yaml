@@ -1,0 +1,25 @@
+package:
+  name: hunspell-en_US
+  version: 7.1-0
+  www: http://wordlist.sourceforge.net/
+  short: American English dictionaries.
+
+download:
+  sourceforge: wordlist
+  file_zip: ~
+  checksum: 0dcbbab223b35b2747a32c5b1edcb1bf88b93054
+
+version:
+  installed_na: ~
+  upstream: kxver_upstream_sourceforge("wordlist", "Hunspell%20en_US", "hunspell-en_US");
+
+opt:
+  - prepare_and_build:
+    - sh: |
+        cd ${KX_BASE}/build/opt
+        kx_untar "${KX_HUNSPELL_EN_US}" "${KX_BASE}/../downloads/${KX_HUNSPELL_EN_US_FILE}"
+  - install:
+    - echo: installing
+    - sh: |
+        install -d -m 755 ${KX_PREFIX}/share/hunspell
+        cp -p *.dic *.aff ${KX_PREFIX}/share/hunspell

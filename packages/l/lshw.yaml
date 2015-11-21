@@ -1,0 +1,41 @@
+package:
+  name: lshw
+  version: B.02.17
+  www: http://ezix.org/project/wiki/HardwareLiSter
+  short: lshw (Hardware Lister) is a small tool to provide detailed information on the hardware configuration of the machine.
+
+download:
+  url: http://www.ezix.org/software/files/
+  file_tar_gz: ~
+  checksum: eb9cc053fa0f1e78685cb695596e73931bfb55d2377e3bc3b8b94aff4c5a489c
+
+version:
+  installed: "`lshw -version`"
+  upstream: "kxver_scrape_url(undef, $url, qr|([A-R]\.[0-9.]*[0-9]+)|);"
+
+linux:
+
+  - build:
+    # Need to use gcc to avoid mixing of C++ ABI.
+    # TODO Probably some patching of makefiles can make it work with LLVM
+    - use_gcc: ~
+    - make: ~
+  # No test suite
+  - install:
+    - use_gcc: ~
+    - install: ~
+
+opt:
+  - build:
+    - use_gcc: ~
+    - sh: PREFIX=${KX_PREFIX}; export PREFIX
+    - make: gui
+  # No test suite
+  - install:
+    - use_gcc: ~
+    - sh: PREFIX=${KX_PREFIX}; export PREFIX
+    - sh: make install-gui
+
+verify_cli: |
+  kx_cli_match_success "lshw -version" { }
+  kx_cli_match_success lshw { core memory cpu pci generic }

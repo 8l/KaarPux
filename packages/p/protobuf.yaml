@@ -1,0 +1,24 @@
+package:
+  name: protobuf
+  version: 2.6.1
+  www: https://developers.google.com/protocol-buffers/
+  short: Protocol buffers are a language-neutral, platform-neutral extensible mechanism for serializing structured data.
+
+# https://github.com/google/protobuf/releases/download/v2.6.1/protobuf-2.6.1.tar.gz
+
+download:
+  url: https://github.com/google/protobuf/releases/download/v${KX_PROTOBUF_VERSION}
+  file_tar_gz: ~
+  checksum: f3916ce13b7fcb3072a1fa8cf02b2423
+
+version:
+  upstream: kxver_scrape_url(undef, "https://github.com/google/protobuf/releases", qr|v([0-9]+[0-9.\-_]*[0-9]+)\.tar|);
+
+opt:
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  - install:
+    - install: ~
+

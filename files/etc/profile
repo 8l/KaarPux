@@ -1,0 +1,10 @@
+export PATH="/local/bin:/bin"
+export MANPATH="/local/share/man:/share/man"
+
+for script in /etc/profile.d/* ; do
+        if [ -r $script ] ; then
+                . $script
+        fi
+done
+
+

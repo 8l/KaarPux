@@ -1,0 +1,33 @@
+package:
+  name: ModemManager
+  version: 1.4.10
+  www: http://www.freedesktop.org/wiki/Software/ModemManager/
+  short: |
+      a DBus-activated daemon which controls mobile broadband (2G/3G/4G) devices and connections. 
+
+download:
+  url: http://www.freedesktop.org/software/ModemManager
+  file_tar_xz: ~
+  checksum: 107ba0b4d0749aebb0347691a39f60891cc6004aeca8b2128d69c50557049a63
+
+version:
+  upstream_gnome_uneven: ~
+
+linux:
+  - build:
+    - use_gcc: ~
+    - configure_kx: >
+        --disable-static
+        --with-polkit=permissive
+        --without-mbim
+        --without-qmi
+    - make: ~
+
+  - test:
+    - use_gcc: ~
+    - check: ~
+
+  - install:
+    - use_gcc: ~
+    - install: ~
+

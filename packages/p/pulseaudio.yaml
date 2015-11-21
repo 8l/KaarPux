@@ -1,0 +1,59 @@
+package:
+  name: pulseaudio
+  version: 7.0
+  www: http://www.freedesktop.org/wiki/Software/PulseAudio
+  short: A sound system for POSIX OSes, meaning that it is a proxy for your sound applications.
+
+download:
+  url: http://freedesktop.org/software/pulseaudio/releases
+  file_tar_xz: ~
+  checksum: ca1ae1377e8926bfc3ffe2aeb9f657f6c363a16f72861166fcf9454e3eeae8fa
+
+version:
+  installed_pkgconfig: libpulse
+
+linux:
+
+  - build:
+    - use_gcc: ~
+    - configure_kx: ~
+    - make: ~
+
+#  - test:
+#    - check: ~
+
+  - install:
+
+    - echo: Adding [pulse] group and user
+    - sh: groupadd -fg ${KX_PULSE_GID} pulse
+    - sh: useradd -c "PulseAudio Daemon" -d /dev/null -u ${KX_PULSE_UID} -g pulse -s /bin/false pulse || test "$?" = "9"
+    - sh: id pulse
+
+    - install: ~
+
+    # tell alsa to use pulseaudio as backend
+    - install_pkg_file: 644 asound.conf /etc/
+
+# if daemon fails to start: rm -r ~/.pulse*
+
+verify_cli: |
+  kx_cli_match_success "/bin/pulseaudio --version" { pulseaudio }
+  kx_cli_match_success "/bin/pulseaudio --dump-conf" { daemonize rlimit }
+  kx_cli_match_success "/bin/pulseaudio --dump-modules" { module-alsa-card module-alsa-sink module-alsa-source module-dbus-protocol module-loopback module-x11-bell }
+
+# TODO: verify_cli testcases for other binaries:
+# /bin/padsp
+# /bin/parec
+# /bin/parecord
+# /bin/pax11publish
+# /bin/pacat
+# /bin/pactl
+# /bin/pasuspender
+# /bin/paplay
+# /bin/start-pulseaudio-x11
+# /bin/pulseaudio
+# /bin/start-pulseaudio-kde
+# /bin/pacmd
+# /bin/esdcompat
+# /bin/pamon
+

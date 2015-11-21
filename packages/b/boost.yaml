@@ -1,0 +1,34 @@
+package:
+  name: boost
+  version: 1.59.0
+  www: http://www.boost.org/
+  short: Boost provides free peer-reviewed portable C++ source libraries.
+
+download:
+  sourceforge: ~
+  file: boost_${KX_BOOST_VERSION_USCORE}.tar.bz2
+  dir: boost_${KX_BOOST_VERSION_USCORE}
+  checksum: 727a932322d94287b62abb1bd2d41723eec4356a7728909e38adb65ca25241ca
+
+version:
+  installed: |
+    my $txt = `cat /include/boost/version.hpp 2>&1`;
+    $txt =~ m|BOOST_LIB_VERSION "([0-9\_]+)"|;
+    my $v = $1;
+    $v =~ tr|_|.|;
+    return $v;
+  upstream: |
+    my $v = kxver_scrape_url("", "http://sourceforge.net/projects/boost/files/boost/", qr|boost_([0-9]+[0-9_]*[0-9]+)|);
+    $v =~ tr|_|.|;
+    return $v;
+
+linux:
+  - build:
+    - sh: kx_step_echo bootstrap
+    - sh: ./bootstrap.sh --prefix="${KX_PREFIX}" --with-toolset=clang
+    - sh: kx_step_echo b2
+    - sh: ./b2 stage ${KX_MAKE_J} threading=multi link=shared toolset=clang
+  # No test suite
+  - install:
+    - sh: ./b2 install threading=multi link=shared
+

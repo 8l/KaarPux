@@ -1,0 +1,25 @@
+package:
+  name: efivar
+  version: 0.21
+  www: https://github.com/rhinstaller/efivar
+  short: Tools and library to manipulate EFI variables
+
+download:
+  url: https://github.com/rhinstaller/efivar/archive
+  file: ${KX_EFIVAR_VERSION}.tar.gz
+  checksum: fd95f82d3c4427ce969d8d4258b9e7866b3f910e98bc111cc2aec03f21807817
+
+version:
+  upstream: kxver_scrape_url "efivar", "https://github.com/rhinstaller/efivar/releases"
+
+bootstrap_8:
+
+  - sh: sed 's|-O0|-Os|g' -i Make.defaults
+  - make: ~
+
+  # No testsuite
+
+  - install: ~
+
+verify_cli: |
+  kx_cli_success efibootmgr --version

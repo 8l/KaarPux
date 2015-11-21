@@ -1,0 +1,167 @@
+package:
+  name: glibc
+  version: 2.22
+#  version: 2.21-104-gbdf1ff0
+  www: http://www.gnu.org/software/libc/
+  short: |
+      Any Unix-like operating system needs a C library:
+      the library which defines the "system calls" and other basic facilities such as open, malloc, printf, exit...
+      The GNU C Library is used as the C library in the GNU systems and most systems with the Linux kernel. 
+
+lfs:
+  - http://www.linuxfromscratch.org/lfs/view/development/chapter05/glibc.html
+
+download:
+  gnux: ~
+  # url: http://pkgs.fedoraproject.org/repo/pkgs/glibc/glibc-${KX_GLIBC_VERSION}.tar.gz/dbe7f3b03a46ea6b2a22b9f4c721dd5a/
+  # file_tar_gz: ~
+  checksum: eb731406903befef1d8f878a46be75ef862b9056ab0cde1626d08a7a05328948
+  verify: sig
+
+version:
+  installed_sh_trailing: ldd --version
+  upstream_gnu: ~
+  wiz_sourceware: ~
+  news: NEWS
+  changelog: ChangeLog
+
+# ============================================================
+
+bootstrap_1:
+    # Must have gawk
+  - sh : |
+      _AWK_TITLE=`awk -W version 2>&1 | head -1`
+      _AWK_VERSION=`echo ${_AWK_TITLE} | cut -d " " -f 1`
+      if test x"${_AWK_VERSION}" != xGNU; then
+        echo "*** *** Building glibc requres the GNU version of awk: gawk"
+        echo "*** *** Looks like you have [${_AWK_TITLE}] instead"
+        exit 1
+      fi
+
+  - separate_builddir: ~
+
+  - echo: Configure
+
+  - sh: |
+      touch configparms
+      echo "have-bash2=yes" >> configparms
+      echo "have-ksh=no" >> configparms
+
+  - sh: >
+      ../${KX_GLIBC}/configure
+          --prefix="${KX_TOOLS}"
+          --host=${KX_TARGET}
+          --build=$(../${KX_GLIBC}/scripts/config.guess)
+          --disable-profile
+          --enable-add-ons
+          --enable-kernel=${KX_GKERNEL}
+          --with-headers="${KX_TOOLS}/include"
+          --enable-obsolete-rpc
+          --disable-dependency-tracking
+          libc_cv_forced_unwind=yes
+          libc_cv_ctors_header=yes
+          libc_cv_c_cleanup=yes
+          libc_cv_have_bash2=yes
+          BASH_SHELL=/bin/bash
+
+  - make: ~
+
+  - install: ~
+
+# ============================================================
+
+bootstrap_4:
+
+  - separate_builddir: ~
+
+  - echo: configure
+
+  - sh: |
+      touch configparms
+      echo "have-bash2=yes" >> configparms
+      echo "have-ksh=no" >> configparms
+
+  - sh: >
+      ../${KX_GLIBC}/configure
+          --prefix=''
+          --disable-profile
+          --enable-add-ons
+          --enable-kernel=${KX_GKERNEL}
+          --enable-obsolete-rpc
+          --disable-dependency-tracking
+          libc_cv_have_bash2=yes
+          BASH_SHELL=/bin/bash
+
+  - make: ~    
+
+
+  - sh: if test -z "${KX_DISABLE_TEST}"; then
+
+  - echo: check
+    # Some test-cases may fail.
+    # See e.g.
+    # http://www.linuxfromscratch.org/lfs/view/development/chapter06/glibc.html
+    # http://sourceware.org/glibc/wiki/Release/2.15
+  - sh: |
+      cp -v ../${KX_GLIBC}/iconvdata/gconv-modules iconvdata
+      { TIMEOUTFACTOR=16 make ${KX_MAKE_J} -k check 2>&1 | tee "${KX_BASE}/log/bootstrap_4/glibc_CHECK.txt"; } || true
+      E=$( grep Error "${KX_BASE}/log/bootstrap_4/glibc_CHECK.txt" | wc -l )
+      echo "Found [$E] errors"
+      test $E -le 30 || { kx_error_exit "Too many errors in test: $E"; exit 2; }
+
+  - sh: fi
+
+
+  - sh: touch /etc/ld.so.conf
+  - install: ~
+
+  - echo: Install rpc, rpcsvc, nis headers
+  - sh: |
+      cp -rp ../${KX_GLIBC}/sunrpc/rpc/*.h    /include/rpc
+      cp -rp ../${KX_GLIBC}/sunrpc/rpcsvc/*.h /include/rpcsvc
+      cp -rp ../${KX_GLIBC}/nis/rpcsvc/*.h    /include/rpcsvc
+
+# ==========================================================
+
+verify_cli: |
+
+  kx_cli_success /bin/getconf _POSIX_VERSION
+  kx_cli_match_success "/bin/getconf -a" { _POSIX }
+  kx_cli_match_success "/bin/getconf PATH" { bin }
+
+  kx_cli_match_success "/bin/getent group" { root wheel }
+  kx_cli_match_success "/bin/getent passwd" { root }
+  kx_cli_success /bin/getent hosts
+
+  kx_cli_match_success "/bin/ldconfig -p" { libc.so }
+
+  kx_cli_match_success "/bin/ldd /lib/libm.so" { libc.so }
+
+  kx_cli_match_success "/bin/locale" { LC_ }
+  kx_cli_match_success "/bin/locale -a" { en_US }
+
+  kx_cli_match_success "/bin/zdump UTC" { UTC }
+
+
+# TODO: better verification for tose binaries:
+
+  kx_cli_match_success "/bin/localedef --version" { localedef }
+  kx_cli_match_success "/bin/makedb --version" { makedb }
+  kx_cli_match_success "/bin/mtrace --version" { mtrace }
+  kx_cli_match_success "/bin/pcprofiledump --version" { pcprofiledump }
+  kx_cli_match_success "/bin/pldd --version" { pldd }
+  kx_cli_match_success "/bin/rpcgen --version" { rpcgen }
+  kx_cli_match_success "/bin/sprof --version" { sprof }
+  kx_cli_match_success "/bin/xtrace --version" { xtrace }
+  kx_cli_match_success "/bin/zic --version" { zic }
+
+
+# TODO: more binaries to verify:
+
+# /bin/catchsegv
+# /bin/gencat
+# /bin/iconv
+# /bin/iconvconfig
+# /bin/nscd
+# /bin/sln
+

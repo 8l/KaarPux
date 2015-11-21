@@ -1,0 +1,212 @@
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2014-2015: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+# COMMON FUNCTIONS FOR BUILDING KAARPUX
+# IN VIRTUAL MACHINES
+
+# ============================================================
+# 	UTILITIES
+# ============================================================
+
+dbg () {
+	echo "===>" "$@" >> /dev/stderr
+}
+
+# ============================================================
+
+dbg_file () {
+	echo "==========>>>>>>>>>>" >> /dev/stderr
+	cat >> /dev/stderr
+	echo "==========<<<<<<<<<<" >> /dev/stderr
+}
+
+# ============================================================
+
+err () {
+	echo "*** $@" >> /dev/stderr
+	exit 1
+}
+
+# ============================================================
+
+err_usage () {
+	echo "*** $@" >> /dev/stderr
+	usage
+	exit 1
+}
+
+# ============================================================
+# 	PING
+# ============================================================
+
+wait_for_ping () {
+	local IP
+	IP="$1"
+	dbg "trying to ping $IP"
+	sleep 5
+	I=0
+	while true; do
+		I=$((I + 1))
+		ping -c1 -W$I $IP && break
+		sleep $I
+		dbg "still waiting for $IP to respond to ping [$I]"
+	done
+	dbg "OK, $IP is pingable"
+}
+
+# ============================================================
+# 	TARBALL
+# ============================================================
+
+get_unpack_tarball () {
+
+	local IP KEY TARBALL
+	IP="$1"
+	KEY="$2"
+	TARBALL="$3"
+
+	dbg "preparing kaarpux directory"
+	ssh -T -i "${KEY}" kaarpux@${IP} <<-EOF
+		set -x
+		test -e kaarpux && mv kaarpux kaarpux_\$(date +%s)
+		mkdir kaarpux
+		EOF
+
+	if test -z "${TARBALL}"; then
+
+		dbg "downloading kaarpux tarball from sourceforge"
+		ssh -T -i "${KEY}" kaarpux@${IP} <<-EOF
+			set -x
+			cd kaarpux
+			wget -O kaarpux.tar.gz http://sourceforge.net/projects/kaarpux/files/latest/download?source=files
+			tar xf kaarpux.tar.gz
+			EOF
+
+	else
+
+		dbg "copying kaarpux from local ${TARBALL}"
+		scp -i "${KEY}" "${TARBALL}" kaarpux@${IP}:kaarpux/kaarpux.tar.gz
+
+	fi
+
+	dbg "unpacking kaarpux"
+	ssh -T -i "${KEY}" kaarpux@${IP} <<-EOF
+		set -x
+		cd kaarpux
+		tar xf kaarpux.tar.gz
+		EOF
+
+	dbg "kaarpux distro ready"
+}
+
+# ============================================================
+# 	CONFIGURATION
+# ============================================================
+
+get_configuration () {
+
+	local IP KEY CONFIGURATION
+	IP="$1"
+	KEY="$2"
+	CONFIGURATION="$3"
+
+	dbg "copying configuration from local ${CONFIGURATION}"
+	scp -i "${KEY}" "${CONFIGURATION}" kaarpux@${IP}:kaarpux/kaarpux.conf
+}
+
+# ============================================================
+# 	DOWNLOADS
+# ============================================================
+
+download_downloads () {
+
+	local IP KEY TARBALL DEV
+	IP="$1"
+	KEY="$2"
+	TARBALL="$3"
+	DEV="$4"
+
+	get_unpack_tarball "${IP}" "${KEY}" "${TARBALL:-}"
+
+	dbg "creating scripts and downloads directory"
+	ssh -T -i "${KEY}" kaarpux@${IP} <<-EOF
+		set -x
+		echo "KX_DEFINITIONS_CUSTOMIZED=yes" > kaarpux/custom_definitions.shinc
+		kaarpux/master/make_scripts.sh
+		mkdir -p kaarpux/downloads
+	EOF
+
+	dbg "mounting downloads"
+	ssh -T -i "${KEY}" toor@${IP} <<-EOF
+		set -x
+		mount ${DEV} /home/kaarpux/kaarpux/downloads
+	EOF
+
+	dbg "downloading"
+	ssh -T -i "${KEY}" kaarpux@${IP} <<-EOF
+		set -x
+		kaarpux/linux/download_all_packages.sh
+		chmod -R ugo+rw /home/kaarpux/kaarpux/downloads/*
+	EOF
+}
+
+# ============================================================
+# 	BOOTSTRAP PHASE
+# ============================================================
+
+bootstrap_phase () {
+
+	local IP KEY CONFIGURATION TARBALL
+	IP="$1"
+	KEY="$2"
+	CONFIGURATION="$3"
+	TARBALL="$4"
+
+	get_unpack_tarball "${IP}" "${KEY}" "${TARBALL}"
+	get_configuration "${IP}" "${KEY}" "${CONFIGURATION}"
+
+	dbg "bootstrapping kaarpux"
+	ssh -T -i "${KEY}" toor@${IP} <<-EOF
+		set -x
+		/home/kaarpux/kaarpux/master/expert/dangerous_build_bootstrap.sh
+		EOF
+
+	dbg "kaarpux ssh key"
+	ssh -T -i "${KEY}" kaarpux@${IP} <<-EOF
+		set -x
+		mkdir -p -m700 /mnt/kxmnt/home/kaarpux/.ssh
+		cp /home/kaarpux/.ssh/authorized_keys /mnt/kxmnt/home/kaarpux/.ssh
+		chmod 600 /mnt/kxmnt/home/kaarpux/.ssh/authorized_keys
+		EOF
+
+	dbg "toor ssh key"
+	ssh -T -i "${KEY}" toor@${IP} <<-EOF
+		set -x
+		mkdir -p -m700 /mnt/kxmnt/root/.ssh
+		cp /home/kaarpux/.ssh/authorized_keys /mnt/kxmnt/root/.ssh
+		chmod 600 /mnt/kxmnt/root/.ssh/authorized_keys
+		EOF
+}
+
+# ============================================================
+# 	LINUX PHASE
+# ============================================================
+
+linux_phase () {
+	local IP KEY
+	IP="$1"
+	KEY="$2"
+	
+	dbg "building the rest of kaarpux"
+	ssh -T -i "${KEY}" toor@${IP} <<-EOF
+		set -x
+		su kaarpux /home/kaarpux/kaarpux/master/make_scripts.sh
+		/home/kaarpux/kaarpux/master/expert/dangerous_build_rest.sh
+		EOF
+}
+

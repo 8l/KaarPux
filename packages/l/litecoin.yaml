@@ -1,0 +1,36 @@
+package:
+  name: litecoin
+  version: 0.10.2.2
+  www: https://github.com/litecoin-project/litecoin
+  short: LiteCoin wallet.
+
+download:
+  full_url: https://github.com/litecoin-project/litecoin/archive/v${KX_LITECOIN_VERSION}.tar.gz
+  file: ${KX_LITECOIN}.tar.gz
+  checksum: 952c84b181323db17a8fa23217f59b576ad3ebad92c158b3a7c29d458a1130dc
+
+version:
+  installed_na: ~
+  upstream: kxver_scrape_url(undef, "https://github.com/litecoin-project/litecoin/releases", qr|v([0-9]+[0-9.\-_]*[0-9]+)\.tar|);
+
+opt:
+
+  - build:
+    - use_gcc: ~
+    - patch: fPIC.patch
+    - sh: ./autogen.sh
+    - configure_kx_bash: >
+        --with-incompatible-bdb
+        --without-daemon
+        --without-miniupnpc
+        --without-qrencode
+    - make_repeat: ~
+
+
+  - install:
+    - install: ~
+    - sh: mkdir -pv ${KX_PREFIX}/share/applications/
+    - install_pkg_file: 644 litecoin.desktop ${KX_PREFIX}/share/applications/
+    - sh: | 
+        install -Dm644 share/pixmaps/bitcoin256.png "${KX_PREFIX}/share/pixmaps/litecoin256.png"
+

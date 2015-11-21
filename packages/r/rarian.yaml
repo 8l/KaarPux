@@ -1,0 +1,58 @@
+package:
+  name: rarian
+  version: 0.8.1
+  www: http://rarian.freedesktop.org/
+  short: A documentation metadata library based on the proposed Freedesktop.org spec.
+
+download:
+  gnome: ~
+  checksum: aafe886d46e467eb3414e91fa9e42955bd4b618c3e19c42c773026b205a84577
+
+version:
+  installed_pkgconfig: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_success /bin/rarian-sk-config --version
+  kx_cli_match_success "/bin/rarian-sk-config --omfdir" { omf }
+  kx_cli_match_success /bin/rarian-example { Rarian Reference Manual }
+
+  # TODO: Add more testcases
+
+  # /bin/rarian-sk-extract
+  # /bin/rarian-sk-gen-uuid
+  # /bin/rarian-sk-get-cl
+  # /bin/rarian-sk-get-content-list
+  # /bin/rarian-sk-get-extended-content-list
+  # /bin/rarian-sk-get-scripts
+  # /bin/rarian-sk-install
+  # /bin/rarian-sk-migrate
+  # /bin/rarian-sk-preinstall
+  # /bin/rarian-sk-rebuild
+  # /bin/rarian-sk-update
+  # /bin/scrollkeeper-config
+  # /bin/scrollkeeper-extract
+  # /bin/scrollkeeper-gen-seriesid
+  # /bin/scrollkeeper-get-cl
+  # /bin/scrollkeeper-get-content-list
+  # /bin/scrollkeeper-get-extended-content-list
+  # /bin/scrollkeeper-get-index-from-docpath
+  # /bin/scrollkeeper-get-toc-from-docpath
+  # /bin/scrollkeeper-get-toc-from-id
+  # /bin/scrollkeeper-install
+  # /bin/scrollkeeper-preinstall
+  # /bin/scrollkeeper-rebuilddb
+  # /bin/scrollkeeper-uninstall
+  # /bin/scrollkeeper-update
+

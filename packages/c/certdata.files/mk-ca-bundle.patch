@@ -1,0 +1,28 @@
+diff -Naur certdata.ORIG/mk-ca-bundle.pl certdata/mk-ca-bundle.pl
+--- certdata.ORIG/mk-ca-bundle.pl	2014-07-15 18:59:16.315514521 +0200
++++ certdata/mk-ca-bundle.pl	2014-07-15 19:12:58.280012989 +0200
+@@ -32,7 +32,7 @@
+ #
+ use Getopt::Std;
+ use MIME::Base64;
+-use LWP::UserAgent;
++# use LWP::UserAgent;
+ use strict;
+ use vars qw($opt_b $opt_d $opt_f $opt_h $opt_i $opt_l $opt_n $opt_q $opt_t $opt_u $opt_v $opt_w);
+ 
+@@ -475,6 +475,15 @@
+           open(CRT, ">>$crt.~") or die "Couldn't open $crt.~: $!";
+         }
+       }
++
++	my $pemfile = $caname;
++	$pemfile =~ tr/a-zA-Z0-9\-/_/c;
++	$pemfile .= ".pem";
++	print "Creating: $pemfile\n" if ($opt_v);
++	open(PEM, ">$pemfile") or die "Couldn't open $pemfile: $!";
++	print PEM $pem;
++	close(PEM) or die "Couldn't close $pemfile: $!";
++
+       report "Parsing: $caname" if ($opt_v);
+       $certnum ++;
+       $start_of_cert = 0;

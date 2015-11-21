@@ -1,0 +1,30 @@
+package:
+  name: zlib
+  version: 1.2.8
+  www: http://www.zlib.net/
+  short: A Massively Spiffy Yet Delicately Unobtrusive Compression Library.
+
+download:
+  url: http://www.zlib.net/
+  file_tar_xz: ~
+  checksum: 28f1205d8dd2001f26fec1e8c2cebe37
+  verify: asc
+
+version:
+  installed_pkgconfig: ~
+  upstream: |
+      my $p = kxver_html_download("www.zlib.net", "/");
+      return kxver_scrape_this(undef, $p, qr|zlib-([0-9]+\.[0-9.]+[0-9]+)|);
+
+bootstrap_5:
+
+  - sh: KX_CONFIG="--prefix=/"
+  - configure_kx: ~
+  - make: ~
+  - check: ~
+  - install: ~ 
+
+verify_cli: |
+  kx_cli_match_success "file -L /lib/libz.so" { ELF SYSV }
+
+

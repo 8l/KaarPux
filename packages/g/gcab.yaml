@@ -1,0 +1,20 @@
+package:
+  name: gcab
+  version: 0.6
+
+download:
+  url: https://download.gnome.org/sources/gcab/0.6
+  file_tar_xz: ~
+  checksum: a0443b904bfa7227b5155bfcdf9ea9256b6e26930b8febe1c41f972f6f1334bb
+
+version:
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages 
+    - make: ~
+
+  - install:
+    - install: ~

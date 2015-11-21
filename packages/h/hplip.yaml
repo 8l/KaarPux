@@ -1,0 +1,60 @@
+package:
+  name: hplip
+  version: 3.15.9
+  www: http://hplipopensource.com
+  short: "Hewlett-Packards Linux Imaging and Printing software."
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: a1f58fe8707373c193728a7fd826523e99c30e3ca7f660faa75531acdff89d6d
+  verify: asc
+
+version:
+  installed: kxver_sh_pattern("hp-info -h", qr|Printing System \(ver. ([0-9]+[0-9.]+[0-9]+)\)|);
+  upstream: kxver_upstream_sourceforge("hplip", "hplip", "hplip");
+
+linux:
+  - build:
+
+    # From Archlinux
+    # https://projects.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/hplip
+    - echo: Fix fomatic-rip
+    - sh: |
+        for i in ppd/hpijs/*.ppd.gz ; do
+          rm -f ${i}.temp
+          gunzip -c ${i} | sed 's/foomatic-rip-hplip/foomatic-rip/g' | gzip > ${i}.temp || exit 1
+          mv ${i}.temp ${i} || exit 1
+        done
+
+    - configure_kx: >
+        --disable-scan-build
+        --disable-gui-build
+        --disable-qt3
+        --disable-qt4
+        --enable-policykit
+        --disable-foomatic-rip-hplip-install
+        --enable-foomatic-ppd-install
+        --enable-hpcups-install
+        --enable-new-hpcups
+        --enable-cups-ppd-install
+        --enable-cups-drv-install
+        --enable-hpijs-install
+        --enable-foomatic-drv-install
+        --enable-pp-build
+        --enable-udev-acl-rules
+
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~
+    - sh: rm -f /etc/xdg/autostart/hplip-systray.desktop || true
+
+verify_cli: |
+  # hp-check currently fails a lot of checks
+  # but returns 0 exit value
+  # TODO: consider to install prereqs
+  set timeout 60
+  kx_cli_success hp-check --run

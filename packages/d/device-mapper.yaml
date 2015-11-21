@@ -1,0 +1,27 @@
+package:
+  name: device-mapper
+  version: 2.02.132
+  www: http://sourceware.org/dm/
+  short: The userspace code (dmsetup and libdevmapper) that supports logical volume management.
+
+download:
+  url: ftp://sources.redhat.com/pub/lvm2/releases
+  file: LVM2.${KX_DEVICE_MAPPER_VERSION}.tgz
+  dir: LVM2.${KX_DEVICE_MAPPER_VERSION}
+  checksum: 413aa09cd5babb2e01b0209ed4be514645fa8b492664f57f384352a7f58f8829
+
+version:
+  installed_pkgconfig: devmapper
+  upstream: kxver_scrape_url("", $url, qr|LVM2\.([0-9]+\.+[0-9\.]*[0-9]+)|);
+
+linux:
+
+  - build:
+    - configure_kx: --enable-pkgconfig
+    - make: device-mapper
+
+  # Test of device-mapper is not part of test-suite
+
+  - install:
+    - sh: make install_device-mapper
+

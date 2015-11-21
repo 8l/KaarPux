@@ -1,0 +1,28 @@
+package:
+  name: json-c
+  version: 0.12
+  www: https://github.com/json-c/json-c/wiki
+  short: |
+      JSON-C implements a reference counting object model
+      that allows you to easily construct JSON objects in C,
+      output them as JSON formatted strings
+      and parse JSON formatted strings back into the C representation of JSON objects.
+
+download:
+  url: https://s3.amazonaws.com/json-c_releases/releases
+  file_tar_gz: ~
+  checksum: 000c01b2b3f82dcb4261751eb71f1b084404fb7d6a282f06074d3c17078b9f3f
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_scrape_xml("json-c", "https://s3.amazonaws.com/json-c_releases/");
+
+linux:
+  - build:
+    - configure_kx: --disable-static
+    - make: -j1
+  - test:
+    - check: ~
+  - install:
+    - install: ~     
+

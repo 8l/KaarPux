@@ -1,0 +1,44 @@
+package:
+  name: gnome-keyring
+  version: 3.18.3
+
+download:
+  gnomexz: ~
+  checksum: 3f670dd61789bdda75b9c9e31e289bf7b1d23ba012433474790081ba7dc0ed98
+
+version:
+  installed_sh_trailing: gnome-keyring-3 version
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+
+    # From http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/gnome-base/gnome-keyring/gnome-keyring-3.12.2-r1.ebuild?view=markup
+    - sh: |
+        # Disable failing tests
+        sed -e 's|\(g_test_add.*/gkm/data-asn1/integers.*;\)|/*\1*/|' -i pkcs11/gkm/test-data-asn1.c
+        sed -e 's|\(g_test_add.*/gkm/timer/cancel.*;\)|/*\1*/|' -i pkcs11/gkm/test-timer.c
+        # For some reason all pam tests make the testsuite retun 77
+        # which is considered an error but the test framework,
+        # but all tests are successful, upstream bug #731030
+        sed -e '558,595 d' -i pam/test-pam.c
+
+    - configure_kx: >
+        --disable-gtk-doc
+        --disable-static
+        --disable-selinux
+        --enable-pam
+        --with-pam-dir=/lib/security
+        --disable-schemas-compile
+
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success "gnome-keyring version" { gnome-keyring: }

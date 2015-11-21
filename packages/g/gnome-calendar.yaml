@@ -1,0 +1,20 @@
+package:
+  name: gnome-calendar
+  version: 3.18.1
+
+download:
+  url: https://download.gnome.org/sources/gnome-calendar/${KX_GNOME_CALENDAR_VERSION_MM}
+  file_tar_xz: ~
+  checksum: 96f307c79952fa55bfdfc2b256085c568384dde2312b2815ee5e8e21e6adf2b9
+
+version:
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages 
+    - make: ~
+
+  - install:
+    - install: ~

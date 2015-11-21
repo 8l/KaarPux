@@ -1,0 +1,41 @@
+package:
+  name: dhcpcd
+  version: 6.9.3
+  www: http://roy.marples.name/projects/dhcpcd/
+  short: a RFC2131 compliant DHCP client.
+
+doc: |
+    <para>
+        <application>dhcpcd</application> is not used by default in KaarPux,
+        but if <application>NetworkManager</application> is enabled
+        (see <xref linkend="networking" />),
+        <application>dhcpcd</application> is a prerequisite.
+    </para>
+
+download:
+  url: http://roy.marples.name/downloads/dhcpcd
+  file_tar_xz: ~
+  checksum: 6089471ed695fa62ac8351466b96b4b6365fd14ec455a120a6524663808eae53
+
+version:
+  source: http://roy.marples.name/projects/dhcpcd/timeline
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static --dbdir=/var/lib/dhcpcd --rundir=/run --sysconfdir=/etc
+    - make: ~
+
+  - test:
+    - test: ~
+
+  - install:
+    - install: ~
+    - echo: post-install
+    - install_pkg_file: 644 dhcpcd@.service /etc/systemd/system
+    - sh: |
+        echo "ipv4only" >> /etc/dhcpcd.conf
+        echo "noipv4ll" >> /etc/dhcpcd.conf
+
+verify_cli: |
+  kx_cli_success dhcpcd --version

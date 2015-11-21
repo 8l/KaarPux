@@ -1,0 +1,48 @@
+package:
+  name: e2fsprogs
+  version: 1.42.13
+  www: http://e2fsprogs.sourceforge.net/
+  short: File system utilities for ext2/ext3/ext4
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: 59993ff3a44f82e504561e0ebf95e8c8fa9f9f5746eb6a7182239605d2a4e2d4
+  verify: asc
+
+version:
+  installed: kxver_sh_pattern("mke2fs -V", qr|mke2fs ([0-9\.]+)|);
+  upstream: kxver_upstream_sourceforge("e2fsprogs", "e2fsprogs", "e2fsprogs");
+
+bootstrap_8:
+
+  - separate_builddir: ~
+  - sh: |
+      LDFLAGS="-lblkid -luuid"; export LDFLAGS
+  - sh: |
+      ../${KX_E2FSPROGS}/configure \
+        --prefix=/ \
+        --with-root-prefix=/ \
+        --enable-elf-shlibs \
+        --disable-libblkid \
+        --disable-libuuid \
+        --disable-uuidd \
+        --disable-fsck
+  - make_repeat: ~
+  - check: ~
+  - install: ~
+  - sh: make install-libs
+
+verify_cli: |
+
+  kx_cli_success /bin/mkfs.ext2 -V
+  kx_cli_success /bin/mkfs.ext3 -V
+  kx_cli_success /bin/mkfs.ext4 -V
+
+  kx_cli_success /bin/fsck.ext2 -V
+  kx_cli_success /bin/fsck.ext3 -V
+  kx_cli_success /bin/fsck.ext4 -V
+
+# TODO: Real tests?
+# TODO: Test other binaries?
+

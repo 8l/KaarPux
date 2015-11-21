@@ -1,0 +1,23 @@
+package:
+  name: opus
+  version: 1.1
+  www: http://www.opus-codec.org/
+  short: interactive speech and music transmission over the Internet
+
+download:
+  url: http://downloads.us.xiph.org/releases/opus
+  file_tar_gz: ~
+  checksum: b9727015a58affcf3db527322bf8c4d2fcf39f5f6b8f15dbceca20206cbe1d95
+
+version:
+  installed_pkgconfig: ~
+
+linux:
+  - build:
+    - configure_kx_bash: --enable-custom-modes --disable-static
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+

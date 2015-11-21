@@ -1,0 +1,22 @@
+package:
+  name: parallel
+  version: 20150922
+  www: http://www.gnu.org/software/parallel/
+  doc: |
+      GNU parallel is a shell tool for executing jobs in parallel using one or more computers.
+      A job can be a single command or a small script that has to be run for each of the lines in the input.
+
+download:
+  gnu: ~
+  checksum: f2b485fabdca6492d892c57f50d112a7693f8dc088f74787c98eeb2aa11cee17
+
+version: ~
+
+bootstrap_8:
+
+    - configure_kx: ~
+    - make: ~
+
+    - check: ~
+
+    - install: ~

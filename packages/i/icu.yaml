@@ -1,0 +1,32 @@
+package:
+  name: icu
+  version: 56.1
+  www: http://icu-project.org/
+  short: |
+      ICU is a mature, widely used set of C/C++ and Java libraries
+      providing Unicode and Globalization support for software applications.
+      ICU is widely portable and gives applications the same results
+      on all platforms and between C/C++ and Java software. 
+
+download:
+  url: http://download.icu-project.org/files/icu4c/${KX_ICU_VERSION}
+  file: icu4c-${KX_ICU_VERSION_USCORE}-src.tgz
+  dir: icu
+  checksum: 3a64e9105c734dcf631c0b3ed60404531bce6c0f5a64bfe1a6402a4cc2314816
+
+version:
+  installed_sh_trailing: icu-config --version
+  upstream: kxver_scrape_url("", "http://download.icu-project.org/files/icu4c/")
+
+bootstrap_8:
+  - sh: cd source
+  - configure_kx: ~
+  - make: ~
+  - check: ~
+  - install: ~
+
+verify_cli: |
+  kx_cli_match_success "/bin/icuinfo" { U_ZERO_ERROR }
+
+# TODO: Test other installed programs
+

@@ -1,0 +1,30 @@
+package:
+  name: harfbuzz
+  version: 1.0.6
+  www: http://www.freedesktop.org/wiki/Software/HarfBuzz
+  short: OpenType text shaping engine
+
+download:
+  url: http://www.freedesktop.org/software/harfbuzz/release
+  file_tar_bz2: ~
+  checksum: f616a7fbdc78a627043f9029000bf08c0c71df59cde4143fc92a014f6a993b26
+
+version:
+  installed_pkgconfig: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  - test:
+    # remove failing testcase
+    # http://www.linuxfromscratch.org/blfs/view/svn/general/harfbuzz.html
+    - sh: sed -e s':tests/arabic-fallback-shaping.tests::' -i test/shaping/Makefile
+    - check: ~
+
+  - install:
+    - install: ~
+
+# TODO: verify_cli

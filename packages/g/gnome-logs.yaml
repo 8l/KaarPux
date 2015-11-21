@@ -1,0 +1,23 @@
+package:
+  name: gnome-logs
+  version: 3.18.1
+
+download:
+  gnomexz: ~
+  checksum: 3ccbd74e61af13b9ab4f8a45df9c0ff84b7c06a7baccf2150601a82b6dd662dc
+
+version:
+  installed_na: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static --disable-schemas-compile
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

@@ -1,0 +1,25 @@
+package:
+  name: file-roller
+  version: 3.16.4
+  www: http://library.gnome.org/users/file-roller/
+  short: Archive Manager, also known as File Roller, allows you to create, view, modify, or unpack an archive (.gz, .bz, ...).
+
+download:
+  gnomexz: ~
+  checksum: 5455980b2c9c7eb063d2d65560ae7ab2e7f01b208ea3947e151680231c7a4185
+
+version:
+  upstream_gnome: ~
+  installed: kxver_sh_pattern("file-roller --version", qr|([0-9]+\.[0-9.]*[0-9]+)|);
+
+linux:
+
+  - build:
+    - configure_kx: --disable-schemas-compile --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

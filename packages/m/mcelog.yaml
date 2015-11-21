@@ -1,0 +1,24 @@
+package:
+  name: mcelog
+  version: 128
+  www: http://www.mcelog.org/
+  short: mcelog processes machine checks (in particular memory and CPU hardware errors)
+
+download:
+  url: https://github.com/andikleen/mcelog/archive/
+  file: v${KX_MCELOG_VERSION}.tar.gz
+  checksum: a13e9098f93c0d026d4a70d825fc7860ad24bbb88a1bf303b17a15aeaeb38adc
+
+version:
+  upstream: kxver_scrape_url(undef, "https://github.com/andikleen/mcelog/releases", qr|<span class="tag-name">v([0-9]+)</span>|)
+
+bootstrap_8:
+
+    - make: prefix=${KX_PREFIX}
+
+  # we do not run the test-suite, as we do not have mce-inject,
+  # and because we are still on the host machine in chroot
+
+    - install: ~
+    - install_pkg_file: 644 mcelog.service /etc/systemd/system
+    - sh: ln -svf /etc/systemd/system/mcelog.service /etc/systemd/system/multi-user.target.wants/mcelog.service

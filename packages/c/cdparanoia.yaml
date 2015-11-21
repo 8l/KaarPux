@@ -1,0 +1,33 @@
+package:
+  name: cdparanoia
+  version: III-10.2 
+  www: http://xiph.org/paranoia/
+  short: Use your CDROM drive to read audio tracks.... and have it actually work right!
+
+download:
+  url:   http://downloads.xiph.org/releases/cdparanoia/
+  file: cdparanoia-III-10.2.src.tgz
+  checksum: b304bbe8ab63373924a744eac9ebc652  
+
+version:
+  installed: |
+    my $v = kxver_sh_pattern("cdparanoia --version", qr|cdparanoia III release ([0-9]+\.+[0-9\.]*[0-9]+)|);
+    return "III-$v";
+  upstream: kxver_scrape_url("", $url, qr|cdparanoia-(III-[0-9]+\.+[0-9\.]*[0-9]+)|);
+
+linux:
+  - build:
+    - sh: |
+        unset CC
+        unset CXX
+    - configure_kx: --disable-static
+    - make: -j 1
+
+  # No test suite
+
+  - install:
+    - install: ~
+    - sh: chmod -v 755 /lib/libcdda_*
+
+verify_cli: |
+  kx_cli_success cdparanoia --version

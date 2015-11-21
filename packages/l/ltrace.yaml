@@ -1,0 +1,29 @@
+package:
+  name: ltrace
+  version: 0.7.3
+  www: http://ltrace.org/
+  short: ltrace intercepts and records dynamic library calls which are called by an executed process and the signals received by that process.
+
+download:
+  full_url: http://anonscm.debian.org/gitweb/?p=collab-maint/ltrace.git;a=snapshot;h=refs/tags/${KX_LTRACE_VERSION};sf=tgz
+  file_tar_gz: ~
+  checksum: no
+
+version: 
+  installed: kxver_sh_pattern "ltrace --version", qr|ltrace version ([0-9a-z.]+)\.| ;
+  upstream: kxver_scrape_url(undef, 'http://ltrace.org/', qr|ltrace_([0-9.]+)\.orig|);
+
+linux:
+  - build:
+    - echo: autogen
+    - sh: ./autogen.sh
+    - configure_kx: --disable-werror
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success "ltrace --version" { ltrace }
+  kx_cli_match_success "ltrace ls" { malloc opendir readdir free }

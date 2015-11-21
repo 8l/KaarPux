@@ -1,0 +1,21 @@
+package:
+  name: libpthread-stubs
+  version: 0.1
+  short: libpthread-stubs provides stub functions for pthreads as weak aliases for platforms on which libc does not provide these stubs.
+
+download:
+  url: ftp://ftp.x.org/pub/individual/lib
+  file_tar_bz2: ~
+  checksum: 774eabaf33440d534efe108ef9130a7d
+
+version:
+  installed_pkgconfig: pthread-stubs
+
+bootstrap_8:
+    - configure_kx: ~
+    - make: ~
+    # No testsuite
+    - install: ~     
+
+
+

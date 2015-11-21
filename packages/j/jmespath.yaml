@@ -1,0 +1,25 @@
+package:
+  name:  jmespath
+  version: 0.9.0
+  www: http://jmespath.org/
+  short: JMESPath is a query language for JSON
+
+
+download:
+  url: https://pypi.python.org/packages/source/j/jmespath
+  file_tar_gz: ~
+  checksum: 08dfaa06d4397f283a01e57089f3360e3b52b5b9da91a70e1fd91e9f0cdd3d3d
+
+version:
+  upstream_pypi: ~
+
+linux:
+  - build:
+    - python3: ~
+    - sh: python3 setup.py build
+  # TODO tests?
+  - install:
+    - python3: ~
+    - sh: python3 setup.py install --prefix=${KX_PREFIX}
+
+

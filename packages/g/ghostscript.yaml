@@ -1,0 +1,37 @@
+package:
+  name: ghostscript
+  version: 9.18
+  www: http://www.ghostscript.com/
+  short: Interpreter for the PostScript language and for PDF.
+
+download:
+  url: http://downloads.ghostscript.com/public
+  checksum: 83daf5bbbb5afbc32cab944a1afa7ceca046dbf0c3712cd5f2bd21a13e484da1
+
+version:
+  installed_sh_trailing: gs --version
+
+linux:
+  - build:
+    - sh: rm -rf expat freetype jpeg lcms2 libpng tiff
+    - sh: rm -rf jasper lcms zlib
+    - sh: sed -i 's:ZLIBDIR=src:ZLIBDIR=/include:' configure
+    - configure_kx: --enable-dynamic --with-system-libtiff
+    - make: -j 1
+    - make: -j 1 so
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+    - sh: make soinstall
+    - echo: install headers
+    - sh: |
+        mkdir -pv /include/ghostscript
+        install -v -m644 base/*.h /include/ghostscript
+        install -v -m644 psi/*.h /include/ghostscript
+        ln -v -s ghostscript /include/ps
+
+verify_cli: |
+  kx_cli_success gs --version

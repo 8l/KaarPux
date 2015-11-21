@@ -1,0 +1,76 @@
+package:
+  name: gettext
+  version: 0.19.6
+  www: http://www.gnu.org/software/gettext/
+  short: | 
+      The Gettext package contains utilities for internationalization and localization.
+      These allow programs to be compiled with NLS (Native Language Support),
+      enabling them to output messages in the user's native language. 
+
+download:
+  gnux: ~
+  checksum: 9b95816620fd1168cb4eeca0e9dc0ffd86e864fc668f76f5e37cc054d6982e51
+
+# Note that this does NOT report any trailing .MIRCO
+version: 
+  upstream_gnu: ~
+  wiz_savannah: ~
+  changelog: NEWS
+
+bootstrap_3:
+
+  - echo: configure
+  - sh: |
+      cd gettext-tools
+      EMACS="no" ./configure --prefix="${KX_TOOLS}" --disable-shared
+
+  - echo: "make GETTEXT"
+  - sh: |
+      make -j ${KX_MAKE_J} -C gnulib-lib
+      make -j ${KX_MAKE_J} -C intl pluralx.c
+      make -j ${KX_MAKE_J} -C src msgfmt
+      make -j ${KX_MAKE_J} -C src msgmerge
+      make -j ${KX_MAKE_J} -C src xgettext
+
+  - echo: post-install
+  - sh: cp -v src/msgfmt "${KX_TOOLS}/bin"
+  - sh: cp -v src/msgmerge "${KX_TOOLS}/bin"
+  - sh: cp -v src/xgettext "${KX_TOOLS}/bin"
+
+bootstrap_7:
+
+  - configure: --prefix="${KX_PREFIX}" --disable-static
+  - make: ~
+  - check: -j1
+  - install: ~ 
+
+
+verify_cli: |
+
+  # TODO: better testcase for gettext
+
+  kx_cli_success /bin/autopoint --version
+  kx_cli_success /bin/envsubst --version
+  kx_cli_success /bin/gettext --version
+  kx_cli_success /bin/gettextize --version
+  kx_cli_success /bin/gettext.sh --version
+  kx_cli_success /bin/msgattrib --version
+  kx_cli_success /bin/msgcat --version
+  kx_cli_success /bin/msgcmp --version
+  kx_cli_success /bin/msgcomm --version
+  kx_cli_success /bin/msgconv --version
+  kx_cli_success /bin/msgen --version
+  kx_cli_success /bin/msgexec --version
+  kx_cli_success /bin/msgfilter --version
+  kx_cli_success /bin/msgfmt --version
+  kx_cli_success /bin/msggrep --version
+  kx_cli_success /bin/msginit --version
+  kx_cli_success /bin/msgmerge --version
+  kx_cli_success /bin/msgunfmt --version
+  kx_cli_success /bin/msguniq --version
+  kx_cli_success /bin/ngettext --version
+  kx_cli_success /bin/recode-sr-latin --version
+  kx_cli_success /bin/xgettext --version
+
+  kx_cli_match_success "/bin/gettext -s 'Hello GetText'" { Hello GetText }
+

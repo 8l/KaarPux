@@ -1,0 +1,58 @@
+ac_add_options --enable-application=browser
+mk_add_options MOZ_CO_PROJECT=browser
+
+ac_add_options --enable-official-branding
+
+ac_add_options --enable-gold
+
+ac_add_options --with-system-nspr
+ac_add_options --with-system-nss
+
+ac_add_options --disable-necko-wifi
+ac_add_options --enable-system-sqlite
+ac_add_options --enable-startup-notification
+ac_add_options --enable-system-hunspell
+
+ac_add_options --with-system-libevent
+ac_add_options --with-system-icu
+
+ac_add_options --disable-gconf
+ac_add_options --with-system-hunspell
+ac_add_options --with-pthreads
+ac_add_options --enable-system-ffi
+ac_add_options --with-system-jpeg
+ac_add_options --with-system-zlib
+ac_add_options --with-system-bz2
+ac_add_options --with-system-png
+ac_add_options --enable-system-pixman
+
+# From firefox-40, using system cairo causes firefox to crash
+# frequently when it is doing background rendering in a tab.
+# ac_add_options --enable-system-cairo
+
+ac_add_options --enable-shared
+ac_add_options --disable-static
+ac_add_options --enable-debug-symbols
+ac_add_options --disable-strip
+ac_add_options --disable-install-strip
+
+ac_add_options --disable-crashreporter
+ac_add_options --disable-installer
+ac_add_options --disable-updater
+
+ac_add_options --enable-pango
+
+ac_add_options --disable-alsa
+ac_add_options --enable-pulseaudio
+ac_add_options --enable-gstreamer=1.0
+
+ac_add_options --enable-safe-browsing
+ac_add_options --enable-url-classifier
+ac_add_options --with-system-libvpx
+
+ac_add_options --enable-llvm-hacks
+
+mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/kx_objdir
+
+#CC="clang"; export CC
+#CXX="clang++ -std=c++11 -Dlinux"; export CXX

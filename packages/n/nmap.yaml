@@ -1,0 +1,26 @@
+package:
+  name: nmap
+  version: 6.47
+  www: http://nmap.org/
+  short: |
+      a security scanner
+      used to discover Host and services on a computer network,
+      thus creating a "map" of the network.
+
+download:
+  url: http://nmap.org/dist/
+  file_tar_bz2: ~
+  checksum: 8fa11e9e203ce2d81a207db5ca4f110a525f6c01c1dd0018325a7112a51aa591
+
+version:
+  installed: kxver_sh_version('nmap --version 2>&1 | tail -n +2 | head -1');
+
+linux:
+  - build:
+    - configure_kx: --with-liblua=included
+    - make: ~
+
+  # No test suite
+
+  - install:
+    - install: ~

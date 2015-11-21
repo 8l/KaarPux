@@ -1,0 +1,71 @@
+package:
+  name: docbook-xml
+  version: 4.5
+  www: http://www.docbook.org/
+  short: |
+      DocBook is a schema maintained by the DocBook Technical Committee of OASIS.
+      It is particularly well suited to books and papers about computer hardware and software (though it is by no means limited to these applications).
+
+download:
+  url: http://www.docbook.org/xml/${KX_DOCBOOK_XML_VERSION}
+  file: docbook-xml-${KX_DOCBOOK_XML_VERSION}.zip
+  dir: docbook-xml/docbook-${KX_DOCBOOK_XML_VERSION}
+  checksum: 03083e288e87a7e829e437358da7ef9e
+
+version:
+  installed_sh_trailing: ls -d1 /usr/share/xml/docbook/xml-*
+  upstream: kxver_scrape_url("docbook-xml", $url);
+
+linux:
+
+# The docbook zip has no directory names, so we need to umpack by hand...
+
+- prepare_and_build:
+
+    - echo: Unpacking
+    - sh: |
+        mkdir -pv "${KX_BASE}/build/linux/${KX_DOCBOOK_XML}"
+        rm -rf "${KX_BASE}/build/linux/${KX_DOCBOOK_XML}"/*
+        cd "${KX_BASE}/build/linux/${KX_DOCBOOK_XML}"
+        unzip "${KX_BASE}/../downloads/${KX_DOCBOOK_XML_FILE}"
+
+  # No test suite
+
+- install:
+    - sh: |
+        X="/usr/share/xml/docbook/xml-dtd-${KX_DOCBOOK_XML_VERSION}"; export X
+        F="file:///usr/share/xml/docbook/xml-dtd-${KX_DOCBOOK_XML_VERSION}"; export F
+        install -v -d -m755 "$X"
+        install -v -d -m755 /etc/xml
+        cp -v -af docbook.cat *.dtd ent/ *.mod $X
+        if [ ! -e /etc/xml/docbook ]; then
+            xmlcatalog --noout --create /etc/xml/docbook
+        fi
+        xmlcatalog --noout --add "public" "-//OASIS//DTD DocBook XML V${KX_DOCBOOK_XML_VERSION}//EN" "http://www.oasis-open.org/docbook/xml/${KX_DOCBOOK_XML_VERSION}/docbookx.dtd" /etc/xml/docbook
+        xmlcatalog --noout --add "public" "-//OASIS//DTD DocBook XML CALS Table Model V${KX_DOCBOOK_XML_VERSION}//EN" "$F/calstblx.dtd" /etc/xml/docbook
+        xmlcatalog --noout --add "public" "-//OASIS//DTD XML Exchange Table Model 19990315//EN" "$F/soextblx.dtd" /etc/xml/docbook
+        xmlcatalog --noout --add "public" "-//OASIS//ELEMENTS DocBook XML Information Pool V${KX_DOCBOOK_XML_VERSION}//EN" "$F/dbpoolx.mod" /etc/xml/docbook
+        xmlcatalog --noout --add "public" "-//OASIS//ELEMENTS DocBook XML Document Hierarchy V${KX_DOCBOOK_XML_VERSION}//EN" "$F/dbhierx.mod" /etc/xml/docbook
+        xmlcatalog --noout --add "public" "-//OASIS//ELEMENTS DocBook XML HTML Tables V${KX_DOCBOOK_XML_VERSION}//EN" "$F/htmltblx.mod" /etc/xml/docbook
+        xmlcatalog --noout --add "public" "-//OASIS//ENTITIES DocBook XML Notations V${KX_DOCBOOK_XML_VERSION}//EN" "$F/dbnotnx.mod" /etc/xml/docbook
+        xmlcatalog --noout --add "public" "-//OASIS//ENTITIES DocBook XML Character Entities V${KX_DOCBOOK_XML_VERSION}//EN" "$F/dbcentx.mod" /etc/xml/docbook
+        xmlcatalog --noout --add "public" "-//OASIS//ENTITIES DocBook XML Additional General Entities V${KX_DOCBOOK_XML_VERSION}//EN" "$F/dbgenent.mod" /etc/xml/docbook
+        xmlcatalog --noout --add "rewriteSystem" "http://www.oasis-open.org/docbook/xml/${KX_DOCBOOK_XML_VERSION}" "$F" /etc/xml/docbook
+        xmlcatalog --noout --add "rewriteURI" "http://www.oasis-open.org/docbook/xml/${KX_DOCBOOK_XML_VERSION}" "$F" /etc/xml/docbook
+    - sh: |
+        if [ ! -e /etc/xml/catalog ]; then
+            xmlcatalog --noout --create /etc/xml/catalog
+        fi &&
+        xmlcatalog --noout --add "delegatePublic" "-//OASIS//ENTITIES DocBook XML" "file:///etc/xml/docbook" /etc/xml/catalog
+        xmlcatalog --noout --add "delegatePublic" "-//OASIS//DTD DocBook XML" "file:///etc/xml/docbook" /etc/xml/catalog
+        xmlcatalog --noout --add "delegateSystem" "http://www.oasis-open.org/docbook/" "file:///etc/xml/docbook" /etc/xml/catalog
+        xmlcatalog --noout --add "delegateURI" "http://www.oasis-open.org/docbook/" "file:///etc/xml/docbook" /etc/xml/catalog
+    - sh: |
+        for D in 4.1.2 4.2 4.3 4.4
+        do
+          xmlcatalog --noout --add "public" "-//OASIS//DTD DocBook XML V$D//EN" "http://www.oasis-open.org/docbook/xml/$D/docbookx.dtd" /etc/xml/docbook
+          xmlcatalog --noout --add "rewriteSystem" "http://www.oasis-open.org/docbook/xml/$D" "$F" /etc/xml/docbook
+          xmlcatalog --noout --add "rewriteURI" "http://www.oasis-open.org/docbook/xml/$D" "$F" /etc/xml/docbook
+          xmlcatalog --noout --add "delegateSystem" "http://www.oasis-open.org/docbook/xml/$D/" "file:///etc/xml/docbook" /etc/xml/catalog
+          xmlcatalog --noout --add "delegateURI" "http://www.oasis-open.org/docbook/xml/$D/" "file:///etc/xml/docbook" /etc/xml/catalog
+        done

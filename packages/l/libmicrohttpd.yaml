@@ -1,0 +1,23 @@
+package:
+  name: libmicrohttpd
+  version: 0.9.44
+  www: http://www.gnu.org/software/libmicrohttpd/
+  short: |
+      a small C library that is supposed to make it easy
+      to run an HTTP server as part of another application
+
+download:
+  gnuz: ~
+  checksum: f2739cc05112dc00a5ebe1a470174970ca3a3fd71dcd67fb7539af9d83b8411e
+
+version:
+  installed_pkgconfig: ~
+
+linux:
+  - build:
+    - configure_kx_bash: --disable-static
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~

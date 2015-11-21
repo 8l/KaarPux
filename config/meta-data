@@ -1,0 +1,2 @@
+instance-id: ${KX_CLOUD_HOSTNAME}
+local-hostname: ${KX_CLOUD_HOSTNAME}

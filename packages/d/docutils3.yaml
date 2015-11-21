@@ -1,0 +1,22 @@
+package:
+  name: docutils3
+  version: 0.12
+  www: http://docutils.sourceforge.net
+  short: Python tools for processing plaintext docs into formats such as HTML, XML, or LaTeX
+
+download:
+  sourceforge: docutils
+  file: docutils-${KX_DOCUTILS3_VERSION}.tar.gz
+  dir: docutils-${KX_DOCUTILS3_VERSION}
+  
+  checksum: 4622263b62c5c771c03502afa3157768
+
+version: ~
+
+linux:
+  - build:
+    - python3: ~
+    - sh: python3 setup.py build
+  - install_keep:
+    - python3: ~
+    - sh: python3 setup.py install

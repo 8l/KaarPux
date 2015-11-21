@@ -1,0 +1,36 @@
+package:
+  name: bustle
+  version: 0.4.7
+  www: http://willthompson.co.uk/bustle/
+  short: |
+      Bustle is a better dbus-monitor!
+      It records and draws sequence diagrams of D-Bus activity,
+      showing signal emissions, method calls and their corresponding returns,
+      with timestamps for each individual event and the duration of each method call.
+
+download:
+  url: http://willthompson.co.uk/bustle/releases/${KX_BUSTLE_VERSION}
+  file_tar_gz: ~
+  checksum: 08b12207561157e639bc64e0b274e70e4909f50079cd97564c916d66a3f088b9
+  verify: asc
+
+version: 
+  installed_sh_trailing: 'bustle-pcap --version'
+  upstream: kxver_scrape_url(undef, "http://willthompson.co.uk/bustle/releases/", qr|href="([0-9]+[0-9.]*[0-9]+)/"|);
+
+opt:
+
+  - build:
+    - patch: type_annotations.patch
+    - make: PREFIX=${KX_PREFIX}
+    - echo: "runhaskell Setup"
+    - sh: |
+        runhaskell Setup configure --prefix=${KX_PREFIX}
+        runhaskell Setup build
+
+  - install:
+    - install: PREFIX=${KX_PREFIX}
+    - echo: "runhaskell Setup install"
+    - sh: |
+        runhaskell Setup install
+

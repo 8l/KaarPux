@@ -1,0 +1,24 @@
+package:
+  name: libgtop
+  version: 2.32.0
+  www: http://developer.gnome.org/libgtop/
+  short: Library to get system specific data such as CPU and Memory Usage and information about running Processes.
+
+download:
+  gnomexz: ~
+  checksum: 8443246332f22b33e389f565825b58cd9623fb7625bf874d404354b705ad178e
+
+version:
+  installed_pkgconfig: libgtop-2.0
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

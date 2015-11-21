@@ -1,0 +1,28 @@
+package:
+  name: cantarell-fonts
+  version: 0.0.17.2
+  www: https://live.gnome.org/CantarellFonts/
+  short: The Cantarell font family is a contemporary Humanist sans serif designed for on-screen reading. 
+
+download:
+  gnomexz: ~
+  checksum: b5cf061c1cb37881c34c5bd5a6cad495236e50bef2386072800322f0ef5abf36
+
+version:
+  # TODO: This version check is UGLY
+  installed: |
+    my $txt = `strings /share/fonts/cantarell/Cantarell-Regular.otf 2>&1 | grep '^Version '`;
+    $txt =~ m|Version ([0-9\.]+)|;
+    return $1;
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

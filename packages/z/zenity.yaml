@@ -1,0 +1,31 @@
+package:
+  name: zenity
+  version: 3.18.1.1
+  www: http://library.gnome.org/users/zenity/
+  short: Zenity is a rewrite of gdialog, the GNOME port of dialog which allows you to display dialog boxes from the commandline and shell scripts.
+
+download:
+  gnomexz: ~
+  checksum: e6317a03f58b528e2e3330fef5acea39506ec08a7c2aeec5c4f1e7505d43a80a
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+verify_gui: |
+    spawn zenity zenity --question
+    await pushbutton Yes 4
+    do click
+    desktop
+    away application zenity 1

@@ -1,0 +1,58 @@
+package:
+  name: patch
+  version: 2.7.5
+  www: http://savannah.gnu.org/projects/patch/
+  short: |
+      Patch takes a patch file containing a difference listing produced by the diff program
+      and applies those differences to one or more original files, producing patched versions. 
+
+download:
+  gnux: ~
+  checksum: fd95153655d6b95567e623843a0e77b81612d502ecf78a489a4aed7867caa299
+
+version:
+  wiz_savannah: ~
+  changelog: NEWS
+
+bootstrap_3:
+  - configure_tools: ~
+  - make: ~
+  - install: ~ 
+
+bootstrap_7:
+  # need BASH shell for "make check"
+  - configure_kx_bash: ~
+  - make: ~
+  - check: ~
+  - install: ~ 
+
+
+verify_cli: |
+
+  kx_cli_success /bin/patch --version
+
+  if [catch {
+    set filename "patchtest_[pid]_[clock microseconds]"
+    set file [open $filename.txt [list RDWR CREAT EXCL TRUNC] 0700]
+    puts $file "alfa"
+    puts $file "bravo"
+    puts $file "charlie"
+    close $file
+    set file [open $filename.patch [list RDWR CREAT EXCL TRUNC] 0700]
+    puts $file "--- $filename.txt.ORIG\r"
+    puts $file "+++ $filename.txt"
+    puts $file "@@ -1,3 +1,4 @@"
+    puts $file " alfa"
+    puts $file "-bravo"
+    puts $file "+beta"
+    puts $file " charlie"
+    puts $file "+delta"
+    close $file
+  } reason] then {
+    fail "patch test failed: $reason";
+  } else {
+    kx_cli_match_success "/bin/patch -o - $filename.txt $filename.patch" { alfa beta charlie delta}
+  }
+  catch { file delete "$filename.patch" }
+  catch { file delete "$filename.txt" }
+

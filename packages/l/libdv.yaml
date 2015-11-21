@@ -1,0 +1,23 @@
+package:
+  name: libdv
+  version: 1.0.0
+  www: http://libdv.sourceforge.net/
+  short: Software codec for DV video, the encoding format used by most digital camcorders, typically those that support the IEEE 1394 (a.k.a. FireWire or i.Link) interface.
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: f895162161cfa4bb4a94c070a7caa6c7 
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_upstream_sourceforge("libdv", "libdv", "libdv");
+
+linux:
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+  # 'make check' does nothing
+  - install:
+    - install: ~
+

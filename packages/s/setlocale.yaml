@@ -1,0 +1,26 @@
+package:
+  name: setlocale
+  version: 0.0.3
+  www: https://hackage.haskell.org/package/setlocale
+  short: A Haskell interface to setlocale()
+
+download:
+  url: http://hackage.haskell.org/packages/archive/setlocale/${KX_SETLOCALE_VERSION}
+  file_tar_gz: ~
+  checksum: 5466b6ebc3b4219804ff7d53b98f97c9723d78eac666512e4999eaba2210ed22
+
+version: ~
+
+opt:
+
+  - build:
+    - patch: typeable.patch
+    - sh: |
+        runhaskell Setup configure --ghc --prefix=${KX_PREFIX}
+        runhaskell Setup build
+ 
+  - install:
+    - sh: |
+        { flock -w 60 9;
+        runhaskell Setup install;
+        } 9</opt/kaarpux/${KX_GHC}/lib/${KX_GHC}/package.conf.d/package.cache

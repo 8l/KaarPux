@@ -1,0 +1,78 @@
+#!/bin/bash
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2014: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+# ============================================================
+# CREATE BRIDGE FOR USE BY KVM FOR BUILDING KAARPUX
+# ============================================================
+
+set -o nounset
+set -o errexit
+
+test $(id -u) -eq 0 || { echo "*** $0: must be run as root"; exit 1; }
+test $# -ge 1 || { echo "*** $0: must be called as $0 <if>"; exit 1; } 
+
+if test -t 0 -a x"${1:-}" != x"--yes"; then
+	test x"${1:-}" = x"--yes" && shift
+	echo "This script will set up br0 as a bridge using $1"
+	read -r -p "Are you REALLY sure you want to continue? " DOIT
+	case $DOIT in
+		[yY][eE][sS]|[yY]) 
+			;;
+		*)
+			echo "Aborting...."
+			exit
+		;;
+	esac
+fi
+
+# ============================================================
+
+IF=$1
+
+# ============================================================
+
+chmod u+s /libexec/qemu-bridge-helper
+
+mkdir -pv /etc/qemu
+cat > /etc/qemu/bridge.conf <<EOF
+allow br0
+EOF
+
+# ============================================================
+
+rm -f /etc/systemd/network/50-dhcp.network
+
+# ============================================================
+
+cat > /etc/systemd/network/42-br0.netdev<<EOF
+[NetDev]
+Name=br0
+Kind=bridge
+EOF
+
+cat > /etc/systemd/network/44-${IF}.network<<EOF
+[Match]
+Name=${IF}
+
+[Network]
+Bridge=br0
+EOF
+
+cat > /etc/systemd/network/46-br0.network<<EOF
+[Match]
+Name=br0
+
+[Network]
+DHCP=yes
+EOF
+
+# ============================================================
+
+echo "PLEASE REBOOT:"
+echo "systemctl reboot"

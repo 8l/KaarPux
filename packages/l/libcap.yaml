@@ -1,0 +1,30 @@
+package:
+  name: libcap
+  version: 2.24
+  www: https://sites.google.com/site/fullycapable/
+  short: Linux Capabilities - an alternative to the superuser model of privilege under Linux.
+
+download:
+  kernelxz: linux/libs/security/linux-privs/libcap2
+  checksum: cee4568f78dc851d726fc93f25f4ed91cc223b1fe8259daa4a77158d174e6c65
+
+version:
+  installed_na: ~
+
+bootstrap_8:
+    - patch: cc2441e4a3532aa561d194e39622cfcfbcbaff5d..84fb6007dcc7f6b6da9f6dab77a487c22b6c7beb.patch
+    - make: ~
+    # No testsuite
+    - install: ~
+
+
+# ==========================================================
+
+verify_cli: |
+
+  kx_cli_match_success "/bin/capsh --help" { capsh  }
+  kx_cli_success /bin/getcap .
+  kx_cli_match_success "/bin/getpcaps \$\$" { Capabilities  }
+
+# TODO: better testcases
+

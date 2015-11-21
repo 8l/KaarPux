@@ -1,0 +1,31 @@
+package:
+  name: libwebp
+  version: 0.4.0
+  www: https://developers.google.com/speed/webp/
+  short: WebP is a new image format that provides lossless and lossy compression for images on the web
+
+download:
+  url: http://webp.googlecode.com/files/
+  file_tar_gz: ~
+  checksum: 31913577e96386556855b41d210736449445fe96cfbe9289014e9b8afa944d69
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_scrape_url(undef, "http://code.google.com/p/webp/downloads/list", qr|libwebp-([0-9.]+)\.|);
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_success cwebp "-version"
+  kx_cli_success dwebp "-version"
+
+# TODO: verify_cli: real testcases

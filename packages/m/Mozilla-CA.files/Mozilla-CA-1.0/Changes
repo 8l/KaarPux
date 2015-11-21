@@ -1,0 +1,6 @@
+Revision history for Perl extension Mozilla-CA.
+
+0.01  Thu May 10 23:50:29 2012
+	- original version; created by h2xs 1.23 with options
+		-AXc -n Mozilla-CA
+

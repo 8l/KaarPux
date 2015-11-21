@@ -1,0 +1,24 @@
+package:
+  name: gtkmm
+  version: 3.18.0
+
+download:
+  gnomexz: ~
+  checksum: 829fa113daed74398c49c3f2b7672807f58ba85d0fa463f5bc726e1b0138b86b
+
+version:
+  installed_pkgconfig: gtkmm-3.0
+  upstream_gnome: ~
+
+
+linux:
+
+  - build:
+    - configure_kx: --disable-documentation --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

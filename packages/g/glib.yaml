@@ -1,0 +1,55 @@
+package:
+  name: glib
+  version: 2.46.1
+  www: http://developer.gnome.org/glib/
+  short: |
+      GLib provides the core application building blocks for libraries and applications written in C.
+      It provides the core object system used in GNOME, the main loop implementation,
+      and a large set of utility functions for strings and common data structures.
+
+download:
+  gnomexz: ~
+  checksum: 5a1f03b952ebc3a7e9f612b8724f70898183e31503db329b4f15d07163c8fdfb
+
+version:
+  installed_pkgconfig: glib-2.0
+  upstream_gnome: ~
+
+bootstrap_8:
+    - echo: "configure"
+    - configure_kx: >
+          --disable-static
+          --disable-gtk-doc
+          --disable-gtk-doc-html
+          --disable-gtk-doc-pdf
+          --with-pcre=system 
+    - make: ~     
+
+#    Many glib tests are failing,
+#    because we are in a chroot, not a real system
+#    So, for now, do not "make check"
+#    TODO: Can we run glib tests later, or disable the failing ones?
+#    - check: ~
+
+    - install: ~     
+    - sh: ln -v -sfn ../../lib/glib-2.0/include/glibconfig.h /include/glib-2.0/glibconfig.h
+
+# TODO Configure http://www.linuxfromscratch.org/blfs/view/svn/general/glib2.html
+
+verify_cli: |
+  # Most commands are used extensively during KaarPux building,
+  # and difficult to test standalone, so we only do very simple verification here
+  kx_cli_success /bin/dbus-binding-tool --version
+  #/bin/gdbus
+  #/bin/gdbus-codegen
+  #/bin/gio-querymodules
+  #/bin/glib-compile-resources
+  #/bin/glib-compile-schemas
+  #/bin/glib-genmarshal
+  #/bin/glib-gettextize
+  #/bin/glib-mkenums
+  #/bin/gobject-query
+  #/bin/gresource
+  kx_cli_match_success "/bin/gsettings list-schemas" { gnome freedesktop }
+  #/bin/gtester
+  #/bin/gtester-report

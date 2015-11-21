@@ -1,0 +1,27 @@
+package:
+  name: pycups
+  version: 1.9.73
+  www: http://cyberelk.net/tim/software/pycups/
+  short: Python bindings for the CUPS API
+
+download:
+  url: https://pypi.python.org/packages/source/p/pycups
+  file_tar_bz2: ~
+  checksum: c381be011889ca6f728598578c89c8ac9f7ab1e95b614474df9f2fa831ae5335
+  # TODO: Key 0x36ebeb19
+  verify: asc
+
+version:
+  upstream_pypi: ~
+
+linux:
+  - build:
+    - python3: ~
+    - sh: python3 setup.py build
+
+  # No test suite
+
+  - install:
+    - python3: ~
+    - sh: python3 setup.py install
+

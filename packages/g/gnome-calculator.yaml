@@ -1,0 +1,67 @@
+package:
+  name: gnome-calculator
+  version: 3.18.1
+  www: https://live.gnome.org/Gcalctool/
+  short: GCalctool is an application that solves mathematical equations and is suitable as a default application in a Desktop environment.
+
+download:
+  gnomexz: ~
+  checksum: 1cfae1c2d4e8a39cdc584e2add5022cd5824e6c6539deded60f4b2c4054f9b5c
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-schemas-compile
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+verify_cli: |
+    kx_cli_send_match_success gcalccmd { "1 + 2*3 + 4*5*6 + 7*8*9*10" } { 5167 }
+
+verify_gui: |
+    spawn gnomecalculator gnome-calculator
+
+    application
+    find pushbutton 1 7
+    do click
+
+    application
+    find pushbutton 2 7
+    do click
+
+    application
+    find pushbutton 3 7
+    do click
+
+    application
+    find pushbutton 4 7
+    do click
+
+    application
+    find pushbutton multiply 7
+    do click
+
+    application
+    find pushbutton 2 7
+    do click
+
+    application
+    find pushbutton result 7
+    do click
+
+    sleep 1
+    application
+    find editbar _ 7
+    verifytext 2468
+
+    altf4
+    desktop
+    away application gnomecalculator 1

@@ -1,0 +1,250 @@
+package:
+  name: linux
+  version: 4.1.12
+  www: http://www.kernel.org/
+  short: The Linux kernel (and initramfs)
+
+download:
+  kernelxz: linux/kernel/v4.x
+  checksum: 4b49b246b2b99404432fdaa3338a01ce84dcd05b9501aaa71b04d81ac6e13f61
+
+version:
+  installed: kxver_sh_pattern("uname -r", qr|([0-9.]+)-kx|);
+  source: https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable.git/log/?id=refs/tags/v${KX_LINUX_VERSION}
+  news: https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-${KX_LINUX_VERSION}
+
+# ============================================================
+
+doc: |
+
+  ====================
+  Kernel configuration
+  ====================
+  %%%%
+  Our linux kernel configuration file
+  (`.config <http://sourceforge.net/p/kaarpux/code/ci/HEAD/tree/master/packages/l/linux.files/config.x86_64>`_)
+  is - in general - configured as follows:
+  %%%%
+  - options needed for a default :program:`KaarPux` system are build-in
+  - options for most common hardware needed early (video, keyboard, net, disks) are build as modules
+  - some other useful modules (such as netfilter connection tracking helpers) are build as modules
+  - as much as possible, everything else has been disabled
+  %%%%
+  =====================
+  Kernel release number
+  =====================
+  %%%%
+  When building a kernel, we do::
+  %%%%
+  &&&&LOCALVERSION=$(sha1sum .config | cut -b1-8)
+  &&&&echo "-kx-${LOCALVERSION}" > localversion
+  %%%%
+  so we will end up with a kernel release (``uname -r``) such as
+  ``3.5.0-kx-106155c9``.
+  %%%%
+  This makes it possible to have different kernel versions in the system,
+  and let :program:`grub` choose between them.
+
+  %%%%
+  =========
+  initramfs
+  =========
+  %%%%
+  :program:`KaarPux` provides a small (less than 1MB compressed) ``initramfs``.
+  %%%%
+  For an introduction to ``initramfs`` see
+  `Introducing initramfs, a new model for initial RAM disks <http://www.linuxfordevices.com/c/a/Linux-For-Devices-Articles/Introducing-initramfs-a-new-model-for-initial-RAM-disks/>`_
+  %%%%
+  The ``initramfs`` includes :ref:`pkg_busybox`
+  which makes it possible to boot with e.g. ``root=UUID=....``
+  %%%%
+  Check out the
+  `init <http://sourceforge.net/p/kaarpux/code/ci/HEAD/tree/master/packages/l/linux.files/init>`_ file
+  for further options.
+
+  %%%%
+  =================
+  Two step building
+  =================
+  %%%%
+  The kernel is build and installed in two steps (each):
+  %%%%
+  - linux/scripts/linux/linux_BUILD.sh
+  - linux/scripts/linux/linux_INSTALL.sh
+  - linux/scripts/linux/linux_BUILD2.sh
+  - linux/scripts/linux/linux_INSTALL2.sh
+  %%%%
+  The second step is responsible for building/installing the ``initramfs``.
+
+# ============================================================
+bootstrap_1:
+  - echo: Making linux headers
+  - sh: |
+      make mrproper
+      make headers_check
+      make INSTALL_HDR_PATH=dest headers_install
+  - echo: Installing linux headers
+  - sh: cp -rv dest/include/* "${KX_TOOLS}/include"
+
+# ============================================================
+bootstrap_4:
+  - echo: Making linux headers
+  - sh: |
+      make headers_check
+      make INSTALL_HDR_PATH=dest headers_install
+  - echo: Installing linux headers
+  - sh: cp -rv dest/include/* /usr/include
+
+# ============================================================
+bootstrap_8:
+  - echo: Configuring linux kernel
+  - get_pkg_file: config.$(uname -m)
+  - sh: cp config.$(uname -m) .config
+  - sh: |
+      LOCALVERSION=$(sha1sum .config | cut -b1-8)
+      echo "-kx-${LOCALVERSION}" > localversion
+
+  - echo: Making and installing tools
+  - sh: |
+      make DESTDIR=/ -C tools cpupower
+      make DESTDIR=/ -C tools turbostat
+      make DESTDIR=/ -C tools perf
+      # make DESTDIR=/ -C tools/power/acpi
+      make DESTDIR=/ -C tools cpupower_install
+      make DESTDIR=/ -C tools turbostat_install
+      make DESTDIR=/ -C tools perf_install
+      # make DESTDIR=/ -C tools/power/acpi install
+
+  - make: ~
+
+  # No testsuite
+
+  - echo: Making and installing linux kernel modules
+  - sh: make modules_install
+  - echo: Installing
+  - sh: |
+        mkdir -pv /boot
+        LINUXVERSION=$(make kernelrelease)
+        cp -v arch/x86/boot/bzImage /boot/vmlinuz-${LINUXVERSION}
+        cp -v System.map /boot/System.map-${LINUXVERSION}
+        cp -v .config /boot/config-${LINUXVERSION}
+        depmod ${LINUXVERSION}
+
+  - echo: Keeping Linux build directory
+  - sh: |
+      rm -rf /lib/modules/${LINUXVERSION}/build
+      cp -rp . /lib/modules/${LINUXVERSION}/build
+      ln -svf build /lib/modules/${LINUXVERSION}/source
+
+  - echo: Preparing initramfs
+  - sh: |
+      rm -rf initramfs
+      mkdir -pv initramfs
+      cd initramfs
+  - get_pkg_file: init
+  - sh: |
+      chmod +x init
+      mkdir -pv bin lib lib/modules/${LINUXVERSION} dev dev/pts etc mnt proc root sbin sys
+      cp -p /bin/busybox bin
+      cp -rp /lib/firmware lib/firmware
+      cp -p /lib/modules/${LINUXVERSION}/modules.* lib/modules/${LINUXVERSION}
+      mkdir -pv lib/modules/${LINUXVERSION}/kernel/drivers/gpu/
+      cp -rp /lib/modules/${LINUXVERSION}/kernel/drivers/gpu/* lib/modules/${LINUXVERSION}/kernel/drivers/gpu/
+      find . -print0 | cpio --null -ov --format=newc | gzip -9 > ../initramfs.img
+      cd ..
+
+  - echo: Installing initramfs
+  - sh: |
+      LINUXVERSION=$(make kernelrelease)
+      echo "LINUX KERNEL VERSION: [${LINUXVERSION}]"
+      cp -v initramfs.img /boot/initramfs-${LINUXVERSION}.img
+
+
+
+# ============================================================
+linux:
+  - build:
+    - echo: Configuring linux kernel
+    - get_pkg_file: config.$(uname -m)
+    - sh: cp config.$(uname -m) .config
+
+#    If KaarPux fails to boot at all,
+#    or if some hardware is not recognized by the kernel,
+#    you can try to build a allmodconfig kernel:
+#    - sh: |
+#        cp config.$(uname -m) kkk
+#        grep "y$" kkk > jjj
+#        export KCONFIG_ALLCONFIG=jjj
+#        make allmodconfig
+#        grep -v CONFIG_DEBUG .config | grep -v CONFIG_CMDLINE_OVERRIDE | grep -v TEST > iii
+#        echo "CONFIG_CRYPTO_MANAGER_DISABLE_TESTS=y" >> iii
+#        echo "CONFIG_VGACON_SOFT_SCROLLBACK_SIZE=1024" >> iii
+#        export KCONFIG_ALLCONFIG=iii
+#       make allnoconfig
+
+    - sh: |
+        LOCALVERSION=$(sha1sum .config | cut -b1-8)
+        echo "-kx-${LOCALVERSION}" > localversion
+    - echo: Making tools
+    - sh: |
+        make DESTDIR=/ -C tools cpupower
+        make DESTDIR=/ -C tools turbostat
+        make DESTDIR=/ -C tools perf
+        # ACPI tools has beed (temporarily) disabled
+        # ACPI tools builds in 3.14.5, but not 3.15
+        # due to type name changes in
+        # include/acpi/actypes.h
+        # TODO: enable ACPI tools
+        # make DESTDIR=/ -C tools/power/acpi
+
+    - make: ~
+
+  # No testsuite
+
+  - install_keep:
+    - echo: Installing tools
+    - sh: |
+        make DESTDIR=/ -C tools cpupower_install
+        make DESTDIR=/ -C tools turbostat_install
+        make DESTDIR=/ -C tools perf_install
+        # make DESTDIR=/ -C tools/power/acpi install
+    - make: modules_install
+    - echo: Installing
+    - sh: |
+        LINUXVERSION=$(make kernelrelease)
+        echo "LINUX KERNEL VERSION: [${LINUXVERSION}]"
+        cp -v arch/x86/boot/bzImage /boot/vmlinuz-${LINUXVERSION}
+        cp -v System.map /boot/System.map-${LINUXVERSION}
+        cp -v .config /boot/config-${LINUXVERSION}
+        depmod ${LINUXVERSION}
+    - echo: Keeping Linux build directory
+    - sh: |
+        rm -rf /lib/modules/${LINUXVERSION}/build
+        cp -rp . /lib/modules/${LINUXVERSION}/build
+        ln -svf build /lib/modules/${LINUXVERSION}/source
+
+  - build2:
+    - echo: Preparing initramfs
+    - sh: |
+        LINUXVERSION=$(make kernelrelease)
+        rm -rf initramfs
+        mkdir -pv initramfs
+        cd initramfs
+    - get_pkg_file: init
+    - sh: |
+        chmod +x init
+        mkdir -pv bin lib lib/modules/${LINUXVERSION} dev dev/pts etc mnt proc root sbin sys
+        cp -p /bin/busybox bin
+        cp -rp /lib/firmware lib/firmware
+        cp -p /lib/modules/${LINUXVERSION}/modules.* lib/modules/${LINUXVERSION}
+        mkdir -pv lib/modules/${LINUXVERSION}/kernel/drivers/gpu/
+        cp -rp /lib/modules/${LINUXVERSION}/kernel/drivers/gpu/* lib/modules/${LINUXVERSION}/kernel/drivers/gpu/
+        find . -print0 | cpio --null -ov --format=newc | gzip -9 > ../initramfs.img
+
+  - install2:
+    - echo: Installing initramfs
+    - sh: |
+        LINUXVERSION=$(make kernelrelease)
+        echo "LINUX KERNEL VERSION: [${LINUXVERSION}]"
+        cp -v initramfs.img /boot/initramfs-${LINUXVERSION}.img
+

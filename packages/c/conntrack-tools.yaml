@@ -1,0 +1,24 @@
+package:
+  name: conntrack-tools
+  version: 1.4.3
+  www: http://conntrack-tools.netfilter.org/
+  short: User space connection tracking tools.
+
+download:
+  url: http://www.netfilter.org/projects/conntrack-tools/files
+  file_tar_bz2: ~
+  checksum: af3ccc60356cfedf941065fdaaf9cd5e51f3df7484f56858af37106feecf3f57
+  verify: sig
+
+version:
+  installed_sh_v: conntrack --version
+
+linux:
+  - build:
+    - configure_kx: --disable-static
+    - make: -j1
+
+# No useful check target
+
+  - install:
+    - install: ~

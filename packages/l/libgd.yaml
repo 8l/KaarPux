@@ -1,0 +1,28 @@
+package:
+  name: libgd
+  version: 2.1.1
+  www: http://libgd.bitbucket.org/
+  short: library for the dynamic creation of images by programmers
+
+download:
+  url: https://bitbucket.org/libgd/gd-libgd/downloads
+  file_tar_xz: ~
+  checksum: 9ada1ed45594abc998ebc942cef12b032fbad672e73efc22bc9ff54f5df2b285
+
+version:
+  installed_pkgconfig: gdlib
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+  - test:
+    # TODO: gdimagestringft/gdimagestringft_bbox fails
+    # https://bitbucket.org/libgd/gd-libgd/issue/72/gdimagestringft_bbox-test-fails-on-old
+    # maybe old freetype version?
+    - sh: export XFAIL_TESTS=gdimagestringft/gdimagestringft_bbox
+    - check: ~
+  - install:
+    - install: ~
+

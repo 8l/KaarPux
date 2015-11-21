@@ -1,0 +1,39 @@
+package:
+  name: privacybadgerfirefox
+  version: 1.0.3
+  www: https://www.eff.org/privacybadger
+  short: Privacy Badger is a Firefox add-on that blocks spying ads and invisible trackers as you browse.
+
+doc: |
+  <para>
+    Privacy Badger is a browser add-on that stops advertisers and other third-party trackers from secretly tracking where you go and what pages you look at on the web.
+    If an advertiser seems to be tracking you across multiple websites without your permission, Privacy Badger automatically blocks that advertiser from loading any more content in your browser.
+    To the advertiser, it's like you suddenly disappeared.
+  </para>
+
+download:
+  url: https://github.com/EFForg/privacybadgerfirefox/archive
+  file: ${KX_PRIVACYBADGERFIREFOX_VERSION}.tar.gz
+  checksum: 7b928e1dbddffceae3e5c34732f8c3ff72f8d079a285ceb0389a32ddb5baff2f
+
+version:
+  installed: kxver_mozilla_addon_installed "/opt/lib/mozilla/extensions/jid1-MnnxcxisBPnSXQ\@jetpack"
+  upstream: kxver_scrape_url(undef, "https://github.com/EFForg/privacybadgerfirefox/releases", qr|archive/([0-9]+[0-9.\-_]*[0-9]+)\.tar|);
+
+opt:
+
+  - build:
+    - sh: |
+        cd ${KX_BASE}/build/opt/${KX_ADDON_SDK}
+        bash <<EOF
+          . bin/activate
+          cd ${KX_BASE}/build/opt/${KX_PRIVACYBADGERFIREFOX}
+          pwd
+          cfx xpi
+        EOF
+
+  - install:
+    - sh: |
+        D="${KX_PREFIX}/lib/mozilla/extensions/jid1-MnnxcxisBPnSXQ@jetpack"
+        mkdir -pv "$D"
+        unzip privacybadger.xpi -d "$D"

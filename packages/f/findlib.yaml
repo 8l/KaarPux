@@ -1,0 +1,29 @@
+package:
+  name: findlib
+  version: 1.4.1
+  www: http://projects.camlcity.org/projects/findlib.html
+  short: Objective CAML package manager and build helper.
+
+download:
+  url: http://download.camlcity.org/download/
+  file_tar_gz: ~
+  checksum: ce7fb1cbd551ca4c5c58c7d4230e6fe0b7194bfd6919e4f637c8946cc2c9ab31
+
+version:
+  upstream: kxver_scrape_url(undef, "http://download.camlcity.org/download/", qr|findlib-([0-9]+[0-9.]+[0-9]+)|);
+
+opt:
+
+  - build:
+    - configure: >
+        -bindir ${KX_PREFIX}/bin
+        -mandir ${KX_PREFIX}/man
+        -sitelib ${KX_PREFIX}/lib
+        -config ${KX_PREFIX}/etc
+
+    - make_repeat: all
+    - make_repeat: opt
+
+  - install:
+    - sh: umask 022
+    - install: ~

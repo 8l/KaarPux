@@ -1,0 +1,25 @@
+package:
+  name: liboauth
+  version: 1.0.3
+  www: http://liboauth.sourceforge.net/
+  short: Collection of POSIX-c functions implementing the OAuth Core RFC 5849 standard.
+
+download:
+  sourceforge: ~
+  url: ftp://ftp.lysator.liu.se/pub/security/lsh
+  file_tar_gz: ~
+  checksum: 0df60157b052f0e774ade8a8bac59d6e8d4b464058cc55f9208d72e41156811f
+
+version:
+  installed_pkgconfig: oauth
+  upstream: kxver_upstream_sourceforge("liboauth", "", "liboauth");
+
+
+linux:
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~

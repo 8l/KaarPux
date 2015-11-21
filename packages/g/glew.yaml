@@ -1,0 +1,28 @@
+package:
+  name: glew
+  version: 1.13.0
+  www: http://glew.sourceforge.net/
+  short: |
+      The OpenGL Extension Wrangler Library (GLEW) is a cross-platform open-source C/C++ extension loading library.
+      GLEW provides efficient run-time mechanisms for determining which OpenGL extensions are supported on the target platform.
+      OpenGL core and extension functionality is exposed in a single header file.
+
+download:
+  sourceforge: ~
+  file_tgz: ~
+  checksum: aa25dc48ed84b0b64b8d41cdd42c8f40f149c37fa2ffa39cd97f42c78d128bc7
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_upstream_sourceforge("glew", "glew", "glew");
+
+linux:
+
+  - build:
+    - make: ~
+
+  # No test suite
+
+  - install:
+    - install: ~
+

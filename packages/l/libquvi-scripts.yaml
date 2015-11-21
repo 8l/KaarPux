@@ -1,0 +1,28 @@
+package:
+  name: libquvi-scripts
+  version: 0.9.20131130
+  www: http://quvi.sourceforge.net/
+  short: |
+      parses media stream URLs for Internet applications
+      that would otherwise have to use adobe flash multimedia platform to access the media streams.
+
+download:
+  sourceforge: quvi/${KX_LIBQUVI_SCRIPTS_VERSION_MM}/libquvi-scripts
+  file_tar_xz: ~
+  checksum: 17f21f9fac10cf60af2741f2c86a8ffd8007aa334d1eb78ff6ece130cb3777e3
+  verify: sig
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_upstream_sourceforge("quvi", undef, "quvi-scripts");
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

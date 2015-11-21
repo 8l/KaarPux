@@ -1,0 +1,27 @@
+package:
+  name: gdk-pixbuf
+  version: 2.32.1
+  www: http://developer.gnome.org/gdk-pixbuf/
+  short: GdkPixbuf is a library for image loading and manipulation.
+
+download:
+  gnomexz: ~
+  checksum: 4432b74f25538c7d6bcb3ca51adabdd666168955f25812a2568dc9637697f3bc
+
+version:
+  installed_pkgconfig: gdk-pixbuf-2.0
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --with-x11 --enable-installed-tests
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+verify_cli: |
+  kx_cli_match_success "gdk-pixbuf-pixdata --version" { gdk-pixbuf-pixdata }

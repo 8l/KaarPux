@@ -1,0 +1,27 @@
+package:
+  name: libXft
+  version: 2.3.2
+  www: http://cgit.freedesktop.org/xorg/lib/libXft
+  short: Client side font rendering library
+
+download:
+  url: http://xorg.freedesktop.org/releases/individual/lib
+  file_tar_bz2: ~
+  checksum: f5a3c824761df351ca91827ac221090943ef28b248573486050de89f4bfcdc4c
+
+version: ~
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+
+

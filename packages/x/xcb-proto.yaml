@@ -1,0 +1,30 @@
+package:
+  name: xcb-proto
+  version: 1.11
+  www: http://xcb.freedesktop.org/
+  short: |
+      The X protocol C-language Binding (XCB) is a replacement for Xlib
+      featuring a small footprint, latency hiding, direct access to the protocol,
+      improved threading support, and extensibility.
+
+download:
+  url: http://xcb.freedesktop.org/dist/
+  file_tar_bz2: ~
+  checksum: b4aceee6502a0ce45fc39b33c541a2df4715d00b72e660ebe8c5bb444771e32e
+
+version: ~
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+
+

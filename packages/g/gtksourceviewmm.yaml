@@ -1,0 +1,23 @@
+package:
+  name: gtksourceviewmm
+  version: 3.18.0
+
+download:
+  gnomexz: ~
+  checksum: 51081ae3d37975dae33d3f6a40621d85cb68f4b36ae3835eec1513482aacfb39
+
+version:
+  installed_pkgconfig: gtksourceviewmm-3.0
+  upstream_gnome: ~
+
+
+linux:
+
+  - build:
+    - configure_kx: --disable-documentation
+    - make: ~
+
+  # No test suite
+
+  - install:
+    - install: ~

@@ -1,0 +1,38 @@
+package:
+  name: dejagnu
+  version: 1.5.3
+  www: http://www.gnu.org/software/dejagnu/
+  short: DejaGnu is a framework for testing other programs. Its purpose is to provide a single front end for all tests.
+
+download:
+  gnuz: ~
+  checksum: 099b8e364ca1d6248f8e1d32168c4b12677abff4253bbbb4a8ac8cdd321e3f19
+
+
+version:
+  installed: kxver_sh_pattern("runtest --version", qr|Framework version is\s*([0-9\.]+)|);
+  wiz_savannah: ~
+  changelog: ChangeLog
+
+bootstrap_3:
+  - configure_tools: ~
+  - make: ~
+  - install: ~ 
+
+bootstrap_7:
+  - configure_kx: --enable-thread-safe
+  # make really does nothing
+  - make: ~
+  - install: ~ 
+  - sh: |
+      if test -z "${KX_DISABLE_TEST}"; then
+        # dejagnu tests do not work if STDIN is /dev/null
+        # so create a fifo as STDIN
+        kx_step_echo 'check DEJAGNU'
+        rm -f stdin-fifo; mkfifo -m600 stdin-fifo;
+          make ${KX_MAKE_J} -k  check 0<>stdin-fifo
+        rm -f stdin-fifo
+      fi
+
+# No explicit CLI test of dejagnu, as the test driver uses dejagnu, so it is implicitly tested
+

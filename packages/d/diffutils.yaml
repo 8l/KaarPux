@@ -1,0 +1,34 @@
+package:
+  name: diffutils
+  version: 3.3
+  www: http://www.gnu.org/software/diffutils/
+  short: GNU Diffutils is a package of several programs related to finding differences between files.
+
+download:
+  gnux: ~
+  checksum: a25e89a8ab65fded1731e4186be1bb25cda967834b6df973599cdcd5abdfc19c
+
+version:
+  installed_sh_trailing: diff --version
+  wiz_savannah: ~
+
+bootstrap_3:
+  - sh: sed -i -e '/gets is a/d' lib/stdio.in.h
+  - configure: --prefix=${KX_TOOLS}
+  - make: ~
+  - install: ~ 
+
+bootstrap_7:
+  - sh: sed -i -e '/gets is a/d' lib/stdio.in.h
+  - configure_kx: ~
+  - make: ~
+  - check: ~
+  - install: ~ 
+
+# ==========================================================
+
+# TODO: Better tests
+
+verify_cli: |
+  kx_cli_success diff -r . . 
+

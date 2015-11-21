@@ -1,0 +1,13 @@
+diff -Naur wxWidgets-3.0.1.ORIG/include/wx/math.h wxWidgets-3.0.1/include/wx/math.h
+--- wxWidgets-3.0.1.ORIG/include/wx/math.h	2014-06-14 23:48:48.000000000 +0200
++++ wxWidgets-3.0.1/include/wx/math.h	2014-06-21 17:41:12.795972783 +0200
+@@ -88,7 +88,7 @@
+ #elif defined(__GNUG__)||defined(__GNUWIN32__)||defined(__DJGPP__)|| \
+       defined(__SGI_CC__)||defined(__SUNCC__)||defined(__XLC__)|| \
+       defined(__HPUX__)
+-    #define wxIsNaN(x) isnan(x)
++    #define wxIsNaN(x) std::isnan(x)
+ #else
+     #define wxIsNaN(x) ((x) != (x))
+ #endif
+

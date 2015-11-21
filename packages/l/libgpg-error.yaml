@@ -1,0 +1,22 @@
+package:
+  name: libgpg-error
+  version: 1.20
+  www: http://www.gnupg.org/related_software/libgpg-error/
+  short: Small library that defines common error values for all GnuPG components.
+
+download:
+  url: ftp://ftp.gnupg.org/gcrypt/libgpg-error
+  file_tar_bz2: ~
+  checksum: 3266895ce3419a7fb093e63e95e2ee3056c481a9bc0d6df694cfd26f74e72522
+
+version:
+  installed_sh_trailing: gpg-error --version
+
+linux:
+  - build:
+    - configure: prefix=/
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~

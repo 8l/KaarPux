@@ -1,0 +1,36 @@
+package:
+  name: gperf
+  version: 3.0.4
+  www: http://www.gnu.org/software/gperf
+  short: |
+      GNU gperf is a perfect hash function generator.
+      For a given list of strings, it produces a hash function and hash table,
+      in form of C or C++ code, for looking up a value depending on the input string.
+
+download:
+  gnuz: ~
+  checksum: 767112a204407e62dbc3106647cf839ed544f3cf5d0f0523aaa2508623aad63e
+
+version:
+  upstream_gnu: ~
+  wiz_savannah: ~
+  news: NEWS
+  changelog: ChangeLog
+
+bootstrap_8:
+
+    - configure_kx: ~
+
+    - make: ~
+
+    - check: -j1
+
+    - install: ~
+
+
+# ==========================================================
+
+verify_cli: |
+
+  kx_cli_send_match_success /bin/gperf { x y z  } { "hash (str, len)" "3, 3, 3, 3, 3, 3, 3, 3, 3, 3," "2, 1, 0, 3, 3, 3, 3, 3, 3, 3," }
+

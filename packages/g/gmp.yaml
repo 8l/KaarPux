@@ -1,0 +1,35 @@
+package:
+  name: gmp
+  version: 6.0.0
+  www: http://gmplib.org/
+  short: |
+      GMP is a free library for arbitrary precision arithmetic, operating on signed integers, rational numbers, and floating point numbers.
+      There is no practical limit to the precision except the ones implied by the available memory in the machine GMP runs on.
+      GMP has a rich set of functions, and the functions have a regular interface. 
+
+lfs:
+  - http://www.linuxfromscratch.org/lfs/view/development/chapter06/gmp.html
+
+download:
+  url: https://gmplib.org/download/gmp
+  file_tar_xz: ~
+  checksum: a48b8e8401f2624c16846d6d34aaad0b97398e225e382f989e0b8eb79579e8ad
+  # verify: sig
+
+version:
+  installed: kxver_header_file_full("/include/gmp.h", qr|__GNU_MP_VERSION\s*([0-9]+)|, qr|__GNU_MP_VERSION_MINOR\s*([0-9]+)|, qr|__GNU_MP_VERSION_PATCHLEVEL\s*([0-9]+)|)
+  upstream_gnu: ~
+  source: https://gmplib.org/repo/
+  news: NEWS
+  changelog: ChangeLog
+
+bootstrap_5:
+  - configure_kx: --enable-cxx --disable-static
+  - make: ~
+  - check: ~
+# make check 2>&1 | tee "${KX_BASE}/log/bootstrap_5/GMP-CHECK.txt"
+# TODO: Check
+# Ensure that all 143 tests in the test suite passed. Check the results by issuing the following command: 
+# awk '/tests passed/{total+=$2} ; END{print total}' gmp-check-log
+  - install: ~
+

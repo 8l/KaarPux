@@ -1,0 +1,20 @@
+#
+# This patch is part of KaarPux:
+# http://kaarpux.kaarposoft.dk/
+#
+# we should install gdm-service, also if the systemdsystemunit already exists
+#
+
+diff -Naur gdm-3.12.2.ORIG/data/Makefile.am gdm-3.12.2/data/Makefile.am
+--- gdm-3.12.2.ORIG/data/Makefile.am	2014-03-18 05:23:44.000000000 +0100
++++ gdm-3.12.2/data/Makefile.am	2014-09-11 10:14:56.314647853 +0200
+@@ -304,6 +304,9 @@
+ 		$(mkinstalldirs) $(DESTDIR)$(SYSTEMD_SYSTEM_UNIT_DIR); \
+ 		chmod 0755 $(DESTDIR)$(SYSTEMD_SYSTEM_UNIT_DIR); \
+ 		chown root:root $(DESTDIR)$(SYSTEMD_SYSTEM_UNIT_DIR) || : ; \
++	fi
++
++	if test -n "$(systemdsystemunit)"; then \
+ 		$(INSTALL_DATA) $(builddir)/$(systemdsystemunit) $(DESTDIR)$(SYSTEMD_SYSTEM_UNIT_DIR)/$(systemdsystemunit); \
+ 	fi
+ 

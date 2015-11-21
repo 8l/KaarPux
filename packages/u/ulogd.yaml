@@ -1,0 +1,47 @@
+package:
+  name: ulogd
+  version: 2.0.5
+  www: http://www.netfilter.org/projects/ulogd/
+  short: userspace logging daemon for netfilter/iptables related logging.
+
+doc: |
+  <para>
+    We configure <systemitem>iptables</systemitem> to log dropped packets
+    using the kernel <systemitem>nfnetlink</systemitem> subsystem.
+  </para><para>
+    We then start <systemitem>ulogd.service</systemitem>,
+    which will log dropped packets into
+    <filename>/var/log/iptables_drop.pcap</filename>.
+  </para><para>
+    Dropped packets can now be analyzed using <application>tcpdump</application>,
+    <application>wireshark</application>, or similar.
+  </para><para>
+    Documentation can be found at
+    <ulink url="http://rlworkman.net/howtos/ulogd.html">ULOGD 2.x - the Netfilter Userspace Logging Daemon</ulink>.
+  </para>
+
+download:
+  url: ftp://ftp.netfilter.org/pub/ulogd/
+  file_tar_bz2: ~
+  checksum: a221cb9f77347c0ca00d0937e27c1b90e3291a553cc62a4139b788e2e420e8c0
+  verify: sig
+
+version:
+  installed: kxver_sh_version "ulogd -V"
+
+bootstrap_8:
+
+    - configure_kx: ~
+    - make: ~
+
+    # No testsuite
+
+    - install: ~
+    - sh: cp ulogd.conf /etc/ulogd.conf.default
+    - install_pkg_file: 644 ulogd.conf /etc
+    - install_pkg_file: 644 ulogd.service /etc/systemd/system
+    - sh: ln -svf '/etc/systemd/system/ulogd.service' '/etc/systemd/system/network.target.wants/ulogd.service' 
+
+verify_cli: |
+  kx_cli_success /bin/ulogd -V
+

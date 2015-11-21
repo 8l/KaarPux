@@ -1,0 +1,75 @@
+# HG changeset patch
+# User Terrence Cole <terrence@mozilla.com>
+# Date 1347300017 25200
+# Node ID 1015240172f32b81aae7a318b80c734a7e34e4ce
+# Parent  d72e446524180c9cd059c2d1021025e322338897
+Bug 784631 - Fix some clang errors; r=?
+
+diff --git a/js/src/jsinterp.cpp b/js/src/jsinterp.cpp
+--- a/js/src/jsinterp.cpp
++++ b/js/src/jsinterp.cpp
+@@ -1226,16 +1226,17 @@ js::Interpret(JSContext *cx, StackFrame 
+     RootedValue rootValue0(cx), rootValue1(cx);
+     RootedString rootString0(cx), rootString1(cx);
+     RootedObject rootObject0(cx), rootObject1(cx), rootObject2(cx);
+     RootedFunction rootFunction0(cx);
+     RootedTypeObject rootType0(cx);
+     RootedPropertyName rootName0(cx);
+     RootedId rootId0(cx);
+     RootedShape rootShape0(cx);
++    DebugOnly<uint32_t> blockDepth;
+ 
+     if (!entryFrame)
+         entryFrame = regs.fp();
+ 
+ #if JS_HAS_GENERATORS
+     if (JS_UNLIKELY(regs.fp()->isGeneratorFrame())) {
+         JS_ASSERT(size_t(regs.pc - script->code) <= script->length);
+         JS_ASSERT(regs.stackDepth() <= script->nslots);
+@@ -3645,17 +3646,17 @@ BEGIN_CASE(JSOP_ENTERLET1)
+         goto error;
+ }
+ END_CASE(JSOP_ENTERBLOCK)
+ 
+ BEGIN_CASE(JSOP_LEAVEBLOCK)
+ BEGIN_CASE(JSOP_LEAVEFORLETIN)
+ BEGIN_CASE(JSOP_LEAVEBLOCKEXPR)
+ {
+-    DebugOnly<uint32_t> blockDepth = regs.fp()->blockChain().stackDepth();
++    blockDepth = regs.fp()->blockChain().stackDepth();
+ 
+     regs.fp()->popBlock(cx);
+ 
+     if (op == JSOP_LEAVEBLOCK) {
+         /* Pop the block's slots. */
+         regs.sp -= GET_UINT16(regs.pc);
+         JS_ASSERT(regs.stackDepth() == blockDepth);
+     } else if (op == JSOP_LEAVEBLOCKEXPR) {
+diff --git a/js/src/jsutil.h b/js/src/jsutil.h
+--- a/js/src/jsutil.h
++++ b/js/src/jsutil.h
+@@ -427,20 +427,20 @@ typedef size_t jsbitmap;
+                                  ((jsbitmap)1<<((_bit)&(JS_BITS_PER_WORD-1))))
+ #define JS_CLEAR_BIT(_map,_bit) ((_map)[(_bit)>>JS_BITS_PER_WORD_LOG2] &=     \
+                                  ~((jsbitmap)1<<((_bit)&(JS_BITS_PER_WORD-1))))
+ 
+ /* Wrapper for various macros to stop warnings coming from their expansions. */
+ #if defined(__clang__)
+ # define JS_SILENCE_UNUSED_VALUE_IN_EXPR(expr)                                \
+     JS_BEGIN_MACRO                                                            \
+-        _Pragma("clang diagnostic push")                                      \
+-        _Pragma("clang diagnostic ignored \"-Wunused-value\"")                \
+-        expr;                                                                 \
+-        _Pragma("clang diagnostic pop")                                       \
++        _Pragma("(clang diagnostic push)")                                    \
++        _Pragma("(clang diagnostic ignored \"-Wunused-value\")")              \
++        {expr;}                                                               \
++        _Pragma("(clang diagnostic pop)")                                     \
+     JS_END_MACRO
+ #elif (__GNUC__ >= 5) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
+ # define JS_SILENCE_UNUSED_VALUE_IN_EXPR(expr)                                \
+     JS_BEGIN_MACRO                                                            \
+         _Pragma("GCC diagnostic push")                                        \
+         _Pragma("GCC diagnostic ignored \"-Wunused-but-set-variable\"")       \
+         expr;                                                                 \
+         _Pragma("GCC diagnostic pop")                                         \

@@ -1,0 +1,30 @@
+package:
+  name: pciutils
+  version: 3.4.0
+  www: http://mj.ucw.cz/sw/pciutils/
+  short: |
+      The PCI Utilities are a collection of programs for inspecting and manipulating configuration of PCI devices,
+      all based on a common portable library libpci which offers access to the PCI configuration space on a variety of operating systems. 
+
+download:
+  kernelxz: software/utils/pciutils
+  checksum: f8898ff6d58f52e9e17e2763bff479bb9511bcf0d8711084fa77f1b6b1739196
+
+version:
+  installed: kxver_header_file_one("/usr/include/pci/config.h", "PCILIB_VERSION");
+
+bootstrap_8:
+  - make: PREFIX="${KX_PREFIX}" ZLIB=no SHARED=yes PCI_COMPRESSED_IDS=0 all
+  # No testsuite
+  - install: >
+      PREFIX="${KX_PREFIX}"
+      MANDIR="${KX_PREFIX}/share/man"
+      ZLIB=no
+      SHARED=yes
+      PCI_COMPRESSED_IDS=0
+      install-lib
+
+verify_cli: |
+  kx_cli_success /bin/lspci --version
+  kx_cli_match_success /bin/lspci { "Host bridge" "ISA bridge" }
+

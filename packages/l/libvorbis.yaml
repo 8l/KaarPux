@@ -1,0 +1,29 @@
+package:
+  name: libvorbis
+  version: 1.3.5
+  www: http://xiph.org/vorbis/
+  short: |
+      Ogg Vorbis is a fully open, non-proprietary, patent-and-royalty-free, general-purpose compressed audio format
+      for mid to high quality (8kHz-48.0kHz, 16+ bit, polyphonic) audio and music at fixed and variable bitrates from 16 to 128 kbps/channel. 
+
+download:
+  url: http://downloads.xiph.org/releases/vorbis
+  file_tar_xz: ~
+  checksum: 54f94a9527ff0a88477be0a71c0bab09a4c3febe0ed878b24824906cd4b0e1d1
+
+version:
+  installed_pkgconfig: vorbis
+
+linux:
+  - build:
+    - sh: sed s/-O20/-O2/ -i configure
+    - sh: CFLAGS="-fpic -fPIC"; export CFLAGS
+    - sh: LDLAGS="-fpic -fPIC"; export LDLAGS
+    - configure_kx: --disable-static
+    - make: ~
+
+  - test:
+    - check: LIBS=-lm
+
+  - install:
+    - install: ~

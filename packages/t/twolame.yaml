@@ -1,0 +1,23 @@
+package:
+  name: twolame
+  version: 0.3.13
+  www: http://www.twolame.org/
+  short: TwoLAME is an optimised MPEG Audio Layer 2 (MP2) encoder.
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: 98f332f48951f47f23f70fd0379463aff7d7fb26f07e1e24e42ddef22cc6112a
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_upstream_sourceforge("twolame", "twolame", "twolame");
+
+linux:
+  - build:
+    - echo: "autogen"
+    - sh: ./autogen.sh
+    - configure_kx: --disable-static
+    - make: ~
+  - install:
+    - install: ~

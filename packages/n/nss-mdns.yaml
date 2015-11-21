@@ -1,0 +1,27 @@
+package:
+  name: nss-mdns
+  version: 0.10
+  www: http://0pointer.de/lennart/projects/nss-mdns/
+  short: Plugin for the GNU Name Service Switch (NSS) functionality of the GNU C Library (glibc) providing host name resolution via Multicast DNS (Avahi)
+
+download:
+  url:  http://0pointer.de/lennart/projects/nss-mdns
+  file_tar_gz: ~
+  checksum: 1e683c2e7c3921814706d62fbbd3e9cbf493a75fa00255e0e715508d8134fa6d
+
+version:
+  installed_na: ~
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~
+    - sh: |
+        sed -i -e s'/^hosts/#hosts/' /etc/nsswitch.conf
+        echo "hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4" >> /etc/nsswitch.conf

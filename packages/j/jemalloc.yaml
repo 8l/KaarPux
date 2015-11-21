@@ -1,0 +1,21 @@
+package:
+  name: jemalloc
+  version: 3.6.0
+  www: http://www.canonware.com/jemalloc/
+  short: a general purpose malloc(3) implementation that emphasizes fragmentation avoidance and scalable concurrency support.
+
+download:
+  url: https://github.com/jemalloc/jemalloc/releases/download/${KX_JEMALLOC_VERSION}
+  file_tar_bz2: ~
+  checksum: e16c2159dd3c81ca2dc3b5c9ef0d43e1f2f45b04548f42db12e7c12d7bdf84fe
+
+version:
+  upstream: kxver_scrape_url(undef, "https://github.com/jemalloc/jemalloc/releases", qr|<span class="tag-name">v([0-9]+)</span>|)
+
+bootstrap_8:
+
+    - configure_kx: --enable-prof
+    - make: ~
+
+    - install: ~
+

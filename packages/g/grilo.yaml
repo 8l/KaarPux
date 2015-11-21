@@ -1,0 +1,27 @@
+package:
+  name: grilo
+  version: 0.2.14
+  www: https://live.gnome.org/Grilo
+  short: framework focused on making media discovery and browsing easy for application developers. 
+
+download:
+  gnomexz: ~
+  checksum: 79c82ea1747ae7430a648aa9660e44d88d48c968bcdaeb3b2c5cb97e1c921ccd
+
+version:
+  installed_pkgconfig: grilo-0.2
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_success grl-inspect-0.2 --keys

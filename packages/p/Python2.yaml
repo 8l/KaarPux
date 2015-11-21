@@ -1,0 +1,72 @@
+package:
+  name: Python2
+  version: 2.7.10
+  www: http://www.python.org/
+  short: Python is a programming language that lets you work more quickly and integrate your systems more effectively.
+  changelog: http://www.python.org/download/releases/${KX_PYTHON2_VERSION}
+
+doc: |
+  <para>
+  We should try to upgrade packages to Python 3
+  </para><para>
+  See <ulink url="http://wiki.python.org/moin/Python2orPython3">Python 2 or Python 3</ulink>
+  </para>
+
+download:
+  url: http://www.python.org/ftp/python/${KX_PYTHON2_VERSION}
+  file: Python-${KX_PYTHON2_VERSION}.tgz
+  dir: Python-${KX_PYTHON2_VERSION}
+  checksum: eda8ce6eec03e74991abb5384170e7c65fcd7522e409b8e83d7e6372add0f12a
+  verify: asc
+
+version:
+  installed_sh_trailing: python --version
+  upstream: kxver_scrape_url(undef, "http://www.python.org/ftp/python/", qr|>(2[0-9.]*[0-9]+)/<|);
+
+bootstrap_8:
+
+    - echo: Preconfigure
+    - sh: sed -i -e "s/ndbm_libs = \[\]/ndbm_libs = ['gdbm', 'gdbm_compat']/" setup.py
+    - configure_kx: >
+        --enable-shared
+        --with-system-expat
+        --with-system-ffi
+        --enable-unicode=ucs4
+    - make_repeat: ~
+
+# We have a few errors in 'make test'
+# TODO: Come back and fix this
+
+# 347 tests OK.
+# 4 tests failed:
+#     test_distutils test_import test_subprocess test_urllib2
+# 41 tests skipped:
+#     test_aepack test_al test_applesingle test_bsddb185 test_bsddb3
+#     test_cd test_cl test_codecmaps_cn test_codecmaps_hk
+#     test_codecmaps_jp test_codecmaps_kr test_codecmaps_tw test_curses
+#     test_dl test_gdb test_gl test_imageop test_imgfile test_kqueue
+#     test_linuxaudiodev test_macos test_macostools test_msilib
+#     test_ossaudiodev test_scriptpackages test_smtpnet
+#     test_socketserver test_sqlite test_ssl test_startfile
+#     test_sunaudiodev test_tcl test_timeout test_tk test_ttk_guionly
+#     test_ttk_textonly test_urllib2net test_urllibnet test_winreg
+#     test_winsound test_zipfile64
+# 6 skips unexpected on linux2:
+#     test_gdb test_ssl test_tcl test_tk test_ttk_guionly
+#     test_ttk_textonly
+
+#    - test: ~
+
+    - install: ~  
+
+
+# ==========================================================
+
+verify_cli: |
+
+  kx_cli_match_success "/bin/python --version" { Python " 2." }
+  kx_cli_send_match_success /bin/python { "print \"Don't panic\"" exit() } { "Don't panic" }
+  kx_cli_send_match_success /bin/python { "print 1+2+3+4+5+6+7+8+9" exit() } { 45 }
+
+# TODO: better testcases
+

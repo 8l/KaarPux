@@ -1,0 +1,31 @@
+package:
+  name: exiv2
+  version: 0.25
+  www: http://www.exiv2.org/
+  short: C++ library and command line utility to manage image metadata.
+
+download:
+  url: http://exiv2.org/
+  file_tar_gz: ~
+  checksum: c80bfc778a15fdb06f71265db2c3d49d8493c382e516cb99b8c9f9cbde36efa4
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_scrape_url("exiv2", "http://www.exiv2.org/download.html");
+
+linux:
+
+  - build:
+    - sh: |
+        CPPFLAGS="-D_FILE_OFFSET_BITS=64"
+        export CPPFLAGS
+    - configure_kx: --disable-static
+    - make_repeat: ~
+
+  # No test suite
+
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success "exiv2 -V" { exiv2 }

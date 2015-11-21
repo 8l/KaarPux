@@ -1,0 +1,25 @@
+package:
+  name: npapi-sdk
+  version: 0.27.2
+  www: https://bitbucket.org/mgorny/npapi-sdk
+  short: |
+      NPAPI-SDK is a bundle of NPAPI headers by Mozilla. This project aims to sort
+      out and package that bundle for 'nix systems, providing a clear way to install
+      those headers and depend on them.
+
+download:
+  url: https://bitbucket.org/mgorny/npapi-sdk/downloads
+  file_tar_bz2:
+  checksum: 01bf34bdd0fcaa546ba3d5c96f5d91f91dd117d4ed5ffe13f56bbd5aa566ae77
+
+
+opt:
+
+  - build:
+
+    - configure_kx: ~
+    - make: ~
+
+  - install:
+    - install: ~
+

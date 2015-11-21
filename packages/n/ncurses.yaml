@@ -1,0 +1,72 @@
+package:
+  name: ncurses
+  version: 6.0
+  www: http://www.gnu.org/software/ncurses/
+  short: |
+      The Ncurses (new curses) library is a free software emulation of curses in System V Release 4.0, and more.
+      It uses Terminfo format, supports pads and color and multiple highlights and forms characters and function-key mapping,
+      and has all the other SYSV-curses enhancements over BSD Curses.
+
+download:
+  gnuz: ~
+  checksum: f551c24b30ce8bfb6e96d9f59b42fbea30fa3a6123384172f9e7284bcf647260
+
+version:
+  installed_sh_trailing: ncursesw5-config --version
+  news: NEWS
+
+bootstrap_3:
+  #  Don't install a static library that is not handled by configure: 
+  - sh: sed -i '/LIBTOOL_INSTALL/d' c++/Makefile.in
+  - configure: >
+        --prefix="${KX_TOOLS}"
+        --with-shared
+        --without-debug
+        --without-normal
+        --without-ada
+        --enable-widec
+        --enable-overwrite
+        --disable-dependency-tracking
+  - make: ~
+  - install: ~ 
+
+bootstrap_7:
+  #  Don't install a static library that is not handled by configure: 
+  - sh: sed -i '/LIBTOOL_INSTALL/d' c++/Makefile.in
+  - configure_kx: >
+        --with-shared
+        --without-debug
+        --without-normal
+        --enable-pc-files
+        --enable-widec
+        --enable-overwrite
+  - make: ~
+  # No testsuite
+  - install: ~ 
+  - echo: post-install
+  - doc: Many applications still expect the linker to be able to find non-wide-character Ncurses libraries.
+  - doc: Trick such applications into linking with wide-character libraries by means of symlinks and linker scripts
+  - sh: |
+      for lib in ncurses form panel menu ; do \
+          rm -vf /lib/lib${lib}.so ; \
+          echo "INPUT(-l${lib}w)" >/lib/lib${lib}.so ; \
+          ln -sfv lib${lib}w.a /lib/lib${lib}.a ; \
+      done
+      ln -sfv libncurses++w.a /lib/libncurses++.a
+  - doc: Finally, make sure that old applications that look for -lcurses at build time are still buildable
+  - sh: |
+      rm -vf /usr/lib/libcursesw.so
+      echo "INPUT(-lncursesw)" > /lib/libcursesw.so
+      ln -sfv libncurses.so /lib/libcurses.so
+      ln -sfv libncursesw.a /lib/libcursesw.a
+      ln -sfv libncurses.a /lib/libcurses.a
+  # ghc-binary wants the lib to be called libtinfo
+  - sh: |
+      ln -svf libncursesw.so.6 /lib/libtinfo.so.5
+
+verify_cli: |
+  kx_cli_match_success "/bin/ncursesw6-config --help" { "ncursesw-config" "prints this message" }
+
+# TODO:
+# real testcase
+

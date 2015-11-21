@@ -1,0 +1,25 @@
+package:
+  name: less
+  version: 481
+  www: http://www.greenwoodsoftware.com/less
+  short: Less is a free, open-source file pager.
+
+download:
+  file_tar_gz: ~
+  url: http://www.greenwoodsoftware.com/less
+  checksum: 3fa38f2cf5e9e040bb44fffaa6c76a84506e379e47f5a04686ab78102090dda5
+  verify: sig
+
+version:
+  installed: kxver_sh_pattern "less -V", qr|less ([0-9]+) |
+  upstream: kxver_scrape_url(undef, "http://www.greenwoodsoftware.com/less", qr|less-([0-9]+)|);
+
+bootstrap_7:
+  - configure_kx: --sysconfdir=/etc
+  - make: ~
+  # No testsuite
+  - install: ~ 
+
+verify_cli: |
+  kx_cli_success /bin/less -V
+

@@ -1,0 +1,26 @@
+package:
+  name: libwnck
+  version: 3.14.0
+  www: http://developer.gnome.org/libwnck/
+  short: |
+      libwnck is the Window Navigator Construction Kit,
+      a library for use in writing pagers, tasklists, and more generally applications that are dealing with window management.
+
+download:
+  gnomexz: ~
+  checksum: f5080076346609b4c36394b879f3a86b92ced3b90a37cb54c8e9a14f00e7921c
+
+version:
+  installed_pkgconfig: libwnck-3.0
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

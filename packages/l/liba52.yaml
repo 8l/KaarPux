@@ -1,0 +1,28 @@
+package:
+  name: liba52
+  version: 0.7.4
+  www: http://liba52.sourceforge.net/
+  short: free ATSC A/52 stream decoder
+
+download:
+  url: http://liba52.sourceforge.net/files/
+  file: a52dec-0.7.4.tar.gz
+  dir: a52dec-0.7.4
+  checksum: caa9f5bc44232dc8aeea773fea56be80
+
+# Looks like this has disappeared from SourceForge ???
+
+version:
+  installed: kxver_sh_pattern("a52dec -versiondoesntwork", qr|a52dec-([0-9]+\.+[0-9.\-]*[0-9]+)|);
+  upstream: kxver_scrape_url("a52dec", "http://liba52.sourceforge.net/");
+
+linux:
+  - build:
+    - configure_kx: --disable-static
+    - make: CFLAGS="-fPIC"
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

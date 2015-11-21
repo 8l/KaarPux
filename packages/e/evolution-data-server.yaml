@@ -1,0 +1,22 @@
+package:
+  name: evolution-data-server
+  version: 3.18.1
+  www: http://projects.gnome.org/evolution/arch.shtml
+  short: The "Evolution Data Server" is responsible for managing calendar and addressbook information.
+
+download:
+  gnomexz: ~
+  checksum: 4fe7c520a49d4c7fd67ed6fc2dfb33667f6138368c7bbe3ecd8c4ad2356771bc
+
+version:
+  installed_pkgconfig: evolution-data-server-1.2
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-vala-bindings --disable-strict --disable-uoa --disable-schemas-compile
+    - make: ~
+
+  - install:
+    - install: ~

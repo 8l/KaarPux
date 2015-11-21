@@ -1,0 +1,26 @@
+package:
+  name: uhttpmock
+  version: 0.5.0
+  www: https://gitorious.org/uhttpmock/pages/Home
+  short: HTTP web service mocking project for projects which use libsoup
+
+download:
+  url: http://tecnocode.co.uk/downloads/uhttpmock/
+  file_tar_xz: ~
+  checksum: 26da182a2db2579c5ba4dad9096d52099e0766228c295cfbaed6de4046f7d16e
+
+version: ~
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+# TODO: verify_cli

@@ -1,0 +1,27 @@
+package:
+  name: libssh
+  version: 0.7.2
+  short: |
+      libssh is a mulitplatform C library implementing the SSHv2 and SSHv1 protocol on client and server side.
+      With libssh, you can remotely execute programs, transfer files,
+      use a secure and transparent tunnel, manage public keys and much more ...
+
+download:
+  url: https://red.libssh.org/attachments/download/177
+  file_tar_xz: ~
+  checksum: 5d7d468937649a6dfc6186edfff083db
+
+version:
+  installed_pkgconfig: ~
+  # TODO: upstream version
+
+linux:
+  - build:
+    - sh: |
+        mkdir -pv build
+        cd build
+    - cmake_kx: -DCMAKE_BUILD_TYPE=Release ..
+    - make: ~
+  - install:
+    - sh: cd build
+    - install: ~

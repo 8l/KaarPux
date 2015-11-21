@@ -1,0 +1,26 @@
+package:
+  name: orca
+  version: 3.18.1
+  www: https://live.gnome.org/Orca
+  short: |
+      screen reader that provides access to the graphical desktop
+      via user-customizable combinations of speech and/or braille.
+
+download:
+  gnomexz: ~
+  checksum: dc36242b1814582f3e8448879e282e2b0c005d1c49617767c6ad28eb85c2a757
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

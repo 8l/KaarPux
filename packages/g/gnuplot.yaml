@@ -1,0 +1,35 @@
+package:
+  name: gnuplot
+  version: 5.0.1
+  www: http://www.gnuplot.info/
+  short: portable command-line driven graphing utility
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: 7cbc557e71df581ea520123fb439dea5f073adcc9010a2885dc80d4ed28b3c47
+
+version:
+  installed: my $v=kxver_sh_pattern("gnuplot --version", qr|gnuplot\s+(.*)|); $v =~ s/ patchlevel /./; return $v;
+  upstream: kxver_upstream_sourceforge("gnuplot", "gnuplot", "gnuplot", qr|gnuplot-([0-9.]+)\.tar.*/download|);
+
+opt:
+
+  - build:
+    - configure_kx_bash: >
+        --with-readline=gnu
+        --enable-history-file
+        --without-libcerf
+        --without-lua
+        --with-x
+        --disable-wxwidgets
+        --with-qt=no
+
+    - make: ~
+
+  - test:
+    # TODO: investigate why the default GNUTERM=wx fails
+    - check: GNUTERM=x11
+
+  - install:
+    - install: ~

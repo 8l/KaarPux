@@ -1,0 +1,27 @@
+package:
+  name: gmime
+  version: 2.6.20
+  www: http://developer.gnome.org/gmime/
+  short: |
+      GMime is a powerful MIME (Multipurpose Internet Mail Extension) utility library.
+      It is meant for creating, editing, and parsing MIME messages and structures.
+
+download:
+  gnomexz: ~
+  checksum: e0a170fb264c2ae4cecd852f4e7aaddb8d58e8f3f0b569ce2d2a4704f55bdf65
+
+version:
+  installed_pkgconfig: gmime-2.6
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

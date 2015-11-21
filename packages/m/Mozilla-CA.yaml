@@ -1,0 +1,44 @@
+package:
+  name: Mozilla-CA
+  version: 1.0
+  short: Fake version of perl's Mozilla's CA module
+
+doc: |
+  <para>
+    The official perl module Mozilla::CA
+    provides a copy of Mozilla's bundle of Certificate Authority
+    certificates in a form that can be consumed by modules and libraries
+    based on OpenSSL.
+  </para><para>
+    The present module simply points to the bundle
+    we already have in <application>KaarPux</application>.
+  </para><para>
+    The whole module is contained in <filename>master/packages/m/Mozilla-CA.files/Mozilla-CA-1.0</filename>
+  </para>
+
+
+download:
+  no_download: ~
+
+version:
+  installed: return("1.0");
+  upstream: return("1.0");
+
+linux:
+  - prepare_and_build:
+    - echo: Copying source
+    - sh: |
+        cd ${KX_BASE}/build/linux
+        rm -rf "${KX_MOZILLA_CA}"
+        cp -rp "${KX_BASE}/../master/packages/m/Mozilla-CA.files/${KX_MOZILLA_CA}" .
+    - echo: Making
+    - sh: |
+        cd "${KX_MOZILLA_CA}"
+        perl Makefile.PL
+        make
+  - test:
+    - test: ~
+
+  - install:
+    - install: ~
+

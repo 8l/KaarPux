@@ -1,0 +1,185 @@
+{#
+    kx_doc/layout.html
+    ~~~~~~~~~~~~~~~~~~~
+
+    Sphinx layout template for the KaarPux theme.
+
+    KaarPux: http://kaarpux.kaarposoft.dk
+    Copyright (C) 2015: Henrik Kaare Poulsen
+    License: http://kaarpux.kaarposoft.dk/license.html
+
+    Based on the default Sphinx theme:
+    :copyright: Copyright 2007-2014 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+#}
+
+{%- block doctype -%}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+{%- endblock %}
+{%- set reldelim1 = reldelim1 is not defined and ' &raquo;' or reldelim1 %}
+{%- set reldelim2 = reldelim2 is not defined and ' |' or reldelim2 %}
+{%- set render_sidebar = (not embedded) and (not theme_nosidebar|tobool) and
+                         (sidebars != []) %}
+{%- set url_root = pathto('', 1) %}
+{# XXX necessary? #}
+{%- if url_root == '#' %}{% set url_root = '' %}{% endif %}
+{%- if not embedded and docstitle %}
+  {%- set titlesuffix = " &mdash; "|safe + docstitle|e %}
+{%- else %}
+  {%- set titlesuffix = "" %}
+{%- endif %}
+
+{%- macro script() %}
+{%- endmacro %}
+
+{%- macro css() %}
+    <link rel="stylesheet" href="{{ pathto('_static/' + style, 1) }}" type="text/css" />
+{%- endmacro %}
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset={{ encoding }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    {{ metatags }}
+    {%- block htmltitle %}
+    <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
+    {%- endblock %}
+    {{ css() }}
+    {%- if not embedded %}
+    {{ script() }}
+    {%- if use_opensearch %}
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="{% trans docstitle=docstitle|e %}Search within {{ docstitle }}{% endtrans %}"
+          href="{{ pathto('_static/opensearch.xml', 1) }}"/>
+    {%- endif %}
+    {%- if favicon %}
+    <link rel="shortcut icon" href="{{ pathto('_static/' + favicon, 1) }}"/>
+    {%- endif %}
+    {%- endif %}
+{%- block linktags %}
+    {%- if hasdoc('about') %}
+    <link rel="author" title="{{ _('About these documents') }}" href="{{ pathto('about') }}" />
+    {%- endif %}
+    {%- if hasdoc('genindex') %}
+    <link rel="index" title="{{ _('Index') }}" href="{{ pathto('genindex') }}" />
+    {%- endif %}
+    {%- if hasdoc('search') %}
+    <link rel="search" title="{{ _('Search') }}" href="{{ pathto('search') }}" />
+    {%- endif %}
+    {%- if hasdoc('copyright') %}
+    <link rel="copyright" title="{{ _('Copyright') }}" href="{{ pathto('copyright') }}" />
+    {%- endif %}
+    <link rel="top" title="{{ docstitle|e }}" href="{{ pathto(master_doc) }}" />
+    {%- if parents %}
+    <link rel="up" title="{{ parents[-1].title|striptags|e }}" href="{{ parents[-1].link|e }}" />
+    {%- endif %}
+    {%- if next %}
+    <link rel="next" title="{{ next.title|striptags|e }}" href="{{ next.link|e }}" />
+    {%- endif %}
+    {%- if prev %}
+    <link rel="prev" title="{{ prev.title|striptags|e }}" href="{{ prev.link|e }}" />
+    {%- endif %}
+{%- endblock %}
+{%- block extrahead %} {% endblock %}
+  </head>
+  <body role="document">
+{% block header %}
+    <div class="header-wrapper">
+      <div class="header">
+        {%- if logo %}
+          <p class="logo"><a href="{{ pathto(master_doc) }}">
+            <img class="logo" src="{{ pathto('_static/' + logo, 1) }}" alt="Logo"/>
+          </a></p>
+        {%- endif %}
+        {%- block headertitle %}
+        <div class="headertitle"><a
+          href="{{ pathto('index.html', 1) }}">{{ shorttitle|e }}</a><br>{{ subtitle|e }}</div>
+        {%- endblock %}
+       </div>
+    </div>
+
+    <div class="related">
+      <ul>
+        <li><a href="{{ pathto('index.html', 1) }}"> {{ shorttitle|e }}</a>{{ reldelim1 }}</li>
+        {%- for parent in parents %}
+          <li><a href="{{ parent.link|e }}" {% if loop.last %}{{ accesskey("U") }}{% endif %}>{{ parent.title }}</a>{{ reldelim1 }}</li>
+        {%- endfor %}
+          <li>{{ title|e }}</li>
+      </ul>
+        <div class="rel">
+          {% if next %}
+          <a href="{{ next.link|e }}">Next</a>
+          {% endif %}
+       </div>
+    </div>
+
+{% endblock %}
+
+{% block relbar1 %}{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="sidebar">
+          {%- block sidebartoc %}
+          <h3><a href="{{ pathto(master_doc) }}">Table of contents</a></h3>
+          {{ toctree() }}
+          {%- endblock %}
+        </div>
+        <div class="document">
+          {%- block document %}
+            <div class="documentwrapper">
+            {%- if render_sidebar %}
+              <div class="bodywrapper">
+            {%- endif %}
+                <div class="body" role="main">
+                  {% block body %} {% endblock %}
+                </div>
+            {%- if render_sidebar %}
+              </div>
+            {%- endif %}
+            </div>
+          {%- endblock %}
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block relbar2 %}{% endblock %}
+
+{%- block footer %}
+    <div class="navfooter">
+      <ul>
+        <li class="prev">
+          {% if prev %}
+          <ul>
+            <li>
+              <a accesskey="p" href="{{ prev.link|e }}">Prev</a>
+            </li>
+            <li>{{ prev.title }}</li>
+          </ul>
+          {% endif %}
+        </li>
+        <li class="copyright">
+          <ul>
+            <li>{{ copyright }}</li>
+          </ul>
+        </li>
+        <li class="next">
+          {% if next %}
+          <ul>
+            <li>
+              <a accesskey="n" href="{{ next.link|e }}">Next</a>
+            </li>
+            <li>{{ next.title }}</li>
+          </ul>
+          {% endif %}
+        </li>
+      </ul>
+    </div>
+{%- endblock %}
+  </body>
+</html>

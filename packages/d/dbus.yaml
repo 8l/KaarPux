@@ -1,0 +1,61 @@
+package:
+  name: dbus
+  version: 1.10.2
+  www: http://www.freedesktop.org/wiki/Software/dbus
+  short: D-Bus is a message bus system.
+
+doc: |
+  <para>
+  D-Bus is a message bus system, a simple way for applications to talk to one another.
+  In addition to interprocess communication, D-Bus helps coordinate process lifecycle;
+  it makes it simple and reliable to code a "single instance" application or daemon,
+  and to launch applications and daemons on demand when their services are needed. 
+  </para>
+  <para>
+  Note that we are building D-Bus twice.
+  First we build D-Bus in bootstrap step 8 (after <xref linkend="pkg_systemd" />),
+  then we build D-Bus again in the Linux step xorg, after <xref linkend="pkg_libX11" />.
+  </para>
+
+download:
+  url: http://dbus.freedesktop.org/releases/dbus
+  file_tar_gz: ~
+  checksum: aef3f49595df09b0824433ee993cda748ede93693a719a831562ae1616b6bb9e
+  verify: asc
+
+version:
+  installed_pkgconfig: dbus-1
+
+bootstrap_8:
+    - configure_kx: >
+        --disable-static
+        --disable-xml-docs
+        --disable-doxygen-docs
+        --enable-systemd
+
+    - make: ~
+
+    - check: ~
+
+    - echo: Adding [messagebus] group and user
+    - sh: groupadd -fg ${KX_MESSAGEBUS_GID} messagebus
+    - sh: useradd -c "D-BUS Message Daemon User" -d /var/run/dbus -u ${KX_MESSAGEBUS_UID} -g messagebus -s /bin/false messagebus || test "$?" = "9"
+    - sh: id messagebus
+
+    - install: ~
+
+linux:
+  - build:
+    - configure_kx: >
+        --disable-static
+        --enable-xml-docs
+        --disable-doxygen-docs
+        --enable-systemd
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+    - sh: mkdir -pv /etc/X11/xinit/xinitrc.d/
+    - install_pkg_file: 755 00-start-message-bus.sh /etc/X11/xinit/xinitrc.d/00-start-message-bus.sh
+

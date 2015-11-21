@@ -1,0 +1,24 @@
+
+diff --git a/js/src/shell/jsoptparse.cpp b/mozilla/js/src/shell/jsoptparse.cpp
+--- a/js/src/shell/jsoptparse.cpp
++++ b/js/src/shell/jsoptparse.cpp
+@@ -248,17 +248,17 @@ OptionParser::printHelp(const char *prog
+ 
+ OptionParser::Result
+ OptionParser::extractValue(size_t argc, char **argv, size_t *i, char **value)
+ {
+     JS_ASSERT(*i < argc);
+     char *eq = strchr(argv[*i], '=');
+     if (eq) {
+         *value = eq + 1;
+-        if (value[0] == '\0')
++        if (*value[0] == '\0')
+             return error("A value is required for option %.*s", eq - argv[*i], argv[*i]);
+         return Okay;
+     }
+ 
+     if (argc == *i + 1)
+         return error("Expected a value for option %s", argv[*i]);
+ 
+     *i += 1;
+

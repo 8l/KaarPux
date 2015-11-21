@@ -1,0 +1,21 @@
+package:
+  name: gnome-shell-extensions
+  version: 3.18.1
+
+download:
+  gnomexz: ~
+  checksum: 7a7535420c0c808d28b5912ed42cfb221930010193083f2d8a7719ea1ffa1cc2
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --enable-extensions=all --disable-schemas-compile
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

@@ -1,0 +1,25 @@
+package:
+  name: broadcom-wl
+  version: 5.100.138
+  www: http://wireless.kernel.org/en/users/Drivers/b43
+  short: firmware from binary Broadcom 43xx driver files.
+
+doc: |
+    <para>
+         See <ulink url="http://wireless.kernel.org/en/users/Drivers/b43">b43</ulink>
+    </para>
+
+download:
+  url: http://www.lwfinger.com/b43-firmware/
+  file_tar_bz2: ~
+  checksum: f1e7067aac5b62b67b8b6e4c517990277804339ac16065eb13c731ff909ae46f
+
+version:
+  hold: 1
+
+linux:
+  - build:
+    - sh: echo "No Build"
+  # No test suite
+  - install:
+    - sh: b43-fwcutter -w "${KX_PREFIX}/lib/firmware" ./linux/wl_apsta.o

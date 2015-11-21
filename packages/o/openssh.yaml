@@ -1,0 +1,68 @@
+package:
+  name: openssh
+  version: 7.1p1
+  www: http://www.openssh.com/
+  short: OpenSSH is a FREE version of the SSH connectivity tools that technical users of the Internet rely on.
+
+download:
+  url: ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable
+  file_tar_gz: ~
+  checksum: fc0a6d2d1d063d5c66dffd952493d0cda256cad204f681de0f84ef85b2ad8428
+  verify: asc
+
+version:
+  sensitive: 1
+  installed: kxver_sh_pattern("ssh -V", qr|OpenSSH_([0-9.a-z]+),|);
+  upstream: kxver_scrape_ftp("ftp.openbsd.org", "/pub/OpenBSD/OpenSSH/portable", qr|openssh-([0-9]+\.+[0-9.]*[0-9]+p?[0-9]*)\.tar|);
+
+
+bootstrap_8:
+
+    # Slightly modified version of
+    # http://pkgs.fedoraproject.org/cgit/openssh.git/tree/openssh-6.2p1-entropy.patch
+
+    - configure_kx: >
+        --sysconfdir=/etc/ssh 
+        --datadir=/share/sshd 
+        --libexecdir=/lib/openssh 
+        --with-privsep-path=/var/lib/sshd
+        --with-pam
+
+    - make: ~
+
+    - echo: Adding [sshd] group and user
+    - sh: groupadd -fg ${KX_SSHD_GID} sshd
+    - sh: useradd -c "OpenSSH" -d /var/lib/sshd -u ${KX_SSHD_UID} -g sshd -s /bin/false sshd || test "$?" = "9"
+    - sh: id sshd
+    - sh: install -dv -m 0700 /var/lib/sshd
+    - sh: cp scp /bin
+
+    - echo: tests
+    - sh: test -n "${KX_DISABLE_TEST}" || make tests
+
+    - make: install-nokeys
+  
+    - echo: Post-install
+    - append_pkg_file: sshd_config /etc/ssh/sshd_config
+    - install_pkg_file: 644 sshd /etc/pam.d/
+    - install_pkg_file: 644 sshd.service /etc/systemd/system
+    - install_pkg_file: 644 sshd-keygen.service /etc/systemd/system
+    - sh: |
+        ln -svf "../sshd.service" "/etc/systemd/system/multi-user.target.wants/sshd.service"
+
+
+
+verify_cli: |
+
+  kx_cli_match_success "ssh -V" { OpenSSH OpenSSL }
+
+# TODO: verify_cli: add real testcases
+# /bin/scp
+# /bin/sftp
+# /bin/slogin
+# /bin/ssh
+# /bin/ssh-add
+# /bin/ssh-agent
+# /bin/sshd
+# /bin/ssh-keygen
+# /bin/ssh-keyscan

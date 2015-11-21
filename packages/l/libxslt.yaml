@@ -1,0 +1,31 @@
+package:
+  name: libxslt
+  version: 1.1.28
+  www: http://xmlsoft.org/XSLT/
+  short: XSLT C library developed for the GNOME project. XSLT itself is a an XML language to define transformation for XML.
+
+download:
+  url: ftp://xmlsoft.org/libxslt
+  file_tar_gz: ~
+  checksum: 5fc7151a57b89c03d7b825df5a0fae0a8d5f05674c0e7cf2937ecec4d54a028c
+
+version:
+  installed_pkgconfig: ~
+
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+ 
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success "xsltproc --version" { xslt }
+
+# TODO: verify_cli: real testcases

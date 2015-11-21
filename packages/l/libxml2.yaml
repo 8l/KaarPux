@@ -1,0 +1,35 @@
+package:
+  name: libxml2
+  version: 2.9.2
+  www: http://xmlsoft.org/
+  short: XML C parser and toolkit developed for the Gnome project (but usable outside of the Gnome platform).
+
+download:
+  url: ftp://xmlsoft.org/libxml2
+  file_tar_gz: ~
+  checksum: 5178c30b151d044aefb1b08bf54c3003a0ac55c59c866763997529d60770d5bc
+
+version:
+  installed_pkgconfig: libxml-2.0
+
+linux:
+  - build:
+    # http://www.linuxfromscratch.org/blfs/view/svn/general/libxml2.html
+    # Apply two upstream fixes, which correct bugs in xmlcatalog and in the entity substitution mechanism
+    - sh: >
+        sed
+          -e /xmlInitializeCatalog/d
+          -e 's/((ent->checked =.*&&/(((ent->checked == 0) ||
+                  ((ent->children == NULL) \&\& (ctxt->options \& XML_PARSE_NOENT))) \&\&/'
+          -i parser.c
+    - configure_kx: ~
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~     
+
+verify_cli: |
+  kx_cli_success xml2-config "--version"
+
+# TODO: verify_cli: real testcases

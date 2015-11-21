@@ -1,0 +1,49 @@
+package:
+  name: openvas-libraries
+  version: 8.0.5
+  www: http://www.openvas.org/
+  short: |
+      OpenVAS is a framework of several services and tools
+      offering a comprehensive and powerful vulnerability scanning and vulnerability management solution. 
+
+download:
+  url: http://wald.intevation.org/frs/download.php/2191
+  file_tar_gz: ~
+  checksum: 40dad0ea803d8ee7721f2385f2d2f8918b9e6733c8742efc1877210ade6501c1
+
+version:
+  installed_pkgconfig: libopenvas
+  upstream: kxver_scrape_url("openvas-libraries", "http://wald.intevation.org/frs/?group_id=29");
+  wiz_url: return kxver_fusionforge_url(29, @_);
+  wiz_yaml: kxver_fusionforge_yaml(20, @_);
+  source: https://wald.intevation.org/scm/viewvc.php/trunk/?root=openvas
+  news: CHANGES
+  changelog: ChangeLog
+
+linux:
+  - build:
+    - patch: ovas_scanner_context_malloc.patch
+    - patch: cmake_pid_dir.patch
+    - sh: mkdir build; cd build
+    - cmake_kx: -DOPENVAS_PID_DIR="/run/user/${KX_OPENVAS_ID}" -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+    - make: ~
+  - install:
+    - sh: cd build
+    # reentrant
+    - sh: rm -rf /etc/openvas/gnupg || true
+    - install: ~
+    - sh: |
+        groupadd -fg ${KX_OPENVAS_ID} openvas
+        useradd -c "OpenVAS user" -u ${KX_OPENVAS_ID} -g openvas openvas -m || test "$?" = "9"
+        id openvas
+    - sh: >
+        chown openvas:openvas /etc/openvas
+        /var/lib/openvas/gnupg
+    - sh: |
+        rmdir /etc/openvas/gnupg
+        ln -svf /var/lib/openvas/gnupg /etc/openvas/gnupg
+    - sh: >
+        install --directory --mode=0755 --group=openvas --owner=openvas
+        /var/log/openvas
+        /var/lib/openvas
+        /var/cache/openvas

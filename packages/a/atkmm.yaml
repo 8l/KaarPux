@@ -1,0 +1,22 @@
+package:
+  name: atkmm
+  version: 2.24.1
+  www: http://developer.gnome.org/atkmm/
+  short: atkmm is the official C++ interface for the ATK accessibility toolkit library
+
+download:
+  gnomexz: ~
+  checksum: 26c41d8da37d04eef9f219c6ce87d94852e1cacaad823050e520e1c08a36ed23
+
+version:
+  installed_pkgconfig: atkmm-1.6
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static --disable-documentation
+    - make: ~
+
+  - install:
+    - install: ~

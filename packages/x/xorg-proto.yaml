@@ -1,0 +1,34 @@
+package:
+  name: xorg-proto
+  version: 7.7
+
+xorg:
+  - proto_modules: |
+      P 462116ab44e41d8121bfde947321950370b285a5316612b8fce8334d50751b1e  bigreqsproto-1.1.2.tar.bz2
+      . 049359f0be0b2b984a8149c966dd04e8c58e6eade2a4a309cf1126635ccd0cfc  compositeproto-0.4.2.tar.bz2
+      . 5c7c112e9b9ea8a9d5b019e5f17d481ae20f766cb7a4648360e7c1b46fc9fc5b  damageproto-1.2.1.tar.bz2
+      . e72051e6a3e06b236d19eed56368117b745ca1e1a27bdc50fd51aa375bea6509  dmxproto-2.3.1.tar.bz2
+      . 259046b0dd9130825c4a4c479ba3591d6d0f17a33f54e294b56478729a6e5ab8  fontsproto-2.1.3.tar.bz2
+      . a777548d2e92aa259f1528de3c4a36d15e07a4650d0976573a8e2ff5437e7370  recordproto-1.14.2.tar.bz2
+      . 3c66003a6bdeb0f70932a9ed3cf57cc554234154378d301e0c5cfa189d8f6818  resourceproto-1.2.0.tar.bz2
+      . 8bb70a8da164930cceaeb4c74180291660533ad3cc45377b30a795d1b85bcd65  scrnsaverproto-1.2.2.tar.bz2
+      . b13236869372256c36db79ae39d54214172677fb79e9cdc555dceec80bd9d2df  xcmiscproto-1.2.2.tar.bz2
+      . ba9220e2c4475f5ed2ddaa7287426b30089e4d29bd58d35fad57ba5ea43e1648  xf86bigfontproto-1.2.0.tar.bz2
+      . ac5ef65108e1f2146286e53080975683dae49fc94680042e04bd1e2010e99050  xf86dgaproto-2.1.tar.bz2
+      . 9c4b8d7221cb6dc4309269ccc008a22753698ae9245a398a59df35f1404d661f  xf86driproto-2.1.1.tar.bz2
+      . 45d9499aa7b73203fd6b3505b0259624afed5c16b941bd04fcf123e5de698770  xf86vidmodeproto-2.3.1.tar.bz2
+      . 977574bb3dc192ecd9c55f59f991ec1dff340be3e31392c95deff423da52485b  xineramaproto-1.2.1.tar.bz2
+      . 5a47ee62053a6acef3a83f506312494be1461068d0b9269d818839703b95c1d1  inputproto-2.3.1.tar.bz2
+      . 4c675533e79cd730997d232c8894b6692174dce58d3e207021b8f860be498468 randrproto-1.5.0.tar.bz2
+      . ba2f3f31246bdd3f2a0acf8bd3b09ba99cab965c7fb2c2c92b7dc72870e424ce  fixesproto-5.0.tar.bz2
+      . b2721d5d24c04d9980a0c6540cb5396a  dri2proto-2.8.tar.bz2
+      . 01be49d70200518b9a6b297131f6cc71f4ea2de17436896af153226a774fc074 dri3proto-1.0.tar.bz2
+      . adaa94bded310a2bfcbb9deb4d751d965fcfe6fb3a2f6d242e2df2d6589dbe40 glproto-1.4.17.tar.bz2
+      . 06735a5b92b20759204e4751ecd6064a2ad8a6246bb65b3078b862a00def2537  renderproto-0.11.1.tar.bz2
+      . f882210b76376e3fa006b11dbd890e56ec0942bc56e65d1249ff4af86f90b857 kbproto-1.0.7.tar.bz2
+      . 29e85568d1f68ceef8a2c081dad9bc0e5500a53cfffde24b564dc43d46ddf6ca xproto-7.0.28.tar.bz2
+      . f3f4b23ac8db9c3a9e0d8edb591713f3d70ef9c3b175970dd8823dfc92aa5bb0 xextproto-7.3.0.tar.bz2
+      . 8dae168cb820fcd32f564879afb3f24d27c176300d9af66819a18265539bd4b6 videoproto-2.3.2.tar.bz2
+      . 99d0e25feea2fead7d8325b7000b41c3  printproto-1.0.5.tar.bz2        ##### Not part of Xorg katamari 
+      . 812c7d48721f909a0f7a2cb1e91f6eead76159a36c4712f4579ca587552839ce presentproto-1.0.tar.bz2
+

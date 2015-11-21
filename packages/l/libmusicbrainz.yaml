@@ -1,0 +1,23 @@
+package:
+  name: libmusicbrainz
+  version: 5.1.0
+  www: http://musicbrainz.org/
+  short: MusicBrainz is an open music encyclopedia that collects music metadata and makes it available to the public.
+
+download:
+  url: https://github.com/metabrainz/libmusicbrainz/releases/download/release-${KX_LIBMUSICBRAINZ_VERSION}/
+  file_tar_gz: ~
+  checksum: 4cc5556aa40ff7ab8f8cb83965535bc3
+
+version:
+  installed_pkgconfig: libmusicbrainz5
+  upstream: kxver_scrape_url("libmusicbrainz", "http://musicbrainz.org/doc/libmusicbrainz")
+
+linux:
+
+  - build:
+    - cmake_kx: ~
+    - make: ~
+  # No test suite
+  - install:
+    - install: ~

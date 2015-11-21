@@ -1,0 +1,11 @@
+package:
+  name: xorg-data
+  version: 7.7
+
+xorg:
+
+  - data_modules: |
+      P 3671b034356bbc4d32d052808cf646c940ec8b2d1913adac51b1453e41aa1e9d  xbitmaps-1.1.1.tar.bz2
+      . e3fd2c05b9df0d88a3d1192c02143295744685f4f9a03db116e206698331bb86 xcursor-themes-1.0.4.tar.bz2  return "n/a";
+      # xkeyboard-config in separate file, as it has non-standard download location
+

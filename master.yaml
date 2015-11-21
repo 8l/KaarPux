@@ -1,0 +1,1106 @@
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2012-2014: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+
+#   ---------------------------------------------------------------
+#   Definitions of the sequence of installation of KaarPux packages
+#   ---------------------------------------------------------------
+
+
+- bootstrap:
+
+#   ------------------------------------------------------------
+#   bootstrap_1: build on host, install in /tools
+
+  - bootstrap_1:
+    - sudo: prepare_bootstrap.sh
+    - pkg: binutils
+    - pkg: gcc
+    - pkg: linux
+    - pkg: glibc
+    - pkg: gcc-libstdc++
+    - script: check_bootstrap_1.sh
+
+#   ------------------------------------------------------------
+#   bootstrap_2: build on host, using /tools, install in /tools
+  - bootstrap_2:
+    - pkg: binutils
+    - pkg: gcc
+    - script: check_bootstrap_2.sh
+
+#   ------------------------------------------------------------
+#   bootstrap_3: build on host, using /tools, install in /tools, making chroot ready
+  - bootstrap_3:
+
+    - pkg: tcl
+    - pkg: expect
+    - pkg: dejagnu
+    - pkg: ncurses
+    - parallel:
+      - pkg: dash
+      - pkg: bzip2
+      - pkg: coreutils
+      - pkg: diffutils
+      - pkg: findutils
+      - pkg: gawk
+    - parallel:
+      - pkg: gettext
+      - pkg: grep
+      - pkg: gzip
+    - parallel:
+      - pkg: m4
+      - pkg: bash
+    - pkg: make
+    - parallel:
+      - pkg: patch
+      - pkg: perl
+      - pkg: sed
+      - pkg: tar
+      - pkg: texinfo
+    - pkg: xz
+
+    - sudo: prepare_chroot.sh
+    - sudo: mount_virtual_kernel_fs.sh
+
+#   ------------------------------------------------------------
+#   bootstrap_4: build in chroot, using /tools, install in /
+
+  - bootstrap_4:
+    - script: create_dirs.sh
+    - pkg: man-pages
+    - pkg: linux
+    - pkg: glibc
+    - pkg: tzdata
+    - script: postconfigure_bootstrap_4.sh
+    - script: adjust_bootstrap_4.sh
+    - script: check_bootstrap_4.sh
+
+#   ------------------------------------------------------------
+#   bootstrap_5: build in chroot, using /tools, install in /
+
+  - bootstrap_5:
+    - parallel:
+      - pkg: flex
+      - pkg: zlib
+      - pkg: lzip
+    - parallel:
+      - pkg: bison
+      - pkg: bc
+    - pkg: binutils
+    - pkg: gmp
+    - pkg: mpfr
+    - parallel:
+      - pkg: mpc
+      - pkg: isl
+    - pkg: gcc
+    - script: check_bootstrap_5.sh
+
+#   ------------------------------------------------------------
+#   bootstrap_6: build in chroot, using /tools, install in /
+
+  - bootstrap_6:
+
+    - pkg:  dash
+
+#   ------------------------------------------------------------
+#   bootstrap_7: build in chroot, using /tools, install in /
+
+  - bootstrap_7:
+
+    - parallel:
+      - pkg: m4
+      - pkg: ncurses
+
+    - pkg: flex
+
+    - parallel:
+      - pkg: util-linux
+      - pkg: bison
+      - pkg: less
+      - pkg: bzip2
+      - pkg: iana-etc
+      - pkg: diffutils
+
+    - parallel:
+      - pkg: gzip
+      - pkg: perl
+      - pkg: gettext
+      - pkg: tcl
+
+    - parallel:
+      - pkg: make
+      - pkg: pkg-config
+      - pkg: shadow
+      - pkg: texinfo
+      - pkg: findutils
+      - pkg: xz
+      - pkg: attr
+      - pkg: tcllib
+      - pkg: expect
+
+    - parallel:
+      - pkg: acl
+      - pkg: gawk
+      - pkg: patch
+      - pkg: dejagnu
+
+    - parallel:
+      - pkg: sed
+      - pkg: tar
+      - pkg: coreutils
+
+    - parallel:
+      - pkg: pcre
+      - pkg: readline
+
+    - parallel:
+      - pkg: grep
+      - pkg: bash
+
+#   ------------------------------------------------------------
+#   bootstrap_8: build in chroot, NOT using /tools, install in /
+
+  - bootstrap_8:
+    - sh: rm -rf "${KX_MNT}${KX_TOOLS}"
+    - script: install_files.sh
+
+    - parallel:
+      - pkg: berkeley-db
+      - pkg: inetutils
+      - pkg: linux-firmware
+      - pkg: icu
+      - pkg: popt
+      - pkg: psmisc
+
+    - parallel:
+      - pkg: autoconf
+      - pkg: e2fsprogs
+      - pkg: elfutils
+      - pkg: file
+      - pkg: gptfdisk
+      - pkg: groff
+      - pkg: help2man
+      - pkg: procps-ng
+
+    - parallel:
+      - pkg: automake
+      - pkg: check
+      - pkg: expat
+      - pkg: gdbm
+      - pkg: kmod
+      - pkg: libpipeline
+
+    - parallel:
+      - pkg: libtool
+      - pkg: PERLMODULE_YAML-Tiny
+      - pkg: lsb-release
+      - pkg: os-prober
+      - pkg: pciutils
+
+    - parallel:
+      - pkg: libtirpc
+      - pkg: libffi
+
+    - parallel:
+      - pkg: busybox
+      - pkg: openssl
+      - pkg: sqlite
+
+    - parallel:
+      - pkg: grub
+      - pkg: Python2
+      - pkg: efivar
+
+    - parallel:
+      - pkg: linux-pam
+      - pkg: man-db
+      - pkg: PERLMODULE_XML-Parser
+      - pkg: efibootmgr
+      - pkg: net-tools
+
+    - parallel:
+      - pkg: kbd
+      - pkg: vim
+      - pkg: bash-completion
+      - pkg: bc
+      - pkg: cpio
+      - pkg: gperf
+      - pkg: intltool
+      - pkg: libpthread-stubs
+      - pkg: pth
+      - pkg: screen
+      - pkg: shadow
+      - pkg: strace
+      - pkg: sudo
+      - pkg: sysstat
+      - pkg: time
+      - pkg: which
+
+    - script: install_pam_files.sh
+
+    - parallel:
+      - pkg: glib
+      - pkg: ldns
+      - pkg: libcap
+      - pkg: libmnl
+      - pkg: libnfnetlink
+      - pkg: wget
+      - pkg: asciidoc
+
+    - pkg: linux
+
+    - parallel:
+      - pkg: libnetfilter_acct
+      - pkg: libnetfilter_conntrack
+      - pkg: libnetfilter_log
+
+    - parallel:
+      - pkg: iptables
+      - pkg: systemd
+
+    - parallel:
+      - pkg: libgudev
+      - pkg: iproute2
+      - pkg: libusb
+      - pkg: dbus
+      - pkg: openssh
+      - pkg: systemtap
+      - pkg: certdata
+      - pkg: haveged
+      - pkg: parallel
+
+    - parallel:
+      - pkg: usbutils
+      - pkg: libusb-compat
+      - pkg: libpcap
+
+    - parallel:
+      - pkg: ulogd
+      - pkg: coreutils
+      - pkg: mcelog
+      - pkg: i7z
+      - pkg: jemalloc
+
+    - script: install_kx_open_stp.sh
+    - script: update_mandb.sh
+    - script: install_kaarpux.sh
+
+
+# ============================================================
+
+- linux:
+
+#   ------------------------------------------------------------
+  - linux_base:
+
+    - script: linux_boot.sh
+
+    - pkg: setuptools2
+
+    - pkg: MarkupSafe
+
+    - parallel:
+      - pkg: Jinja2
+      - pkg: Pygments
+      - pkg: docutils
+
+    - pkg: Sphinx
+
+    - pkg: llvm
+
+    - pkg:  Python
+
+    - parallel:
+      - pkg: desktop-file-utils
+      - pkg: dosfstools
+      - pkg: hdparm
+      - pkg: ed
+      - pkg: lshw
+      - pkg: libnetfilter_cthelper
+      - pkg: libnetfilter_cttimeout
+      - pkg: libnetfilter_queue
+      - pkg: libpng
+      - pkg: lua
+      - pkg: nasm
+      - pkg: zip
+      - pkg: unzip
+      - pkg: PERLMODULE_IO-HTML
+      - pkg: docutils3
+
+    - pkg: valgrind
+
+    - parallel:
+      - pkg: nspr
+      - pkg: sharutils
+      - pkg: gobject-introspection
+      - pkg: libxml2
+      - pkg: botocore
+      - pkg: jmespath
+
+    - parallel:
+      - pkg: Mozilla-CA
+      - pkg: PERLMODULE_Archive-Zip
+      - pkg: PERLMODULE_DBI
+      - pkg: PERLMODULE_Digest-MD5
+      - pkg: PERLMODULE_Encode-Locale
+      - pkg: PERLMODULE_HTML-Tagset
+      - pkg: PERLMODULE_HTTP-Date
+      - pkg: PERLMODULE_IO-Compress
+      - pkg: PERLMODULE_LWP-MediaTypes
+      - pkg: PERLMODULE_MIME-Base64
+      - pkg: PERLMODULE_Net
+      - pkg: PERLMODULE_Net-SSLeay
+      - pkg: PERLMODULE_Sort-Versions
+      - pkg: PERLMODULE_URI
+      - pkg: PERLMODULE_XML-NamespaceSupport
+      - pkg: PERLMODULE_XML-Parser
+      - pkg: PERLMODULE_XML-SAX-Base
+      - pkg: PERLMODULE_XML-Simple
+      - pkg: docbook-xml
+      - pkg: boto3
+
+    - parallel:
+      - pkg: conntrack-tools
+      - pkg: curl
+      - pkg: device-mapper
+      - pkg: docbook-xsl
+      - pkg: freetype
+      - pkg: ijs
+      - pkg: json-c
+      - pkg: krb5
+      - pkg: libarchive
+      - pkg: libatasmart
+      - pkg: libdaemon
+      - pkg: libgee
+      - pkg: libgpg-error
+      - pkg: libjpeg-turbo
+      - pkg: libogg
+      - pkg: libquvi-scripts
+
+    - pkg: cmake
+
+    - parallel:
+      - pkg: doxygen
+      - pkg: nettle
+      - pkg: pigz
+      - pkg: pixman
+      - pkg: qpdf
+      - pkg: rsync
+      - pkg: setuptools3
+      - pkg: sg3_utils
+      - pkg: sgml-common
+      - pkg: tcpdump
+      - pkg: xmlto
+      - pkg: yaml
+
+    - parallel:
+      - pkg: dhcpcd
+      - pkg: gdb
+      - pkg: nss
+      - pkg: boost
+      - pkg: net-snmp
+      - pkg: parted
+      - pkg: libmtp
+      - pkg: libevent
+
+    - parallel:
+      - pkg: PERLMODULE_DBD-SQLite
+      - pkg: PERLMODULE_File-Listing
+      - pkg: PERLMODULE_HTML-Parser
+      - pkg: PERLMODULE_HTTP-Message
+      - pkg: PERLMODULE_IO-Socket-SSL
+      - pkg: PERLMODULE_Net-HTTP
+      - pkg: PERLMODULE_WWW-RobotRules
+      - pkg: PERLMODULE_XML-SAX
+
+    - parallel:
+      - pkg: docbook-sgml
+      - pkg: fontconfig
+      - pkg: jasper
+      - pkg: libassuan
+      - pkg: libgcrypt
+      - pkg: libtasn1
+      - pkg: libxslt
+      - pkg: nmap
+      - pkg: xerces-c
+
+    - parallel:
+      - pkg: PERLMODULE_HTTP-Cookies
+      - pkg: PERLMODULE_HTTP-Daemon
+      - pkg: PERLMODULE_HTTP-Negotiate
+      - pkg: git
+      - pkg: libgd
+      - pkg: p11-kit
+      - pkg: vala
+
+    - parallel:
+      - pkg: PERLMODULE_LWP
+      - pkg: bridge-utils
+      - pkg: docbook2X
+      - pkg: gnutls
+      - pkg: graphviz
+      - pkg: libksba
+
+    - parallel:
+      - pkg: ruby
+      - pkg: samba
+
+    - parallel:
+      - pkg: PERLMODULE_LWP-Protocol-https
+      - pkg: cyrus-sasl
+      - pkg: libmicrohttpd
+      - pkg: lxc
+      - pkg: acpica
+      - pkg: npth
+      - pkg: libproxy
+
+    - parallel:
+#       TODO: Can we move poppler from here, it is installed later
+      - pkg: poppler
+      - pkg: libsigc++
+      - pkg: gnupg
+      - pkg: zope.interface
+      - pkg: celt
+
+    - parallel:
+      - pkg: gpgme
+      - pkg: yasm
+      - pkg: libtiff
+      - pkg: lcms2
+      - pkg: libdvdcss
+      - pkg: python-twisted
+      - pkg: logilab-common
+      - pkg: dmidecode
+      - pkg: libssh
+      - pkg: hiredis
+
+    - parallel:
+      - pkg: lsof
+      - pkg: ltrace
+      - pkg: openvas-libraries
+      - pkg: taglib
+      - pkg: exiv2
+      - pkg: libexif
+      - pkg: libquvi
+      - pkg: astroid
+      - pkg: smartmontools
+      - pkg: libatomic_ops
+
+    - parallel:
+      - pkg: openvas-scanner
+      - pkg: openvas-manager
+      - pkg: openvas-cli
+      - pkg: pylint
+      - pkg: cliapp
+      - pkg: libunistring
+      - pkg: gc
+
+    - parallel:
+      - pkg: nss-mdns
+      - pkg: libwebp
+      - pkg: libdvdread
+      - pkg: libgphoto2
+      - pkg: quvi
+      - pkg: ttystatus
+      - pkg: guile
+
+    - parallel:
+      - pkg: libdvdnav
+      - pkg: poppler-data
+      - pkg: cdparanoia
+      - pkg: cdrkit
+      - pkg: wavpack
+      - pkg: cracklib
+      - pkg: fuse
+      - pkg: greenbone-security-assistant
+      - pkg: lm_sensors
+      - pkg: gphoto2
+      - pkg: libaio
+      - pkg: dialog
+      - pkg: cmdtest
+      - pkg: autogen
+
+    - sudo: update_mandb.sh
+
+
+#   ------------------------------------------------------------
+  - linux_xorg:
+
+    - xorg_pkg: xorg-proto
+    - xorg_pkg: xorg-util
+    - xorg_pkg: xorg-lib1
+    - pkg: xcb-proto
+    - pkg: libxcb
+    - pkg: xcb-util
+    - parallel:
+      - pkg: xcb-util-wm
+      - pkg: xcb-util-image
+      - pkg: xcb-util-keysyms
+      - pkg: xcb-util-renderutil
+    - xorg_pkg: xorg-lib2
+    - pkg: libxkbfile
+    - xorg_pkg: xorg-lib3
+    - pkg: libXft
+    - xorg_pkg: xorg-font-utils
+    - pkg: luit
+    - pkg: xmodmap
+    - xorg_pkg: xorg-utils1
+    - xorg_pkg: xorg-data
+    - pkg: xkeyboard-config
+    - xorg_pkg: xorg-apps
+    - pkg: xterm
+    - xorg_pkg: xorg-fonts
+    - pkg: libdrm
+    - pkg: libclc
+    - pkg: MesaLib
+    - pkg: dbus
+    - pkg: dbus-glib
+    - pkg: libepoxy
+    - xorg_pkg: xorg-utils2
+
+    - parallel:
+      - pkg: xorg-server
+      - pkg: glu
+      - pkg: glew
+      - pkg: libevdev
+
+    - parallel:
+      - xorg_pkg: xorg-drivers
+      - pkg: glamor-egl
+
+    - parallel:
+      - pkg: xf86-input-wacom
+      - pkg: xf86-video-vesa
+      - pkg: xf86-video-fbdev
+      - pkg: xf86-video-ati
+      - pkg: xf86-video-intel
+
+    - pkg: freeglut
+    - pkg: mesa-demos
+
+    - sudo: update_mandb.sh
+
+
+#   ------------------------------------------------------------
+  - linux_gnome_pre:
+
+    - parallel:
+      # avahi is installed twice; first without gtk3 (as dependency to cups); later with gtk3
+      - pkg: avahi
+      - pkg: gnome-js-common
+      - pkg: libraw1394
+      - pkg: libpwquality
+      - pkg: json-glib
+      - pkg: pycurl
+      - pkg: pyparsing
+      - pkg: requests
+      - pkg: spice-protocol
+
+    - parallel:
+      - pkg: libvpx
+      - pkg: alsa-lib
+      - pkg: cairo
+      - pkg: cups
+      - pkg: flac
+      - pkg: libvorbis
+      - pkg: opus
+      - pkg: iso-codes
+      - pkg: orc
+      - pkg: x264
+
+    - parallel:
+#       Moved here to be after cairo
+      - pkg: poppler
+      - pkg: cairomm
+      - pkg: fontforge
+      - pkg: ghostscript
+      - pkg: libavc1394
+      - pkg: libdc1394
+      - pkg: libsndfile
+      - pkg: libtheora
+      - pkg: neon
+      - pkg: pycairo
+      - pkg: dbus-python
+      - pkg: pycups
+      - pkg: spice
+      - pkg: gnome-common
+
+    - parallel:
+      - pkg: ghostscript-fonts-std
+      - pkg: foomatic-db-engine
+      - pkg: b43-fwcutter
+
+    - parallel:
+      - pkg: liberation-fonts
+      - pkg: pygobject
+      - pkg: dbus-python-2
+      - pkg: rarian
+      - pkg: faad2
+      - pkg: at-spi2-core
+
+    - parallel:
+      - pkg: enchant
+      - pkg: libical
+      - pkg: icon-naming-utils
+      - pkg: ghostscript-fonts-other
+      - pkg: liboauth
+      - pkg: faac
+      - pkg: broadcom-wl
+
+    - parallel:
+      - pkg: bluez
+      - pkg: gnome-doc-utils
+      - pkg: pyatspi3
+      - pkg: rdesktop
+      - pkg: xf86-video-qxl
+      - pkg: libnl
+      - pkg: hyphen
+
+    - parallel:
+      - pkg: tk
+      - pkg: pyatspi
+      - pkg: ipython
+      - pkg: gmime
+      - pkg: startup-notification
+      - pkg: dejavu-fonts-ttf
+      - pkg: xvidcore
+      - pkg: mozjs17
+      - pkg: mozjs24
+      - pkg: wpa_supplicant
+      - pkg: wireless_tools
+      - pkg: libdv
+      - pkg: libcdaudio
+      - pkg: shared-mime-info
+      - pkg: libxklavier
+      - pkg: libvisual
+      - pkg: hplip
+      - pkg: avahi
+      - pkg: libmusicbrainz
+
+    - sudo: update_mandb.sh
+    - sudo: update-desktop-database.sh
+
+#   ------------------------------------------------------------
+  - linux_gnome:
+
+    - parallel:
+      - pkg: exempi
+      - pkg: hicolor-icon-theme
+      - pkg: itstool
+      - pkg: mm-common
+      - pkg: sound-theme-freedesktop
+      - pkg: xtrans
+    - parallel:
+      - pkg: cantarell-fonts
+      - pkg: libxkbcommon
+      - pkg: yelp-xsl
+    - parallel:
+      - pkg: yelp-tools
+    - parallel:
+      - pkg: gnome-user-docs
+      - pkg: gtk-doc
+    - parallel:
+      - pkg: glibmm
+      - pkg: gnome-backgrounds
+      - pkg: harfbuzz
+      - pkg: libcroco
+      - pkg: libgtop
+      - pkg: libgxps
+      - pkg: libsecret
+      - pkg: libwacom
+      - pkg: pulseaudio
+    # freetype again after harfbuzz
+    - pkg: freetype
+    - parallel:
+      - pkg: gstreamer
+      - pkg: libgusb
+      - pkg: pango
+      - pkg: polkit
+      - pkg: telepathy-glib
+    - parallel:
+      - pkg: accountsservice
+      - pkg: atk
+      - pkg: gdk-pixbuf
+      - pkg: gjs
+      - pkg: gnome-menus
+      - pkg: gsettings-desktop-schemas
+      - pkg: libndp
+    - parallel:
+      - pkg: ModemManager
+      - pkg: NetworkManager
+      - pkg: at-spi2-atk
+      - pkg: atkmm
+      - pkg: colord
+      - pkg: glib-networking
+      - pkg: gnome-video-effects
+      - pkg: gtk2+
+      - pkg: librsvg
+      - pkg: pangomm
+      - pkg: telepathy-logger
+      - pkg: udisks
+      - pkg: upower
+    - parallel:
+      - pkg: gtk+
+      - pkg: libsoup
+    - parallel:
+      - pkg: telepathy-mission-control
+    - parallel:
+      - pkg: libcanberra
+      - pkg: accerciser
+      # avahi is installed twice; first without gtk3 (as dependency to cups); later with gtk3
+      - pkg: avahi
+      - pkg: baobab
+      - pkg: colord-gtk
+      - pkg: dconf
+      - pkg: gcr
+      - pkg: gdl
+      - pkg: adwaita-icon-theme
+    - parallel:
+      - pkg: gsound
+      - pkg: dconf-editor
+      - pkg: gdm
+      - pkg: geoclue
+      - pkg: geocode-glib
+      - pkg: glade
+      - pkg: gnome-dictionary
+      - pkg: gnome-nettool
+      - pkg: gnome-screenshot
+      - pkg: gnome-logs
+
+    # update-desktop-database has glib-compile-schemas; needed for testing
+    - sudo: update-desktop-database.sh
+
+    - parallel:
+      - pkg: gnome-themes-standard
+      - pkg: gnome-tweak-tool
+      - pkg: gst-plugins-base
+      - pkg: gtk-vnc
+      - pkg: gtkmm
+      - pkg: gucharmap
+      - pkg: gvfs
+      - pkg: libgweather
+      - pkg: libnotify
+      - pkg: libwnck
+      - pkg: mousetweaks
+      - pkg: orca
+      - pkg: rest
+      - pkg: totem-pl-parser
+      - pkg: vte
+      - pkg: vte290
+      - pkg: zenity
+
+    # update-desktop-database has glib-compile-schemas; needed before WebKit
+    - sudo: update-desktop-database.sh
+
+    - pkg: WebKit2
+
+    - parallel:
+      - pkg: cogl
+      - pkg: gdlmm
+      - pkg: gnome-bluetooth
+      - pkg: gnome-characters
+      - pkg: gnome-desktop
+      - pkg: gnome-keyring
+      - pkg: gnome-system-monitor
+      - pkg: gnome-taquin
+      - pkg: grilo
+      - pkg: gst-plugins-bad
+      - pkg: gst-plugins-good
+      - pkg: gtksourceview
+      - pkg: ibus
+      - pkg: libnice
+      - pkg: libpeas
+      - pkg: seahorse
+      - pkg: vinagre
+      - pkg: vino
+    - parallel:
+      - pkg: uhttpmock
+      - pkg: clutter
+      - pkg: eog
+      - pkg: epiphany
+      - pkg: farstream
+      - pkg: gedit
+      - pkg: gnome-calculator
+      - pkg: gnome-clocks
+      - pkg: gnome-color-manager
+      - pkg: gnome-font-viewer
+      - pkg: gnome-online-accounts
+      - pkg: gnome-session
+      - pkg: gnome-settings-daemon
+      - pkg: gtksourceviewmm
+      - pkg: nautilus
+      - pkg: network-manager-applet
+      - pkg: yelp
+      # #### spice-gtk IS NOT REALLY GNOME, BUT NEEDED BEFORE vinagre, AND DEPENDS ON PREVIOUS GNOME PKGS
+      - pkg: spice-gtk
+    - parallel:
+      - pkg: caribou
+      - pkg: clutter-gst
+      - pkg: clutter-gst3
+      - pkg: clutter-gtk
+      - pkg: evince
+      - pkg: file-roller
+      - pkg: gnome-disk-utility
+      - pkg: libgdata
+      - pkg: mutter
+      - pkg: telepathy-farstream
+    - parallel:
+      - pkg: brasero
+      - pkg: cheese
+      - pkg: evolution-data-server
+      - pkg: grilo-plugins
+      - pkg: sushi
+    - parallel:
+      - pkg: folks
+      - pkg: gnome-calendar
+      - pkg: gnome-control-center
+      - pkg: gnome-shell
+      - pkg: totem
+    - parallel:
+      - pkg: gnome-shell-extensions
+      - pkg: gnome-terminal
+
+
+    - sudo: update_mandb.sh
+    - sudo: update-desktop-database.sh
+
+#   ------------------------------------------------------------
+  - linux_gnome_post:
+
+    - parallel:
+      - pkg: pep8
+      - pkg: gedit-plugins
+      - pkg: libmpeg2
+      - pkg: liba52
+      - pkg: sane-backends
+      - pkg: cabextract
+
+    - parallel:
+      - pkg: d-feet
+      - pkg: lame
+      - pkg: twolame
+      - pkg: libmad
+      - pkg: cups-filters
+      - pkg: xsane
+      - pkg: gst-libav
+      - pkg: mscorefonts
+
+    - parallel:
+      - pkg: foomatic-filters
+      - pkg: foomatic-db
+      - pkg: gst-plugins-ugly
+      - pkg: cups-pk-helper
+      - pkg: nose
+      - pkg: pinentry
+      - pkg: system-config-printer
+      - pkg: qemu
+      - pkg: qt
+
+    - sudo: update_mandb.sh
+    - sudo: update-desktop-database.sh
+
+
+#   ------------------------------------------------------------
+
+  - opt_desktop:
+
+    - parallel:
+      - pkg: meld
+      - pkg: oraclejdk-bin
+      - pkg: junit
+      - pkg: protobuf
+      - pkg: cppunit
+      - pkg: npapi-sdk
+
+    - parallel:
+      - pkg: hunspell
+      - pkg: babl
+      - pkg: wxWidgets
+
+    - parallel:
+      - pkg: mythes
+      - pkg: hunspell-en_US
+      - pkg: gegl
+#      - pkg: pwsafe
+
+    - parallel:
+      - pkg: openjdk
+      - pkg: thunderbird
+
+    - pkg: firefox
+
+    - parallel:
+      - pkg: addon-sdk
+      - pkg: provider_for_google_calendar
+      - pkg: lesscss
+      - pkg: lshw
+
+    - parallel:
+      - pkg: privacybadgerfirefox
+      - pkg: openjdk-cacerts
+      - pkg: icedtea-web
+      - pkg: mercurial
+      - pkg: wireshark
+      - pkg: gimp
+      - pkg: gnuplot
+
+#   ------------------------------------------------------------
+
+  - opt_libreoffice:
+
+    - pkg: libreoffice
+
+    - script: update_mandb_opt.sh
+    - script: update-desktop-database_opt.sh
+
+
+#   ------------------------------------------------------------
+
+  - opt_programming:
+
+    - pkg: ghc-binary
+
+    - parallel:
+      - pkg: ghc
+
+      # temporarily disabled
+      # - pkg: codelite
+
+      - pkg: ocaml
+
+    # We are not really installing the haskell-platform
+    - pkg: haskell-platform
+
+    # Instead we are installing the individual modules
+
+    - parallel:
+      - haskell_module: text
+      - haskell_module: mtl
+      - haskell_module: html
+      - haskell_module: stm
+      - haskell_module: primitive
+      - haskell_module: OpenGLRaw
+      - haskell_module: HUnit
+      - haskell_module: xhtml
+      - haskell_module: parallel
+      - haskell_module: split
+      - haskell_module: zlib
+
+    - parallel:
+      - haskell_module: GLURaw
+      - haskell_module: fgl
+      - haskell_module: regex-base
+      - haskell_module: parsec
+      - haskell_module: attoparsec
+      - haskell_module: hashable
+      - haskell_module: vector
+      - haskell_module: random
+      - haskell_module: async
+
+    - parallel:
+      - haskell_module: QuickCheck
+      - haskell_module: syb
+      - haskell_module: unordered-containers
+      - haskell_module: case-insensitive
+      - haskell_module: network
+      - haskell_module: regex-posix
+      - haskell_module: OpenGL
+
+    - parallel:
+      - haskell_module: GLUT
+      - haskell_module: regex-compat
+      - haskell_module: HTTP
+      - haskell_module: haskell-src
+
+    # Additional haskell-platform modules
+
+    - haskell_module: Cabal
+    - parallel:
+      - haskell_module: cabal-install
+      - haskell_module: alex
+    - haskell_module: happy
+    # hscolor
+
+    # Non  haskell-platform modules
+
+    - haskell_module: polyparse
+
+    - parallel:
+      - haskell_module: cpphs
+      - haskell_module: hashtables
+
+    - parallel:
+
+      - haskell_module: uniplate
+      - haskell_module: utf8-string
+      - pkg: setlocale
+      - haskell_module: xml-types
+      - haskell_module: pcap
+      - haskell_module: cereal
+
+    - parallel:
+      - haskell_module: haskell-src-exts
+      - haskell_module: gtk2hs-buildtools
+      - pkg: camlp4
+      - pkg: camlp5
+
+    - parallel:
+      - haskell_module: hgettext
+      - haskell_module: cairo
+      - haskell_module: libxml-sax
+      - haskell_module: glib
+      - pkg: findlib
+
+    - parallel:
+      - haskell_module: dbus
+      - haskell_module: pango
+      - pkg: lablgtk
+
+    - parallel:
+      - pkg: haskell-gtk
+      - pkg: coq
+      - pkg: nemiver
+
+    - parallel:
+      - pkg: bustle
+      - pkg: eclipse
+
+
+    - script: update_mandb_opt.sh
+    - script: update-desktop-database_opt.sh
+
+#   ------------------------------------------------------------
+
+  - opt_coins:
+
+    - parallel:
+      - pkg: uthash
+      - pkg: jansson
+      - pkg: libbase58
+
+    - parallel:
+      - pkg: bitcoin
+      - pkg: litecoin
+      - pkg: dogecoin
+      - pkg: libblkmaker
+
+    - parallel:
+      - pkg: bfgminer
+      - pkg: cpuminer
+
+    - script: update_mandb_opt.sh
+    - script: update-desktop-database_opt.sh
+
+#   ------------------------------------------------------------
+
+  - opt_closed_source:
+
+    - pkg: flash_player_11
+# TODO: Bring this package in when we have 32/64 multilib
+#    - pkg: skype
+

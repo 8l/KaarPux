@@ -1,0 +1,27 @@
+package:
+  name: libmnl
+  version: 1.0.3
+  www: http://www.netfilter.org/projects/libmnl/
+  short: A minimalistic user-space library oriented to Netlink developers.
+
+doc: |
+  <para>
+  Included as a prerequisite to <xref linkend="pkg_ulogd" />
+  </para>
+
+download:
+  url: ftp://ftp.netfilter.org/pub/libmnl
+  file_tar_bz2: ~
+  checksum: c27e25f67c6422ebf893fc3a844af8085a1c5b63
+  verify: sig
+
+version:
+  installed_pkgconfig: ~
+
+bootstrap_8:
+
+    - configure_kx: --disable-static
+    - make: ~
+    - check: ~
+    - install: ~
+

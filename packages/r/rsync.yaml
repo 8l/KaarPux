@@ -1,0 +1,26 @@
+package:
+  name: rsync
+  version: 3.1.1
+  www: http://rsync.samba.org/
+  short: Utility that provides fast incremental file transfer.
+
+download:
+  url: http://samba.org/ftp/rsync/src
+  file_tar_gz: ~
+  checksum: 7de4364fcf5fe42f3bdb514417f1c40d10bbca896abe7e7f2c581c6ea08a2621
+  verify: asc
+
+version:
+  installed_sh_version: rsync --version
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  - test:
+    - check_repeat: ~
+
+  - install:
+    - install: ~

@@ -1,0 +1,86 @@
+package:
+  name: jasper
+  version: 1.900.1
+  www: http://www.ece.uvic.ca/~frodo/jasper/
+  short: |
+      The JasPer Project is an open-source initiative to provide
+      a free software-based reference implementation
+      of the codec specified in the JPEG-2000 Part-1 standard (i.e., ISO/IEC 15444-1).
+
+download:
+  url: http://www.ece.uvic.ca/~frodo/jasper/software
+  file_zip: ~
+  checksum: a342b2b4495b3e1394e161eb5d85d754
+
+version:
+  upstream: "kxver_scrape_url('jasper', 'http://www.ece.uvic.ca/~frodo/jasper/');"
+
+linux:
+
+  - build:
+
+    # Patches from Fedora
+    # http://pkgs.fedoraproject.org/cgit/jasper.git/tree/
+
+    - patch: jasper-1.701.0-GL.patch
+    # autoconf/automake bits of patch1
+    - patch: jasper-1.701.0-GL-ac.patch
+    # CVE-2007-2721 (bug #240397)
+    # borrowed from http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=413041;msg=88
+    - patch: patch-libjasper-stepsizes-overflow.diff
+    # borrowed from http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=469786 
+    - patch: jpc_dec.c.patch
+    # OpenBSD hardening patches addressing couple of possible integer overflows
+    # during the memory allocations
+    # https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2008-3520
+    - patch: jasper-1.900.1-CVE-2008-3520.patch
+    # https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2008-3522
+    - patch: jasper-1.900.1-CVE-2008-3522.patch
+    # add pkg-config support
+    - patch: jasper-pkgconfig.patch
+
+    - patch: jasper-1.900.1-CVE-2011-4516-CVE-2011-4517-CERT-VU-887409.patch
+
+    - patch: jasper-CVE-2014-9029.patch
+    - patch: jasper-CVE-2014-8137.patch
+    - patch: jasper-CVE-2014-8138.patch
+
+    - patch: jasper-CVE-2014-8157.patch
+    - patch: jasper-CVE-2014-8158.patch
+
+    # Issues found by static analysis of code
+    - patch: jasper-1.900.1-Coverity-BAD_SIZEOF.patch
+    - patch: jasper-1.900.1-Coverity-CHECKED_RETURN.patch
+    - patch: jasper-1.900.1-Coverity-FORWARD_NULL.patch
+    - patch: jasper-1.900.1-Coverity-NULL_RETURNS.patch
+    - patch: jasper-1.900.1-Coverity-RESOURCE_LEAK.patch
+    - patch: jasper-1.900.1-Coverity-UNREACHABLE.patch
+    - patch: jasper-1.900.1-Coverity-UNUSED_VALUE.patch
+
+    - echo: autoreconf
+    - sh: autoreconf --verbose --force --install
+
+    - configure_kx: --sysconfdir=/etc --localstatedir=/var --disable-static
+
+    # jas_icc.c@744@2@ warning@ assuming signed overflow does not occur
+    # when assuming that (X + c) < X is always false [-Wstrict-overflow]
+    #
+    # comment from Red Hat Security Response Team
+    # gcc inlines jas_iccattrtab_resize into jas_iccattrtab_add. Additionally, it
+    # essentially removes the "assert(maxents >= tab->numattrs);" assertion in
+    # jas_iccattrtab_resize, because it assumes that "maxents >= tab->numattrs" will
+    # always be true due to jas_iccattrtab_resize(attrtab, attrtab->numattrs + 32),
+    # especially the + 32. This assumption can only be true if it completely ignores
+    # the problem of signed integer overflows. I don't think it's a smart idea to
+    # accept that.
+    # -fno-strict-overflow forces gcc into keeping the assertion there.
+
+    - make: CFLAGS="-fPIC -fno-strict-overflow"
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success "jasper --version" { libjasper }

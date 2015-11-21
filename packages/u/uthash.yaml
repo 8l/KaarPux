@@ -1,0 +1,23 @@
+package:
+  name: uthash
+  version: 1.9.9
+  www: http://troydhanson.github.io/uthash/
+  short: LiteCoin wallet.
+
+download:
+  full_url: https://github.com/troydhanson/uthash/archive/v${KX_UTHASH_VERSION}.tar.gz
+  file: ${KX_UTHASH}.tar.gz
+  checksum: f2f10115f4de03b98d8c2e860e241d165aa15019bd634ee0e3debe58341bbf0c
+
+version:
+  installed_na: ~
+  upstream: kxver_scrape_url(undef, "https://github.com/troydhanson/uthash/releases", qr|v([0-9]+[0-9.\-_]*[0-9]+)\.tar|);
+
+opt:
+
+  - build:
+    - sh: echo no build
+
+  - install:
+    - sh: mkdir -pv ${KX_PREFIX}/include
+    - sh: cp src/*.h ${KX_PREFIX}/include

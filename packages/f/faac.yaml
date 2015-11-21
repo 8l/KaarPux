@@ -1,0 +1,33 @@
+package:
+  name: faac
+  version: 1.28
+  www: http://www.audiocoding.com/faac.html
+  short: FAAC is an MPEG-4 and MPEG-2 AAC encoder.
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: 80763728d392c7d789cde25614c878f6 
+
+version:
+  installed_sh_trailing: faac --help 2>&1 | tail -n +2
+  upstream: kxver_upstream_sourceforge("faac", "faac-src", "faac");
+
+linux:
+  - build:
+
+    # clang++ -std=c++11 barfs:
+    # ./mpeg4ip.h:164:17: error: invalid suffix on literal; C++11 requires a space between literal and identifier [-Wreserved-user-defined-literal]
+    # #define D64  "%"D64F
+    # TODO: report upstream
+    - sh: CXX=clang++; export CXX
+
+    - patch: faac-1.28-glibc_fixes-1.patch
+
+    - configure_kx: --disable-static
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

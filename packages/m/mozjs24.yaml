@@ -1,0 +1,39 @@
+package:
+  name: mozjs24
+  version: 24.2.0
+  www: https://developer.mozilla.org/en-US/docs/SpiderMonkey
+  short: Mozilla's JavaScript engine written in C/C++.
+
+download:
+  url: https://ftp.mozilla.org/pub/mozilla.org/js
+  file: mozjs-${KX_MOZJS24_VERSION}.tar.bz2
+  dir: mozjs-${KX_MOZJS24_VERSION}
+  checksum: e62f3f331ddd90df1e238c09d61a505c516fe9fd8c5c95336611d191d18437d8
+
+version:
+  installed: kxver_sh_pattern("js24-config --version", qr|(.*)|);
+  upstream: kxver_scrape_url(undef, $url, qr|mozjs-(24[0-9.]+[0-9])|);
+
+linux:
+  - build:
+    - patch: optparse.patch
+    - patch: moz_perl.patch
+    - sh: cd js/src
+    - configure_kx: >
+        --enable-threadsafe
+        --disable-readline
+        --with-system-nspr
+        --enable-ctypes
+        --with-system-ffi
+        --disable-intl-api
+    - make: ~
+  - test:
+    - sh: cd js/src
+    - sh: TZ=US/Pacific; export TZ
+    - check: ~
+  - install:
+    - sh: cd js/src
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success "js17-config --libs" { mozjs-17 }

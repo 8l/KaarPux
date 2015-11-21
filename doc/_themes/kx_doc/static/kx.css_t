@@ -1,0 +1,519 @@
+/*
+ * kx.css_t
+ * ~~~~~~~~
+ *
+ * Sphinx stylesheet for KaarPux kx_doc theme.
+ *
+ * KaarPux: http://kaarpux.kaarposoft.dk
+ * Copyright (C) 2015: Henrik Kaare Poulsen
+ * License: http://kaarpux.kaarposoft.dk/license.html
+ *
+ */
+
+
+/* ============================================================ */
+/*           RESET                                              */
+/* ============================================================ */
+
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+/* ============================================================ */
+/*           BODY                                               */
+/* ============================================================ */
+
+body {
+	padding: 0;
+	background-color: {{ theme_content_bg_color }};
+	font-family: {{ theme_serif_font_family }};
+}
+
+p {
+	margin-top: 0.2em;
+	margin-bottom: 0.2em;
+}
+
+em {
+	font-style: italic;
+}
+
+strong {
+	font-weight: bold;
+}
+
+
+/* ============================================================ */
+/*           HEADER                                             */
+/* ============================================================ */
+
+div.header {
+	display: block;
+	padding: {{ theme_vertical_space }} {{ theme_horizontal_space }};
+	background-color: {{ theme_header_bg_color }};
+	color: {{ theme_header_fg_color }};
+	font-family: {{ theme_sans_font_family }};
+	font-weight: bold;
+}
+
+div.header div.headertitle a {
+	font-size: 280%;
+	text-decoration: none;
+}
+
+div.header div.headertitle a:link {
+	color: {{ theme_header_fg_color }};
+}
+
+div.header div.headertitle a:visited {
+	color: {{ theme_header_fg_color }};
+}
+
+/* PermaLink */
+a.headerlink {
+	visibility: hidden;
+}
+h1:hover > a.headerlink,
+h2:hover > a.headerlink,
+h3:hover > a.headerlink,
+h4:hover > a.headerlink,
+h5:hover > a.headerlink,
+h6:hover > a.headerlink,
+dt:hover > a.headerlink {
+	visibility: visible;
+}
+
+/* ============================================================ */
+/*           RELATED                                            */
+/* ============================================================ */
+
+div.related {
+	display: block;
+	overflow: hidden;
+	padding: {{ theme_vertical_space }} {{ theme_horizontal_space }};
+	border-bottom: 1px solid {{ theme_related_line }};
+	background-color: {{ theme_related_bg_color }};
+	color: {{ theme_related_fg_color }};
+	font-family: {{ theme_sans_font_family }};
+}
+
+div.related ul {
+	list-style: none; 
+	float: left;
+}
+
+div.related ul li {
+	float: left;
+}
+
+div.related div.rel {
+	float: right;
+}
+
+div.related div.rel span:after { /* TODO: Not working? */ 
+	content: " | "; 
+	font-weight: bold;
+}
+
+
+/* ============================================================ */
+/*           FOOTER                                             */
+/* ============================================================ */
+
+div.navfooter {
+	display: block;
+	overflow: hidden;
+	padding: {{ theme_vertical_space }} {{ theme_horizontal_space }};
+	background-color: {{ theme_header_bg_color }};
+	border-top: 1px solid {{ theme_related_line }};
+	color: {{ theme_header_fg_color }};
+	font-family: {{ theme_sans_font_family }};
+}
+
+div.navfooter a:visited {
+	color: {{ theme_header_fg_color }};
+}
+
+
+div.navfooter ul {
+	list-style: none; 
+}
+
+div.navfooter ul li.prev {
+	float: left;
+	text-align: left;
+	width: 33%;
+}
+
+div.navfooter ul li.copyright {
+	float: left;
+	text-align: center;
+	width: 34%;
+}
+
+div.navfooter ul li.next {
+	float: left;
+	text-align: right;
+	width: 33%;
+}
+
+
+/* ============================================================ */
+/*           SIDEBAR / TOC                                      */
+/* ============================================================ */
+
+div.sidebar {
+	font-family: {{ theme_sans_font_family }};
+	width: {{ theme_sidebar_width }};
+	float: right;
+	padding: {{ theme_sidebar_padding }};
+	border-left: {{ theme_sidebar_border_left_bottom }} solid {{ theme_content_bg_color }};
+	border-bottom: {{ theme_sidebar_border_left_bottom }} solid {{ theme_content_bg_color }};
+	color: {{ theme_sidebar_fg_color }};
+	background-color: {{ theme_sidebar_bg_color }};
+}
+
+div.sidebar ul {
+  list-style-type: none;
+}
+
+div.sidebar a, div.header a {
+  text-decoration: none;
+}
+
+div.sidebar a:hover, div.header a:hover {
+  text-decoration: underline;
+}
+
+div.sidebar h3 {
+  color: {{ theme_toc_header_color }};
+  text-transform: uppercase;
+  margin: 1ex 0 1ex 0;
+  font-size: 130%;
+  letter-spacing: .1em;
+}
+
+div.sidebar h3 a {
+  color: {{ theme_toc_header_color }};
+}
+
+div.sidebar li.toctree-l1 a {
+  display: block;
+  padding: 1px;
+  border: 1px solid {{ theme_toc_l1_border_color }};
+  background-color: {{ theme_toc_l1_bg_color }};
+  margin-bottom: .4em;
+  padding-left: 3px;
+  color: {{ theme_toc_l1_fg_color }};
+}
+
+div.sidebar li.toctree-l2 a {
+  background-color: transparent;
+  border: none;
+  margin-left: 1em;
+  border-bottom: 1px solid {{ theme_toc_l2_bottom_color }};
+}
+
+div.sidebar li.toctree-l3 a {
+  background-color: transparent;
+  border: none;
+  margin-left: 2em;
+  border-bottom: 1px solid {{ theme_toc_l3_bottom_color }};
+}
+
+div.sidebar li.toctree-l2:last-child a {
+  border-bottom: none;
+}
+
+div.sidebar li.toctree-l1.current a {
+  border-right: 6px solid {{ theme_toc_l1_marker_color }};
+}
+
+div.sidebar li.toctree-l1.current li.toctree-l2 a {
+  border-right: none;
+}
+
+div.sidebar li.toctree-l1.current li.toctree-l2.current a {
+  border-right: 3px solid {{ theme_toc_l2_marker_color }};
+}
+
+div.sidebar li.toctree-l1.current li.toctree-l2.current li.toctree-l3 a {
+  border-right: none;
+}
+
+div.sidebar li.toctree-l1.current li.toctree-l2.current li.toctree-l3.current a {
+  border-right: 2px solid {{ theme_toc_l3_marker_color }};
+}
+
+
+/* ============================================================ */
+/*           CONTENT                                            */
+/* ============================================================ */
+
+div.content {
+	font-family: {{ theme_serif_font_family }};
+	padding: {{ theme_vertical_space }} {{ theme_horizontal_space }};
+	background-color: {{ theme_content_bg_color }};
+	color: {{ theme_content_fg_color }};
+	line-height: {{ theme_content_line_height }};
+}
+
+div.clearer {
+	clear: both;
+}
+
+
+/* ============================================================ */
+/*           LINKS                                              */
+/* ============================================================ */
+
+a:link {
+	color: {{ theme_color_link }};
+}
+
+a:visited {
+	color: {{ theme_color_link_visited }};
+}
+
+a:active {
+	color: {{ theme_color_link_active }};
+}
+
+a:hover{
+	color: {{ theme_color_link_hover }};
+}
+
+
+/* ============================================================ */
+/*           HEADERS                                            */
+/* ============================================================ */
+
+h1 {
+	font-family: {{ theme_sans_font_family }};
+	font-weight: bold;
+	color: {{ theme_header_color }};
+	letter-spacing: 0.05em;
+	margin: 1ex 0 1ex 0;
+	font-size: 200%;
+}
+
+h2 {
+	font-family: {{ theme_sans_font_family }};
+	font-weight: bold;
+	color: {{ theme_header_color }};
+	letter-spacing: 0.05em;
+	margin: 3ex 0 1ex 0;
+	font-size: 160%;
+}
+
+h3 {
+	font-family: {{ theme_sans_font_family }};
+	font-weight: bold;
+	color: {{ theme_header_color }};
+	letter-spacing: 0.05em;
+	margin: 3ex 0 1ex 0;
+	font-size: 130%;
+}
+
+h4 {
+	font-family: {{ theme_sans_font_family }};
+	font-weight: bold;
+	color: {{ theme_header_color }};
+	letter-spacing: 0.05em;
+	margin: 3ex 0 1ex 0;
+	font-size: 110%;
+}
+
+
+/* ============================================================ */
+/*           LISTS                                              */
+/* ============================================================ */
+
+div.news ul {
+	list-style: disc;
+}
+
+div.news ul li{
+	margin-left: 2em;
+}
+
+div.document ul {
+	list-style: disc;
+}
+
+div.document ul li{
+	margin-left: 3em;
+}
+
+div.document ol {
+	list-style: decimal;
+}
+
+div.document ol li {
+	margin-left: 3em;
+}
+
+div.document dl {
+	margin-top: 1em;
+}
+
+div.document dt {
+	font-weight: bold;
+	font-family: {{ theme_sans_font_family }};
+}
+
+div.document dd {
+  margin-left: 1.2em;
+  margin-top: .4em;
+  margin-bottom: 1em;
+}
+
+
+/* ============================================================ */
+/*           TABLES                                             */
+/* ============================================================ */
+
+table {
+	margin: 1em;
+	border-top: 1px solid {{ theme_table_border_color }};
+	border-right: 1px solid {{ theme_table_border_color }};
+	border-collapse: collapse;
+
+}
+
+th {
+	font-weight: bold;
+}
+
+td, th {
+	border-left: 1px solid {{ theme_table_border_color }};
+	border-bottom: 1px solid {{ theme_table_border_color }};
+	border-collapse:collapse;
+	padding: 0.3em 1em;
+}
+
+
+/* ============================================================ */
+/*           CODE                                               */
+/* ============================================================ */
+
+.program {
+	font-weight: bold;
+}
+
+.command,
+.guilabel,
+code {
+	color: {{ theme_code_fg_color }};
+	font-family: {{ theme_monospace_font_family }};
+}
+
+.highlight  {
+	margin: 0.3em;
+	padding: 0.3em;
+	color: {{ theme_code_fg_color }};
+	background_color: {{ theme_code_bg_color }};
+	font-family: {{ theme_monospace_font_family }};
+	border: 1px solid {{ theme_code_border_color }};
+}
+
+
+/* ============================================================ */
+/*           NOTE / IMPORTANT                                   */
+/* ============================================================ */
+
+div.note {
+	margin: 0.5em 0em !important;
+	padding: 0.5em 0.75em;
+	border-style: solid;
+	border-width: 1px 1px 1px 4px;
+	background-color: {{ theme_note_bg_color }};
+	color: {{ theme_note_fg_color }};
+	border-color: {{ theme_note_bg_color }};
+}
+
+div.important {
+	margin: 0.5em 0em !important;
+	padding: 0.5em 0.75em;
+	border-style: solid;
+	border-width: 1px 1px 1px 4px;
+	background-color: {{ theme_important_bg_color }};
+	color: {{ theme_important_fg_color }};
+	border-color: {{ theme_important_bg_color }};
+}
+
+div.warning {
+	margin: 0.5em 0em !important;
+	padding: 0.5em 0.75em;
+	border-style: solid;
+	border-width: 1px 1px 1px 4px;
+	background-color: {{ theme_warning_bg_color }};
+	color: {{ theme_warning_fg_color }};
+	border-color: {{ theme_warning_bg_color }};
+}
+
+p.admonition-title {
+	font-family: {{ theme_sans_font_family }};
+	font-weight: bold;
+}
+
+/* ============================================================ */
+/*           SMALL DEVICES                                      */
+/* ============================================================ */
+
+@media all and (max-width: {{ theme_sidebar_width_break }})  {
+	div.sidebar {
+		width: {{ theme_sidebar_width_break }};
+		float: left;
+		clear: both;
+	}
+}
+

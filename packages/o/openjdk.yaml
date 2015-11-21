@@ -1,0 +1,193 @@
+package:
+  name: openjdk
+  version: 8u66-b17
+  www: http://openjdk.java.net/
+  short: OpenJDK is an open-source implementation of Oracle's Java Standard Edition platform.
+
+doc: |
+  <para>
+    We bootstrap <systemitem>openjdk</systemitem> (<systemitem>Java 8</systemitem>)
+    using a binary distribution of 
+    <systemitem>Java 7</systemitem>: <xref linkend="pkg_oraclejdk-bin" />
+  </para>
+
+download:
+  url: http://hg.openjdk.java.net/jdk8u/jdk8u/archive
+  file: jdk${KX_OPENJDK_VERSION}.tar.bz2
+  dir: jdk8u-jdk${KX_OPENJDK_VERSION}
+  checksum: ea639bf4945727757f4b70bf93ef4ba8c7f21a72a3399059dcfdf10fe20c1bbb
+
+
+additional_downloads:
+  - http://hg.openjdk.java.net/jdk8u/jdk8u/corba/archive/jdk${KX_OPENJDK_VERSION}.tar.bz2 corba-jdk${KX_OPENJDK_VERSION}.tar.bz2 60b715779657635f035be1bf96d05c72ff38c20d4ba570e19d47e024df41b1a2 /
+  - http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/archive/jdk${KX_OPENJDK_VERSION}.tar.bz2 hotspot-jdk${KX_OPENJDK_VERSION}.tar.bz2 3100603bde28413bb80b52b4c58194f7bb98090034b7a835be03399255e0ddd0 /
+  - http://hg.openjdk.java.net/jdk8u/jdk8u/jaxp/archive/jdk${KX_OPENJDK_VERSION}.tar.bz2 jaxp-jdk${KX_OPENJDK_VERSION}.tar.bz2 6f6b069e79fbb272fde2fc6d0cb067ab6b3b0959694a61ef12d8d7916b3e6fef /
+  - http://hg.openjdk.java.net/jdk8u/jdk8u/jaxws/archive/jdk${KX_OPENJDK_VERSION}.tar.bz2 jaxws-jdk${KX_OPENJDK_VERSION}.tar.bz2 d020fe6348220e141821f6f2cd04f679ffc0b77b9d1a478a8492ede28c49455d /
+  - http://hg.openjdk.java.net/jdk8u/jdk8u/langtools/archive/jdk${KX_OPENJDK_VERSION}.tar.bz2 langtools-jdk${KX_OPENJDK_VERSION}.tar.bz2 6d8bca76f0db2c718e7559638f502f115acda68fc993d98adb4314a89f28f6bd /
+  - http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/archive/jdk${KX_OPENJDK_VERSION}.tar.bz2 jdk-jdk${KX_OPENJDK_VERSION}.tar.bz2 77b81255af6c7052012ace9851bcf2c3be3336825e8174c34da70f8c0c5325ec /
+  - http://hg.openjdk.java.net/jdk8u/jdk8u/nashorn/archive/jdk${KX_OPENJDK_VERSION}.tar.bz2 nashorn-jdk${KX_OPENJDK_VERSION}.tar.bz2 ea5a84f7a63084740aa6348b1c00f91170e7556ff4cdb6eea2ad588f62238947 /
+
+# TO UPGRADE:
+# Check current Oracle update on http://www.oracle.com/technetwork/java/javase/downloads/index.html
+# Find the latest OpenJDK build for corresponding update on http://hg.openjdk.java.net/jdk8u/X/tags where X is eg jdk8u66
+# If the tag X from Oracle is not found on OpenJDK then try "jdk8u" for X instead
+# If the latest update (eg 8u60) is newer than the one in this .yaml file, change the url: and dir: and additional_downloads in this .yaml file
+# Run master/tools/kx_ver_wiz.pl openjdk --version=Y where Y is the latest tag above, e.g. 8u60-b27
+# Apply the sed
+# Run master/make_scripts.sh
+# Run linux/download_packages_2.sh 2>&1| grep 'Wrong\|expected'
+# Update sha256 checksums for all additional_downloads
+# Run linux/download_packages_2.sh again to verify
+
+# SECURITY - CVE
+# Map of Public Vulnerability to Advisory/Alert:
+# https://web.archive.org/web/*/http://www.oracle.com/technetwork/topics/security/public-vuln-to-advisory-mapping-093627.html
+# Leads to e.g.
+# Oracle Critical Patch Update Advisory - October 2015
+# http://www.oracle.com/technetwork/topics/security/cpuoct2015-2367953.html
+# However, following e.g. "Oracle Java SE" to
+# https://support.oracle.com/rs?type=doc&id=2049800.1
+# requires registration, but even with registration it requires Support Identifier.
+# So when updating
+# http://kaarpux.kaarposoft.dk/cve.html
+# we - unfortunatley - have to be creative...
+# We *ASSUME* that the first OpenJDK release after to the quarterly "Critical Patch Update Advisory"
+# actually includes the fixes mentioned in the Advisory.
+# The dates of the Advisory publications:
+# http://www.oracle.com/technetwork/topics/security/alerts-086861.html
+
+
+version:
+  sensitive: 1
+  installed: >
+      kxver_sh_pattern("readlink /opt/bin/java",
+      qr|/opt/kaarpux/jdk8u-jdk(8u[0-9]+-b[0-9]+)/bin/java|);
+  upstream: >
+      kxver_scrape_url(undef, "http://hg.openjdk.java.net/jdk8u/jdk8u/tags", qr|jdk(8u[0-9]+-b[0-9]+)|);
+  source: http://hg.openjdk.java.net/jdk8u/jdk8u/
+
+opt:
+
+  - build:
+
+    # ============================================================
+
+    - use_gcc: ~
+
+    - echo: "Pass 1 - Additional downloads"
+    - sh: |
+        # Additional downloads
+        DL="$(cd ../../../../downloads; pwd -P)"
+        for X in corba hotspot jaxp jaxws langtools jdk nashorn; do
+        echo $X
+        tar xf ${DL}/${X}-jdk${KX_OPENJDK_VERSION}.tar.bz2
+        mv ${X}-jdk${KX_OPENJDK_VERSION} ${X}
+        done
+
+    - echo: "Pass 1 - configure"
+
+    - sh: |
+        export LC_ALL=C
+        EXTRA_CFLAGS="-fstack-protector-strong -fno-devirtualize"
+        EXTRA_CXXFLAGS="-fno-devirtualize -fno-tree-vrp"
+        export EXTRA_CFLAGS
+        export EXTRA_CXXFLAGS
+
+    - sh: |
+        V=${KX_OPENJDK_VERSION#*u}
+        U=${V%-*}
+        B=${V#*-}
+
+    - sh: >
+        sh ./configure
+        --with-boot-jdk="$(cd ../${KX_ORACLEJDK_BIN}; pwd -P)"
+        --with-update-version=$U
+        --with-build-number=$B
+        --with-milestone=KaarPux
+        --with-debug-level=fastdebug
+        --with-jvm-variants=server
+        --enable-unlimited-crypto
+        --with-zlib=system
+        --with-extra-cflags="${EXTRA_CFLAGS}"
+        --with-extra-cxxflags="${EXTRA_CXXFLAGS}"
+        --with-jobs="${KX_JOBS}"
+#        --with-giflib=system
+
+    - echo: "Pass 1 - make"
+    - sh: make LOG=debug all
+
+    - echo: "Pass 1 - cleanup"
+
+    - sh: find build/*/images/j2sdk-image -iname \*.diz -delete
+
+    # ============================================================
+
+    - echo: "keep image as bootstrap"
+    - sh: |
+        rm -rf "../j2sdk-image"
+        mkdir -pv "../j2sdk-image"
+        cp -rp build/*/images/j2sdk-image/* "../j2sdk-image" || true
+
+    - echo: "new build directory"
+    - sh: |
+        cd ..
+        rm -rf ${KX_OPENJDK}
+        DL="$(cd ../../../downloads; pwd -P)"
+        tar xf ${DL}/jdk${KX_OPENJDK_VERSION}.tar.bz2
+        cd jdk8u-jdk${KX_OPENJDK_VERSION}
+
+    # ============================================================
+
+    - echo: "Pass 2 - Additional downloads"
+    - sh: |
+        # Additional downloads
+        DL="$(cd ../../../../downloads; pwd -P)"
+        for X in corba hotspot jaxp jaxws langtools jdk nashorn; do
+        echo $X
+        tar xf ${DL}/${X}-jdk${KX_OPENJDK_VERSION}.tar.bz2
+        mv ${X}-jdk${KX_OPENJDK_VERSION} ${X}
+        done
+
+    - echo: "Pass 2 - configure"
+
+    - sh: |
+        export LC_ALL=C
+        EXTRA_CFLAGS="-fstack-protector-strong -fno-devirtualize"
+        EXTRA_CXXFLAGS="-fno-devirtualize -fno-tree-vrp"
+        export EXTRA_CFLAGS
+        export EXTRA_CXXFLAGS
+
+    - sh: |
+        V=${KX_OPENJDK_VERSION#*u}
+        U=${V%-*}
+        B=${V#*-}
+
+    - sh: >
+        sh ./configure
+        --with-boot-jdk="$(cd ../j2sdk-image; pwd -P)"
+        --with-update-version=$U
+        --with-build-number=$B
+        --with-milestone=KaarPux
+        --with-debug-level=fastdebug
+        --with-jvm-variants=server
+        --enable-unlimited-crypto
+        --with-zlib=system
+        --with-extra-cflags="${EXTRA_CFLAGS}"
+        --with-extra-cxxflags="${EXTRA_CXXFLAGS}"
+        --with-jobs="${KX_JOBS}"
+#        --with-giflib=system
+
+    - echo: "Pass 2 - make"
+    - sh: make all
+
+    - echo: "Pass 2 - cleanup"
+    - sh: find build/*/images/j2sdk-image -iname \*.diz -delete || true
+
+    # ============================================================
+
+  - install:
+    - sh: |
+        mkdir "${KX_PREFIX}"
+        cp -rp build/*/images/j2sdk-image/* "${KX_PREFIX}"
+        rm -rf ../j2sdk-image
+        rm -rf ../${KX_ORACLEJDK_BIN}

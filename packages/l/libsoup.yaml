@@ -1,0 +1,29 @@
+package:
+  name: libsoup
+  version: 2.52.1
+  www: https://live.gnome.org/LibSoup
+  short: |
+      HTTP client/server library for GNOME.
+      It uses GObjects and the glib main loop, to integrate well with GNOME applications,
+      and also has a synchronous API, for use in threaded applications. 
+
+download:
+  gnomexz: ~
+  checksum: 0e19bca047ad50b28e8ed7663840f9e45a94909148822ca44dcb3e8cafb5cc48
+
+version:
+  installed_pkgconfig: libsoup-2.4
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - use_gcc: ~
+    - configure_kx: --disable-gtk-doc --disable-static --disable-tls-check
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

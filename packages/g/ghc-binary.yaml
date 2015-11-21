@@ -1,0 +1,34 @@
+package:
+  name: ghc-binary
+  version: 7.8.4
+  www: http://www.haskell.org/ghc/
+  short: Binary version of GHC, used to bootstrap GHC source.
+
+download_64:
+  url: http://www.haskell.org/ghc/dist/${KX_GHC_BINARY_VERSION}
+  file: ghc-${KX_GHC_BINARY_VERSION}-x86_64-unknown-linux-deb7.tar.xz
+  dir: ghc-${KX_GHC_BINARY_VERSION}
+  checksum: f62e00e93a5ac16ebfe97cd7cb8cde6c6f3156073d4918620542be3e0ad55f8d
+
+version:
+  upstream: kxver_scrape_url(undef, "http://www.haskell.org/ghc/dist", qr|href="([0-9]+[0-9.]*[0-9]+)/"|);
+
+doc: |
+  <para>
+    We are not really installing this package,
+    just putting it into a directory in the build tree,
+    and later force the compilation of the GHC source package
+    (<xref linkend="pkg_ghc" />) to use this.
+  </para>
+
+opt:
+
+  - build:
+    - sh: |
+        mkdir -pv ../ghc-${KX_GHC_BINARY_VERSION}-x86_64
+        P=$(cd ../ghc-${KX_GHC_BINARY_VERSION}-x86_64; pwd -P)
+        ./configure --prefix="$P"
+        make install
+
+  - install_keep:
+    - echo: "No Install. Only used for bootstrapping GHC."

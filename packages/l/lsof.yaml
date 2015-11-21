@@ -1,0 +1,39 @@
+package:
+  name: lsof
+  version: 4.89
+  www: http://people.freebsd.org/~abe/
+  short: lsof (for LiSt Open Files) displays information about files open to Unix processes.
+
+download:
+  url: https://www.mirrorservice.org/sites/lsof.itap.purdue.edu/pub/tools/unix/lsof
+  file: lsof_${KX_LSOF_VERSION}.tar.bz2
+  dir: lsof_${KX_LSOF_VERSION}
+  checksum: 81ac2fc5fdc944793baf41a14002b6deb5a29096b387744e28f8c30a360a3718
+  # ignore signature from weak key
+  # verify: sig
+
+version:
+  installed: "kxver_sh_pattern('lsof -v 2>&1 | head -2', qr|revision: ([0-9.]+)|);"
+  upstream: "kxver_scrape_url(undef, 'https://www.mirrorservice.org/sites/lsof.itap.purdue.edu/pub/tools/unix/lsof', qr|lsof_([0-9]+[0-9.]*[0-9]+)|);"
+
+linux:
+
+  - build:
+    - sh: |
+        tar xf lsof_${KX_LSOF_VERSION}_src.tar
+        cd lsof_${KX_LSOF_VERSION}_src
+        LSOF_CFGL="-ltirpc -lpthread -L./lib -llsof"; export LSOF_CFGL
+        ./Configure -n linux
+    - make: ~
+
+  # No test suite
+
+  - install:
+    - sh: |
+        cd lsof_${KX_LSOF_VERSION}_src
+        install -p -m 0755 lsof "${KX_PREFIX}/sbin"
+        install -p lsof.8 "${KX_PREFIX}/man/man8"
+
+verify_cli: |
+  kx_cli_match_success "lsof -v" { lsof }
+  kx_cli_match_success lsof { COMMAND FD root cwd rtd txt mem }

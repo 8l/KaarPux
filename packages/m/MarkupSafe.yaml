@@ -1,0 +1,24 @@
+package:
+  name: MarkupSafe
+  version: 0.23
+  www: http://www.pocoo.org/projects/markupsafe/
+  short: |
+      MarkupSafe is a library for Python
+      that implements a unicode string that is aware of HTML escaping rules
+      and can be used to implement automatic string escaping
+
+download:
+  url: https://pypi.python.org/packages/source/M/MarkupSafe
+  file_tar_gz: ~
+  checksum: a4ec1aff59b95a14b45eb2e23761a0179e98319da5a7eb76b56ea8cdc7b871c3
+
+version:
+  upstream_pypi: ~
+
+linux:
+  - build:
+    - sh: python setup.py build
+  # No test suite
+  - install:
+    - sh: python setup.py install
+

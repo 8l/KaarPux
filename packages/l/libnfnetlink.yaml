@@ -1,0 +1,30 @@
+package:
+  name: libnfnetlink
+  version: 1.0.1
+  www: http://www.netfilter.org/projects/libnfnetlink/
+  short: |
+      libnfnetlink is the low-level library for netfilter related kernel/userspace communication.
+      It provides a generic messaging infrastructure for in-kernel netfilter subsystems
+      (such as nfnetlink_log, nfnetlink_queue, nfnetlink_conntrack) and their respective users and/or management tools in userspace. 
+
+doc: |
+  <para>
+  Included as a prerequisite to <xref linkend="pkg_ulogd" />
+  </para>
+
+download:
+  url: ftp://ftp.netfilter.org/pub/libnfnetlink
+  file_tar_bz2: ~
+  checksum: f270e19de9127642d2a11589ef2ec97ef90a649a74f56cf9a96306b04817b51a
+
+version:
+  installed_pkgconfig: ~
+
+bootstrap_8:
+
+    - configure_kx: ~
+    - make: ~
+    - check: ~
+    - install: ~
+
+

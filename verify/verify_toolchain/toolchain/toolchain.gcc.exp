@@ -1,0 +1,17 @@
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2013: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+#
+# Tests to verify gcc in verify_toolchain
+#
+
+kx_cli_success cpp toolchain/ccstl.cc
+kx_cli_success toolchain/toolcov
+kx_cli_success gcov -o toolchain/toolcov-toolchain toolchain/toolchain.c
+kx_cli_success file toolchain.c.gcov
+

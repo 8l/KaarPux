@@ -1,0 +1,32 @@
+package:
+  name: ghostscript-fonts-std
+  version: 8.11
+  www: http://sourceforge.net/projects/gs-fonts/
+  short: | 
+      Fonts and font metrics customarily distributed with Ghostscript.
+      Currently includes the 35 standard PostScript fonts and a grab-bag of others.
+
+download:
+  sourceforge: gs-fonts
+  file_tar_gz: ~
+  checksum: 2a7198e8178b2e7dba87cb5794da515200b568f5
+
+version:
+  installed: return "???";
+  upstream: kxver_upstream_sourceforge("gs-fonts", "gs-fonts", "ghostscript-fonts-std")
+
+linux:
+  - build: 
+    - sh: |
+        cd ..
+        rmdir "${KX_GHOSTSCRIPT_FONTS_STD}"
+        mv fonts "${KX_GHOSTSCRIPT_FONTS_STD}"
+    - sh: echo "Nothing to build"
+  # No test suite
+  - install:
+    - echo: "Installing fonts"
+    - sh: |
+        mkdir -pv /share/ghostscript/fonts
+        cp -r * /share/ghostscript/fonts
+        fc-cache -v /share/ghostscript/fonts/
+        ln -svf /share/ghostscript/fonts/ /share/fonts/ghostscript

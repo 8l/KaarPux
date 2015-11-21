@@ -1,0 +1,45 @@
+package:
+  name: docbook-xsl
+  version: 1.78.1
+  www: http://www.docbook.org/
+  short: |
+      DocBook is a schema maintained by the DocBook Technical Committee of OASIS.
+      It is particularly well suited to books and papers about computer hardware and software (though it is by no means limited to these applications).
+
+download:
+  sourceforge: docbook
+  file_tar_bz2: ~
+  checksum: c98f7296ab5c8ccd2e0bc07634976a37f50847df2d8a59bdb1e157664700b467
+
+version:
+  installed_sh_trailing: ls -d1 /usr/share/xml/docbook/xsl-stylesheets-*
+  upstream: kxver_upstream_sourceforge("docbook", "docbook-xsl", "docbook-xsl");
+    
+linux:
+
+  - build:
+    - echo: no build steps
+
+  # No test suite
+
+  - install:
+    - sh: |
+        X="/usr/share/xml/docbook/xsl-stylesheets-${KX_DOCBOOK_XSL_VERSION}"; export X
+        install -v -m755 -d $X
+        cp -v -R VERSION common eclipse extensions fo highlighting html  \
+         htmlhelp images javahelp lib manpages params profiling  \
+         roundtrip slides template tools website xhtml xhtml-1_1 $X
+        ln -svf VERSION $X/VERSION.xsl
+        mkdir -pv /usr/share/xml/docbook/stylesheet
+        rm -rf /usr/share/xml/docbook/stylesheet/nwalsh
+        ln -svf /usr/share/xml/docbook/xsl-stylesheets-${KX_DOCBOOK_XSL_VERSION} /usr/share/xml/docbook/stylesheet/nwalsh
+
+    - sh: |
+        if [ ! -d /etc/xml ]; then install -v -m755 -d /etc/xml; fi
+        if [ ! -f /etc/xml/catalog ]; then xmlcatalog --noout --create /etc/xml/catalog; fi
+        xmlcatalog --noout --add "rewriteSystem" "http://docbook.sourceforge.net/release/xsl/${KX_DOCBOOK_XSL_VERSION}" "$X" /etc/xml/catalog
+        xmlcatalog --noout --add "rewriteURI"    "http://docbook.sourceforge.net/release/xsl/${KX_DOCBOOK_XSL_VERSION}" "$X" /etc/xml/catalog
+        xmlcatalog --noout --add "rewriteSystem" "http://docbook.sourceforge.net/release/xsl/current" "$X" /etc/xml/catalog
+        xmlcatalog --noout --add "rewriteURI"    "http://docbook.sourceforge.net/release/xsl/current"  "$X" /etc/xml/catalog
+
+  # TODO: The INSTALL file has different instructions; including a post-install ./test.sh

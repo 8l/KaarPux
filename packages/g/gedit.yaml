@@ -1,0 +1,60 @@
+package:
+  name: gedit
+  version: 3.18.1
+  www: http://projects.gnome.org/gedit/
+  short: gedit is the official text editor of the GNOME desktop environment.
+
+download:
+  gnomexz: ~
+  checksum: 5ad5aeb01b0a299bb7c154e82fcff96e1a722617fcc4e39b3b57ddcbe88363cd
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - use_gcc: ~
+    - python3: ~
+    - configure_kx: >
+        --disable-gtk-doc
+        --disable-static
+        --disable-dependency-tracking
+        --enable-python
+        --disable-updater
+        --disable-schemas-compile
+        --disable-introspection
+
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - python3: ~
+    - install: ~
+verify_gui: |
+    spawn gedit gedit
+
+    find splitpane _ 4
+    find pushbutton Open 3
+
+    application
+    find splitpane _ 4
+    find togglebutton Recentfiles 3
+
+    application
+    find splitpane _ 4
+    find pushbutton New 3
+
+    application
+    find splitpane _ 4
+    find pushbutton Save 3
+
+    application
+    find splitpane _ 4
+    find togglebutton Menu 3
+
+    altf4
+    desktop
+    away application gedit 1

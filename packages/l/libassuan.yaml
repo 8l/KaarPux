@@ -1,0 +1,27 @@
+package:
+  name: libassuan
+  version: 2.3.0
+  www: http://www.gnupg.org/related_software/libassuan/index.html
+  short: |
+      Libassuan is a small library implementing the so-called Assuan protocol.
+      This protocol is used for IPC between most newer GnuPG components.
+      Both, server and client side functions are provided.
+
+download:
+  url: ftp://ftp.gnupg.org/gcrypt/libassuan
+  file_tar_bz2: ~
+  checksum: 87c999f572047fa22a79ab5de4c8a1a5a91f292561b69573965cac7751320452
+  verify: sig
+
+version:
+  installed: kxver_sh_trailing "libassuan-config --version"
+
+linux:
+  - build:
+    - configure_kx: ~
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+

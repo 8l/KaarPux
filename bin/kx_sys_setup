@@ -1,0 +1,187 @@
+#!/bin/sh
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2015: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+# ============================================================
+# System setup utilities for KaarPux
+# ============================================================
+
+set -o nounset
+set -o errexit
+KX_BASE="$(cd $(dirname "$0")/..; pwd -P)"
+
+# ============================================================
+
+KX_SETUP_COMMANDS="format_downloads_disk|mount_downloads_bootstrap|mount_downloads_final|format_target_disk|mount_target_disk|prepare_bootstrap_dir|grub_setup"
+
+# ============================================================
+
+usage () {
+	P=$(basename "$0")
+	cat >> /dev/stderr <<-EOF
+		Usage:
+		$P: <configuration_file_name> ${KX_SETUP_COMMANDS}
+	EOF
+}
+
+# ============================================================
+
+usage_exit () {
+	echo "***" "$@" >> /dev/stderr
+	usage
+	exit 1
+}
+
+# ============================================================
+
+error_exit () {
+	echo "***" "$@" >> /dev/stderr
+	exit 1
+}
+
+
+# ============================================================
+# CHECK ARGS
+# ============================================================
+
+test "$#" -eq 2 || usage_exit "Please specify exactly two arguments"
+
+C=$(basename $1)
+CONFIG="${KX_BASE}/../$C"
+test -f "${CONFIG}" || error_exit "Configuration file [${CONFIG}] not found"
+. "${CONFIG}"
+
+COMMAND="$2"
+echo "${COMMAND}" | grep -Eqx "${KX_SETUP_COMMANDS}" || usage_exit "Invalid command [${COMMAND}]"
+
+test $(id -u) -eq 0 || error_exit "This script must be run as root"
+
+
+# ============================================================
+# MAIN
+# ============================================================
+
+cd "${KX_BASE}"
+case "$COMMAND" in
+
+	# ============================================================
+	format_downloads_disk)
+	# ============================================================
+		echo ""
+		echo "===> formatting downloads disk"
+		mke2fs -t ext4 -jv ${KX_DOWNLOADS_DEV}
+		fsck -a ${KX_DOWNLOADS_DEV}
+		mkdir -pv /home/kaarpux/kaarpux/downloads
+		mount ${KX_DOWNLOADS_DEV} /home/kaarpux/kaarpux/downloads
+		chown kaarpux: /home/kaarpux/kaarpux/downloads
+		umount ${KX_DOWNLOADS_DEV}
+		echo "===> downloads disk formatted"
+		;;
+
+	# ============================================================
+	mount_downloads_bootstrap)
+	# ============================================================
+		echo ""
+		echo "===> mounting downloads disk (for bootstrap)"
+		mkdir -pv ${KX_MNT}/home/kaarpux/kaarpux/downloads
+		fsck -a ${KX_DOWNLOADS_DEV}
+		mount ${KX_DOWNLOADS_DEV} ${KX_MNT}/home/kaarpux/kaarpux/downloads
+		echo deadline > /sys/block/${KX_DOWNLOADS_DEV#/dev/}/queue/scheduler
+		echo "===> downloads disk mounted"
+		;;
+
+	# ============================================================
+	mount_downloads_final)
+	# ============================================================
+		echo ""
+		echo "===> mounting downloads disk (for final build)"
+		mkdir -pv /home/kaarpux/kaarpux/downloads
+		fsck -a ${KX_DOWNLOADS_DEV}
+		mount ${KX_DOWNLOADS_DEV} /home/kaarpux/kaarpux/downloads
+		echo deadline > /sys/block/${KX_DOWNLOADS_DEV#/dev/}/queue/scheduler
+		echo "===> downloads disk mounted"
+		;;
+
+	# ============================================================
+	format_target_disk)
+	# ============================================================
+		echo ""
+		echo "===> partitioning [${KX_KAARPUX_DEV}] - legacy MBR style"
+		dd if=/dev/zero of="${KX_KAARPUX_DEV}" bs=2048 count=1
+		fdisk ${KX_KAARPUX_DEV} <<-EOF
+		n
+		p
+		1
+
+
+		w
+		EOF
+		echo "===> show disk layout"
+		fdisk -l ${KX_KAARPUX_DEV}
+		echo "===> formatting [${KX_KAARPUX_PARTITION}]"
+		mke2fs -t ext4 -jv ${KX_KAARPUX_PARTITION}
+		fsck -a ${KX_KAARPUX_PARTITION}
+		echo "===> target disk [${KX_KAARPUX_DEV}] formatted"
+		;;
+
+	# ============================================================
+	mount_target_disk)
+	# ============================================================
+		echo ""
+		echo "===> mounting target disk [${KX_KAARPUX_PARTITION}]"
+		mkdir -pv ${KX_MNT}
+		mount ${KX_KAARPUX_PARTITION} ${KX_MNT}
+		echo deadline > /sys/block/${KX_KAARPUX_DEV#/dev/}/queue/scheduler
+		echo "done"
+		echo "===> target disk mounted"
+		;;
+
+	# ============================================================
+	prepare_bootstrap_dir)
+	# ============================================================
+		echo ""
+		echo "===> Creating kaarpux home directory"
+		mkdir -pv ${KX_MNT}/home/kaarpux/kaarpux
+		mkdir -pv ${KX_MNT}/home/kaarpux/kaarpux/bootstrap/build/
+
+		if test -n "${KX_USE_TMPFS}"; then
+			echo "===> mounting tmpfs on build"
+			mount -t tmpfs -o size=32G tmpfs ${KX_MNT}/home/kaarpux/kaarpux/bootstrap/build/
+		else
+			echo "===> NOT mounting tmpfs on build"
+		fi
+		echo "===> make kaarpux owner"
+		chown -R kaarpux: ${KX_MNT}/home/kaarpux/
+
+		echo "===> bootstrap prepared"
+		;;
+
+	# ============================================================
+	grub_setup)
+	# ============================================================
+		echo ""
+		echo "===> setting up grub"
+		cd ${KX_MNT}/home/kaarpux/kaarpux
+		bootstrap/host_scripts/enter_chroot.sh <<-EOF
+			set -o nounset
+			set -o errexit
+			grub-install ${KX_KAARPUX_DEV}
+			grub-mkconfig > /boot/grub/grub.cfg
+			EOF
+		echo "===> grub set up"
+		;;
+
+	# ============================================================
+	*)
+	# ============================================================
+		usage_exit "Command [$COMMAND] not implemented yet"
+		;;
+esac
+
+
+

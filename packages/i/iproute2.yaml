@@ -1,0 +1,47 @@
+package:
+  name: iproute2
+  version: 4.2.0
+  www: http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2
+  short: A collection of utilities for controlling TCP / IP networking and traffic control in Linux.
+
+download:
+  url: http://www.kernel.org/pub/linux/utils/net/iproute2/
+  file_tar_xz: ~
+  checksum: a4101e743e0da36b55f63353ff489699ddcd634ceca854a9a272346588f30f30
+
+version:
+  installed_na: ~
+
+bootstrap_8:
+  - echo: patch
+  - sh: sed -e 's/doc//' -i Makefile
+  - echo: make
+  - make: DESTDIR=''
+  # iproute2 has a testsuite directory, but make alltests does not seem to work...
+  - install: DESTDIR=''
+
+verify_cli: |
+  kx_cli_success /bin/bridge -V
+  kx_cli_success /bin/ifstat -V
+  kx_cli_match_success /bin/ifstat { Errs/Drop }
+  kx_cli_success /bin/ip -V
+  kx_cli_match_success "/bin/ip addr" { LOOPBACK }
+  kx_cli_success /bin/ss -V
+  kx_cli_success /bin/tc -V
+
+# TODO: text other binaries
+# /bin/arpd
+# /bin/ctstat
+# /bin/genl
+# /bin/ifcfg
+# /bin/lnstat
+# /bin/nstat
+# /bin/routef
+# /bin/routel
+# /bin/rtacct
+# /bin/rtmon
+# /bin/rtpr
+# /bin/rtstat
+# /bin/ss
+# /bin/tc
+

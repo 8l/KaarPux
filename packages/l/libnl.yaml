@@ -1,0 +1,24 @@
+package:
+  name: libnl
+  version: 3.2.25
+  www: http://www.infradead.org/~tgr/libnl/
+  short: The libnl suite is a collection of libraries providing APIs to netlink protocol based Linux kernel interfaces.
+
+download:
+  url: http://www.infradead.org/~tgr/libnl/files/
+  file_tar_gz: ~
+  checksum: 8beb7590674957b931de6b7f81c530b85dc7c1ad8fbda015398bc1e8d1ce8ec5
+
+version:
+  installed_pkgconfig: libnl-3.0
+
+linux:
+  - build:
+    - configure_kx: --sysconfdir=/var/lib --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

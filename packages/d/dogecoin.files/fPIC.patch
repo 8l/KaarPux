@@ -1,0 +1,13 @@
+diff -Naur dogecoin-1.8.3.ORIG/configure.ac dogecoin-1.8.3/configure.ac
+--- dogecoin-1.8.3.ORIG/configure.ac	2015-07-02 19:54:24.000000000 +0200
++++ dogecoin-1.8.3/configure.ac	2015-10-16 10:58:27.200447489 +0200
+@@ -341,7 +341,8 @@
+ if test x$use_hardening != xno; then
+   AX_CHECK_COMPILE_FLAG([-Wstack-protector],[HARDENED_CXXFLAGS="$HARDENED_CXXFLAGS -Wstack-protector"])
+   AX_CHECK_COMPILE_FLAG([-fstack-protector-all],[HARDENED_CXXFLAGS="$HARDENED_CXXFLAGS -fstack-protector-all"])
+-  AX_CHECK_COMPILE_FLAG([-fPIE],[HARDENED_CXXFLAGS="$HARDENED_CXXFLAGS -fPIE"])
++  #AX_CHECK_COMPILE_FLAG([-fPIE],[HARDENED_CXXFLAGS="$HARDENED_CXXFLAGS -fPIE"])
++  AX_CHECK_COMPILE_FLAG([-fPIC],[HARDENED_CXXFLAGS="$HARDENED_CXXFLAGS -fPIC"])
+ 
+   AX_CHECK_PREPROC_FLAG([-D_FORTIFY_SOURCE=2],[
+     AX_CHECK_PREPROC_FLAG([-U_FORTIFY_SOURCE],[

@@ -1,0 +1,24 @@
+package:
+  name: libatasmart
+  version: 0.19
+  www: http://0pointer.de/blog/projects/being-smart.html
+  short: A lean, small and clean implementation of an ATA S.M.A.R.T. reading and parsing library. 
+
+download:
+  url: http://0pointer.de/public
+  file_tar_xz: ~
+  checksum: 61f0ea345f63d28ab2ff0dc352c22271661b66bf09642db3a4049ac9dbdb0f8d
+
+version:
+  installed_pkgconfig: ~
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

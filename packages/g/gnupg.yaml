@@ -1,0 +1,28 @@
+package:
+  name: gnupg
+  version: 2.1.9
+  www: www.gnupg.org/
+
+download:
+  url: ftp://ftp.gnupg.org/gcrypt/gnupg
+  file_tar_bz2: ~
+  checksum: 1cb7633a57190beb66f9249cb7446603229b273d4d89331b75c652fa4a29f7b6
+  verify: sig
+
+version:
+  sensitive: 1
+  installed: kxver_sh_trailing "gpg2 --version"
+
+linux:
+  - build:
+    - configure_kx: ~
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+    - sh: | 
+        ln -svf gpg2 /bin/gpg
+        ln -svf gpgv2 /bin/gpgv
+        ln -svf gpg2.1.gz /share/man/man1/gpg.1.gz
+

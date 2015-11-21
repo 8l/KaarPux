@@ -1,0 +1,33 @@
+package:
+  name: acpica
+  version: 20150930
+  www: https://www.acpica.org/
+  short: |
+      The ACPI Component Architecture (ACPICA) project provides an
+      operating system (OS)-independent reference implementation
+      of the Advanced Configuration and Power Interface Specification (ACPI).
+
+# It seems that https://acpica.org/downloads/... uses a certificate
+# without CN=acpica.org
+# /description=XZG5sC1x18l3e4ga/C=US/CN=downloads.syncevolution.org/emailAddress=adam.r.gretzinger@intel.com
+# So you may have to download this file manually
+
+download:
+  url: https://acpica.org/sites/acpica/files/
+  file: acpica-unix-${KX_ACPICA_VERSION}.tar.gz
+  dir: acpica-unix-${KX_ACPICA_VERSION}
+  checksum: 42d5682f7e73bf13e9689cfa104878db6082ffd172a746b8e8f5046fc70203c6
+
+version:
+  installed: kxver_sh_pattern "iasl -v", qr|version ([0-9]+)-|;
+  upstream: kxver_scrape_url undef, "https://www.acpica.org/downloads/", qr|The current release of ACPICA is version <strong>([0-9]+)\s*</strong>|;
+  source: https://github.com/acpica/acpica/
+
+linux:
+
+  - build:
+    - make: ~
+
+  - install:
+    - install: ~
+

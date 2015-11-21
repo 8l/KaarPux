@@ -1,0 +1,36 @@
+package:
+  name: kmod
+  version: 21
+  short: Libraries and utilities for loading kernel modules.
+
+download:
+  kernelxz: linux/utils/kernel/kmod
+  checksum: 160a9448af74cf75b08d089f37a3e8d1fafa75cce92d1cbe869a753b670d95c0
+
+version:
+  upstream: kxver_scrape_url(undef, $url, qr|kmod-([0-9]+)|);
+
+bootstrap_8:
+  - configure_kx: >
+        --enable-manpages
+        --with-xz
+        --with-zlib
+  - make: ~
+  - check: ~
+  - install: ~
+  - sh: |
+      for F in lsmod depmod insmod modinfo modprobe rmmod; do
+      ln -svf kmod /bin/$F
+      done
+
+verify_cli: |
+  kx_cli_match_success /bin/lsmod { Module Size "Used by"  }
+
+# TODO: Test other binaries
+# /bin/depmod
+# /bin/insmod
+# /bin/kmod
+# /bin/modinfo
+# /bin/modprobe
+# /bin/rmmod
+

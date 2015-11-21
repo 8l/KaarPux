@@ -1,0 +1,35 @@
+package:
+  name: codelite
+  version: 6.1
+  www: http://codelite.org/
+  short: open-source, cross platform IDE for the C/C++ programming languages.
+
+download:
+  sourceforge: codelite/Releases/codelite-${KX_CODELITE_VERSION_MM}
+  file: codelite-${KX_CODELITE_VERSION}-gtk.src.tar.xz
+  checksum: c4cc0665cbbfbf30e38454bb7a10b36884135c3c2ac250f8cbac2f830ff8932c
+  dir: codelite-${KX_CODELITE_VERSION}
+
+version:
+  # codelite --version does not work?
+  installed_na: ~
+  upstream: kxver_upstream_sourceforge("codelite", "Mirrors", undef, qr|codelite-([0-9]+[0-9.]+[0-9]+)-gtk|);
+
+opt:
+  - build:
+    - sh: mkdir build-release
+    - sh: cd build-release
+    - cmake_kx: >
+        -G "Unix Makefiles"
+        -DENABLE_SFTP=0
+        -DFREETYPE_INCLUDE_DIRS=/include/freetype2
+        -DCMAKE_SKIP_RPATH=1
+        -DCMAKE_BUILD_TYPE=Release
+        -DENABLE_CLANG=1
+        -DPREFIX="${KX_PREFIX}"
+        ..
+    - make: ~
+  - install:
+    - sh: cd build-release
+    - install: ~
+

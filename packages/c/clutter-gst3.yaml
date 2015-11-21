@@ -1,0 +1,21 @@
+package:
+  name: clutter-gst3
+  version: 3.0.14
+
+download:
+  url: https://download.gnome.org/sources/clutter-gst/3.0
+  file: clutter-gst-${KX_CLUTTER_GST3_VERSION}.tar.xz
+  dir: clutter-gst-${KX_CLUTTER_GST3_VERSION}
+  checksum: f7c8a7dc479759cad5ff7483cb5a1abbe3efd0b4f83ed0e443dc602430a82de2
+
+version:
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages 
+    - make: ~
+
+  - install:
+    - install: ~

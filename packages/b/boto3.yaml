@@ -1,0 +1,25 @@
+package:
+  name: boto3
+  version: 1.1.4
+  www: https://github.com/boto/boto3
+  short: Amazon Web Services (AWS) Software Development Kit (SDK) for Python
+
+
+download:
+  url: https://pypi.python.org/packages/source/b/boto3
+  file_tar_gz: ~
+  checksum: 07fb067d749f07cbda3943d2d7da6b064c1a52a94e63a788991dd4feb79a4829
+
+version:
+  upstream_pypi: ~
+
+linux:
+  - build:
+    - python3: ~
+    - sh: python3 setup.py build
+  # TODO tests?
+  - install:
+    - python3: ~
+    - sh: python3 setup.py install --prefix=${KX_PREFIX}
+
+

@@ -1,0 +1,27 @@
+package:
+  name: glamor-egl
+  version: 0.6.0
+
+
+download:
+  url: http://xorg.freedesktop.org/releases/individual/driver
+  checksum: 66531b56e6054eb53daa7bd57eb6358a7ead1b84f63419606e69d1092365e5c9
+
+version: ~
+
+linux:
+
+  - build:
+    - use_gcc: ~
+    - configure_kx: >
+        --disable-static
+        --enable-glx-tls
+        --enable-xv
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - use_gcc: ~
+    - install: ~     
+

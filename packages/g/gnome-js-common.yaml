@@ -1,0 +1,22 @@
+package:
+  name: gnome-js-common
+  version: 0.1.2
+
+download:
+  gnome: ~
+  checksum: 1765be99f3d83cc57e1ec13a2bb963469b8e91b60239eeaab61d66d7744496e6
+
+version:
+  installed_pkgconfig: ~
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

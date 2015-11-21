@@ -1,0 +1,48 @@
+package:
+  name: gnome-system-monitor
+  version: 3.18.0.1
+
+download:
+  gnomexz: ~
+  checksum: 71ff8db2fa3eb53d8f54ffd612c6679b231a9d69c13adb91cf63421425953b10
+
+version:
+  installed_na: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-schemas-compile
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+verify_gui: |
+    spawn gnomesystemmonitor gnome-system-monitor
+
+    application
+    find radiobutton Processes 5
+    do click
+    application
+    find tablecolumnheader ProcessName 8
+
+    application
+    find radiobutton  Resources 5
+    do click
+    application
+    find label CPUHistory 5
+
+    application
+    find radiobutton FileSystems 5
+    do click
+    application
+    find tablecolumnheader Device 8
+
+    altf4
+    desktop
+    away application gnomesystemmonitor 1

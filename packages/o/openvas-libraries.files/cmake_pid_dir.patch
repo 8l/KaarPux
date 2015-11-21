@@ -1,0 +1,13 @@
+diff -Naur openvas-libraries-7.0.3.ORIG/CMakeLists.txt openvas-libraries-7.0.3/CMakeLists.txt
+--- openvas-libraries-7.0.3.ORIG/CMakeLists.txt	2014-07-31 08:40:13.000000000 +0200
++++ openvas-libraries-7.0.3/CMakeLists.txt	2014-08-17 23:32:13.001572805 +0200
+@@ -180,7 +180,9 @@
+ set (OPENVAS_STATE_DIR   "${LOCALSTATEDIR}/lib/openvas")
+ set (OPENVAS_LOG_DIR     "${LOCALSTATEDIR}/log/openvas")
+ set (OPENVAS_CACHE_DIR   "${LOCALSTATEDIR}/cache/openvas")
++if (NOT OPENVAS_PID_DIR)
+ set (OPENVAS_PID_DIR     "${LOCALSTATEDIR}/run")
++endif (NOT OPENVAS_PID_DIR)
+ set (OPENVAS_SYSCONF_DIR "${SYSCONFDIR}/openvas")
+ 
+ set (OPENVAS_NVT_DIR     "${OPENVAS_STATE_DIR}/plugins")

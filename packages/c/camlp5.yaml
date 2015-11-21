@@ -1,0 +1,23 @@
+package:
+  name: camlp5
+  version: 6.14
+  www: http://camlp5.gforge.inria.fr/
+  short: Camlp5 is a preprocessor-pretty-printer of OCaml.
+
+download:
+  url: http://camlp5.gforge.inria.fr/distrib/src
+  file_tgz: ~
+  checksum: 09f9ed12893d2ec39c88106af2306865c966096bedce0250f2fe52b67d2480e2
+
+version:
+  installed_na: ~
+  upstream: kxver_scrape_url("camlp5", "http://camlp5.gforge.inria.fr/distrib/src/");
+
+opt:
+
+  - build:
+    - sh: ./configure -prefix ${KX_PREFIX}
+    - make: world.opt
+
+  - install:
+    - install: ~

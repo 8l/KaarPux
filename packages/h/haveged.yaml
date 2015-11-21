@@ -1,0 +1,34 @@
+package:
+  name: haveged
+  version: 1.9.1
+  www: http://www.issihosts.com/haveged/
+  short: easy-to-use, unpredictable random number generator based upon an adaptation of the HAVEGE algorithm
+
+download:
+  url: http://www.issihosts.com/haveged/
+  file_tar_gz: ~
+  checksum: ab7234b7f57dbb7d500a5ab3cbf0494715ce6499
+  # TODO: Verify signature (but is is in a non-standard place with non-standard name, not well suited for the KaarPux build system)
+
+version:
+  installed: kxver_header_file_one("/include/haveged/havege.h", "HAVEGE_PREP_VERSION");
+  upstream: kxver_scrape_url(undef, "http://www.issihosts.com/haveged/downloads.html", qr|The current version is ([0-9]+[0-9.]*)|);
+
+bootstrap_8:
+
+    - configure_kx: ~
+    - make: ~
+    # in general, haveged check may occassionally fail
+    # in particular, because we run it in parallel with OpenSSH
+    - sh: |
+        kx_step_echo CHECK
+        if ! make check; then
+        kx_step_echo REDO CHECK
+        sleep 10
+        make check
+        fi
+    - install: ~
+    - sh: |
+        sed s:@SBIN_DIR@:/bin: init.d/service.forking > /etc/systemd/system/haveged.service
+        ln -svf '/etc/systemd/system/haveged.service' '/etc/systemd/system/multi-user.target.wants/haveged.service'
+

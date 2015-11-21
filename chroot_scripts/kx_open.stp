@@ -1,0 +1,91 @@
+/*
+ *  KaarPux: http://kaarpux.kaarposoft.dk
+ *
+ *  Copyright (C) 2014: Henrik Kaare Poulsen
+ *
+ *  License: http://kaarpux.kaarposoft.dk/license.html
+ */
+
+/*
+============================================================
+
+The purpose of this systemtap script is
+to identify files opened for reading by a process (and its subprocesses/threads).
+
+(We ignore other file operations, such as link, chown, stat, etc.)
+
+============================================================
+
+The script may be compiled with
+stap -v -p4 kx_open.stp -m kx_open -D MAXSTRINGLEN=4096 --privilege=stapsys
+The MAXSTRINGLEN parameter ensures that we can get the full path (include/linux/limits.h)
+
+The probe may be run with
+staprun kx_open.ko -c "cat /usr/include/*.h > /dev/null 2>&1"
+
+To filter out some files, and only list each file once:
+staprun kx_open.ko -c "cat /usr/include/*.h > /dev/null 2>&1" | grep -v '^/etc/ld.so.cache' | awk '!x[$0]++' 
+
+*/
+
+// ============================================================
+
+global FSNOTIFY_EVENT_PATH	= 1;
+global FSNOTIFY_EVENT_INODE	= 2;
+
+global FS_ACCESS	= 0x00000001;
+global FS_MODIFY	= 0x00000002;
+global FS_ATTRIB	= 0x00000004;
+global FS_CLOSE_WRITE	= 0x00000008;
+global FS_CLOSE_NOWRITE	= 0x00000010;
+global FS_OPEN		= 0x00000020;
+global FS_MOVED_FROM	= 0x00000040;
+global FS_MOVED_TO	= 0x00000080;
+global FS_CREATE	= 0x00000100;
+global FS_DELETE	= 0x00000200;
+global FS_DELETE_SELF	= 0x00000400;
+global FS_MOVE_SELF	= 0x00000800;
+global FS_ISDIR		= 0x40000000;
+
+// ============================================================
+
+probe kernel.function("fsnotify") {
+	try {
+		// only act on decendants of the target process
+		if (!target_set_pid(pid())) { next; }
+		try {
+			# println("M\t", $mask, "\t", $data_is, "\t", $data, "\t", $file_name);
+			# TODO: for FS_DELETE_SELF we have no nameidata, so we do not know what was deleted...
+			if ($mask & (FS_ACCESS|FS_MODIFY|FS_ATTRIB|FS_CLOSE_NOWRITE|FS_DELETE_SELF|FS_MOVE_SELF|FS_ISDIR) ) { next; }
+			if ( !($mask & 0xFFF) ) { next; }
+			if ($data_is==FSNOTIFY_EVENT_PATH) {
+				path = task_dentry_path(task_current(),
+					@cast($data, "path")->dentry,
+					@cast($data, "path")->mnt);
+			} else if ($data_is==FSNOTIFY_EVENT_INODE) {
+				path = inode_path($data);
+			} else {
+				path = "???";
+			}
+			if ( $mask & (FS_CLOSE_WRITE|FS_CREATE) ) {
+				tag = "W";
+			} else if ($mask & FS_OPEN) {
+				tag = "R";
+			} else if ($mask & (FS_MOVED_FROM|FS_DELETE)) {
+				tag = "D";
+				if ($file_name!=0) { path .= "/" . kernel_string($file_name); }
+			} else if ($mask & FS_MOVED_TO) {
+				tag = "W";
+				if ($file_name!=0) { path .= "/" . kernel_string($file_name); }
+			} else {
+				next;
+			}
+			println(tag,"\t", path);
+		} catch (msg) {
+			println(sprintf("e\t%x\t", $mask), $data, "\t", $data_is, "\t", msg);
+		}
+	} catch (msg) {
+		println("E", msg);
+	}
+}
+

@@ -1,0 +1,20 @@
+package:
+  name: libxkbcommon
+  version: 0.5.0
+
+download:
+  url: http://xkbcommon.org/download
+  file_tar_xz: ~
+  checksum: 90bd7824742b9a6f52a6cf80e2cadd6f5349cf600a358d08260772615b89d19c
+
+version:
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages --with-xkb-config-root=/usr/share/X11/xkb
+    - make: ~
+
+  - install:
+    - install: ~

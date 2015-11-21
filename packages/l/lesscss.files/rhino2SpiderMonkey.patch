@@ -1,0 +1,39 @@
+diff -Naur less.js-1.4.2:ORIG/lib/less/parser.js less.js-1.4.2/lib/less/parser.js
+--- less.js-1.4.2:ORIG/lib/less/parser.js	2013-07-20 22:03:30.000000000 +0200
++++ less.js-1.4.2/lib/less/parser.js	2015-05-17 12:42:00.174987258 +0200
+@@ -1,6 +1,6 @@
+ var less, tree, charset;
+ 
+-if (typeof environment === "object" && ({}).toString.call(environment) === "[object Environment]") {
++if (typeof environment === "object" && ({}).toString.call(environment) === "[object environment]") {
+     // Rhino
+     // Details on how to detect Rhino: https://github.com/ringo/ringojs/issues/88
+     if (typeof(window) === 'undefined') { less = {} }
+diff -Naur less.js-1.4.2:ORIG/lib/less/rhino.js less.js-1.4.2/lib/less/rhino.js
+--- less.js-1.4.2:ORIG/lib/less/rhino.js	2013-07-20 22:03:30.000000000 +0200
++++ less.js-1.4.2/lib/less/rhino.js	2015-05-17 12:42:57.375555410 +0200
+@@ -4,7 +4,7 @@
+     var endOfPath = Math.max(name.lastIndexOf('/'), name.lastIndexOf('\\')),
+         sheetName = name.slice(0, endOfPath + 1) + sheet.href,
+         contents = sheet.contents || {},
+-        input = readFile(sheetName);
++        input = read(sheetName);
+ 
+     input = input.replace(/^\xEF\xBB\xBF/, '');
+         
+@@ -63,7 +63,7 @@
+     }
+     path = name.split("/");path.pop();path=path.join("/")
+ 
+-    var input = readFile(name);
++    var input = read(name);
+ 
+     if (!input) {
+         print('lesscss: couldn\'t open file ' + name);
+@@ -123,4 +123,4 @@
+         errorline(e, 2);
+     }
+     print(content);
+-}
+\ No newline at end of file
++}

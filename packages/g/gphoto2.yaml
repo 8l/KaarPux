@@ -1,0 +1,30 @@
+package:
+  name: gphoto2
+  version: 2.5.8
+  www: http://www.gphoto.org/proj/gphoto2/
+  short: |
+      command line client to for libgphoto2.
+      Allows to use gPhoto software from a terminal or from a script shell
+      to perform any camera operation that can be done. 
+
+download:
+  sourceforge: gphoto/gphoto/${KX_GPHOTO2_VERSION}
+  file_tar_bz2: ~
+  checksum: a9abcd15d95f205318d17e3ac12af7ce523d2bc4943709d50b0a12c30cc5ee4d
+
+
+version:
+  installed_sh_trailing: gphoto2 -v
+  upstream: kxver_upstream_sourceforge("gphoto", "gphoto", "gphoto2");
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

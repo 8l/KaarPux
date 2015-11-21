@@ -1,0 +1,31 @@
+package:
+  name: parted
+  version: 3.2
+  www: http://www.gnu.org/software/parted/
+  short: |
+      GNU Parted manipulates partition tables.
+      This is useful for creating space for new operating systems, reorganizing disk usage, copying data on hard disks and disk imaging.
+      The package contains a library, libparted, as well as well as a command-line frontend, parted, which can also be used in scripts.
+
+download:
+  gnux: ~
+  checksum: 858b589c22297cacdf437f3baff6f04b333087521ab274f7ab677cb8c6bb78e4
+
+version:
+  wiz_savannah: ~
+  changelog: NEWS
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  # most tests requires 'root', so disable for now
+  # - test:
+  #   # Fix bash -> posix (dash)
+  #   - sh: sed '/case/s|\[\^0-9\]|[!0-9]|' -i tests/t-local.sh
+  #  - check: ~
+
+  - install:
+    - install: ~

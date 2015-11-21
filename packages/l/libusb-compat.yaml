@@ -1,0 +1,28 @@
+package:
+  name: libusb-compat
+  version: 0.1.5
+  www: http://libusb.org/
+  short: |
+      The libusb-compat package aims to look, feel and behave exactly like libusb-0.1.
+      It is a compatibility layer needed by packages that have not been upgraded to the libusb-1.0 API. 
+
+download:
+  sourceforge: libusb
+  file_tar_bz2: ~
+  checksum: 062319276d913c753a4b1341036e6a2e42abccc9
+
+version:
+  installed_sh_trailing: libusb-config --version
+  upstream: kxver_upstream_sourceforge("libusb", "libusb-compat-0.1", "libusb-compat");
+
+bootstrap_8:
+    - configure_kx: --disable-dependency-tracking --disable-static
+    - make: ~
+    # No testsuite
+    - install: ~
+
+verify_cli: |
+  kx_cli_success /bin/libusb-config --version
+  kx_cli_match_success "/bin/libusb-config --cflags" { include }
+  kx_cli_match_success "/bin/libusb-config --libs" { usb }
+

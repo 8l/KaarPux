@@ -1,0 +1,22 @@
+package:
+  name: libffi
+  version: 3.2.1
+  www: http://sourceware.org/libffi/
+  short: Portable Foreign Function Interface Library
+
+download:
+  url: ftp://sourceware.org/pub/libffi
+  file_tar_gz: ~
+  checksum: d06ebb8e1d9a22d19e38d63fdb83954253f39bedc5d46232a05645685722ca37
+
+version:
+  installed_pkgconfig: ~
+
+bootstrap_8:
+    - configure_kx: --sysconfdir=/etc --localstatedir=/var --disable-static
+    - make: ~
+    - check: ~
+    - install: ~     
+
+
+

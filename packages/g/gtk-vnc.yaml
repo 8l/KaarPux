@@ -1,0 +1,23 @@
+package:
+  name: gtk-vnc
+  version: 0.5.4
+
+download:
+  gnomexz: ~
+  checksum: 488aa97a76ce6868160699cd45d4a0ee0fe6f0ad4631737c6ddd84450f6c9ce7
+
+version:
+  installed_pkgconfig: gtk-vnc-2.0
+  upstream_gnome: ~
+
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages --with-gtk=3.0 --enable-vala --disable-werror
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

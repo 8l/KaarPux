@@ -1,0 +1,25 @@
+package:
+  name: autoconf
+  version: 2.69
+  www: http://www.gnu.org/software/autoconf
+  short: Autoconf is an extensible package of M4 macros that produce shell scripts to automatically configure software source code packages.
+  
+download:
+  gnux: ~
+  checksum: 64ebcec9f8ac5b2487125a86a7760d2591ac9e1d3dbd59489633f9de62a57684
+
+version:
+  installed_sh_trailing: autoconf --version 2>&1 | head -1
+  wiz_savannah: ~
+
+bootstrap_8:
+  - configure_kx: ~
+  - make: ~
+  - check: ~
+  - install: ~
+
+# Tested in "verify_toolchain"
+
+verify_cli: |
+  kx_cli_match_success "autoconf --version"    { autoconf   GNU Autoconf }
+  kx_cli_match_success "autoreconf --version"  { autoreconf GNU Autoconf }

@@ -1,0 +1,37 @@
+package:
+  name: haskell-platform
+  version: 2014.2.0.0
+  www: http://www.haskell.org/platform/linux.html
+  short: |
+      The Haskell Platform is the easiest way to get started with programming Haskell.
+      It comes with all you need to get up and running.
+      Think of it as 'Haskell: batteries included'.
+
+download:
+  url: https://www.haskell.org/platform/download/${KX_HASKELL_PLATFORM_VERSION}
+  file: haskell-platform-${KX_HASKELL_PLATFORM_VERSION}-srcdist.tar.gz
+  checksum: ab759ec50618f2604163eca7ad07e50c8292398a2d043fdc1012df161b2eb89a
+
+version: 
+  installed_na: ~
+  upstream: kxver_scrape_url(undef, "https://www.haskell.org/platform/download/", qr|href="([0-9]+[0-9.]*[0-9]+)/"|);
+
+doc: |
+  <para>
+    This package version needs to be in sync with <xref linkend="pkg_ghc" />.
+    See <ulink url="http://www.haskell.org/platform/linux.html">Haskell Platform for Linux</ulink>.
+  </para><para>
+    We are not really installing this package, because it introduces a cyclic dependency:
+    Building <systemitem>haskell-platform</systemitem> requires <systemitem>Cabal</systemitem>,
+    which is installed by <systemitem>haskell-platform</systemitem>.
+    Instead we are installing the individual modules,
+    with the versions specified by the <systemitem>haskell-platform</systemitem>.
+  </para>
+
+opt:
+
+  - build:
+    - echo: Not building. See doc.
+
+  - install:
+    - echo: Not building. See doc.

@@ -1,0 +1,40 @@
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2013: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+#
+# Tests to verify binutils in verify_toolchain
+#
+
+kx_cli_match_success "/bin/addr2line -e toolchain/toolchain 0" { "??:0" } 
+# /bin/ar verified in "make"
+# /bin/as verified in "make"
+kx_cli_match_success "/bin/c++filt _Z1fv" { "f()" } 
+kx_cli_success elfedit -v
+# TODO: gprof
+# /bin/ld verified in "make"
+# /bin/ld.bfd verified in "make"
+kx_cli_match_success "nm toolchain/.libs/libdeepthought.so" { the_answer_is } 
+# TODO: /bin/objcopy
+kx_cli_match_success "objdump -x toolchain/toolchain.o" { the_answer_is } 
+kx_cli_match_success "objdump -x toolchain/.libs/libdeepthought.so" { the_answer_is } 
+# /bin/ranlib verified in "make"
+kx_cli_match_success "readelf -a toolchain/toolchain.o" { the_answer_is } 
+kx_cli_match_success "readelf -a toolchain/.libs/libdeepthought.so" { the_answer_is } 
+kx_cli_success size toolchain/toolchain
+kx_cli_success size toolchain/toolchain.o
+kx_cli_success size toolchain/.libs/libdeepthought.so
+kx_cli_success size toolchain/ccstl
+kx_cli_success size toolchain/ccstl.o
+kx_cli_match_success "strings toolchain/toolchain" { "ToolChain says the answer is" }
+kx_cli_match_success "strings toolchain/toolchain.o" { "ToolChain says the answer is" }
+kx_cli_success strip toolchain/toolchain
+kx_cli_success strip toolchain/toolchain.o
+kx_cli_success strip toolchain/.libs/libdeepthought.so
+kx_cli_success strip toolchain/ccstl
+kx_cli_success strip toolchain/ccstl.o
+

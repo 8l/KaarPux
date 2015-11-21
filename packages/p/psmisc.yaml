@@ -1,0 +1,33 @@
+package:
+  name: psmisc
+  version: 22.21
+  www: http://psmisc.sourceforge.net/
+  short: A set of some small useful utilities that use the proc filesystem.
+
+download:
+  file_tar_gz: ~
+  sourceforge: ~
+  checksum: 97323cad619210845b696d7d722c383852b2acb5c49b5b0852c4f29c77a8145a
+
+version:
+  installed_sh_trailing: pstree --version
+  upstream: kxver_upstream_sourceforge("psmisc", "psmisc", "psmisc");
+
+bootstrap_8:
+  - configure_kx: ~
+  - make: ~
+    # 'make check' does nothing
+  - install: ~ 
+
+verify_cli: |
+  kx_cli_match_success "/bin/prtstat 1" { Process CPU Memory }
+  kx_cli_success /bin/cal
+
+# TODO: Test
+# /bin/fuser
+# /bin/killall
+# /bin/peekfd
+# /bin/prtstat
+# /bin/pstree
+# /bin/pstree.x11
+

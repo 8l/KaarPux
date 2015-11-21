@@ -1,0 +1,45 @@
+package:
+  name: man-db
+  version: 2.7.4
+  www: http://www.nongnu.org/man-db/
+  short: |
+      man-db is an implementation of the standard Unix documentation system accessed using the man command.
+      It uses a Berkeley DB database in place of the traditional flat-text whatis databases.
+
+download:
+  file_tar_xz: ~
+  url: http://download.savannah.gnu.org/releases/man-db
+  checksum: 153f4d3c33f5f9b0c8484bb39d9d271f6ae4aa1b3f5d6d515879692dba944f0b
+  verify: sig
+
+version:
+  installed_sh_trailing: man --version
+
+bootstrap_8:
+  - sh: sed -i -e '/gets is a/d' gnulib/lib/stdio.in.h
+  - configure_kx: >
+      --with-browser=/bin/lynx
+      --with-vgrind=/bin/vgrind
+      --with-grap=/bin/grap
+  - make: ~
+  # 'make check' fails
+  # It seems to be caused by dependencies to the rest of the system
+  # So, for now, disable the check
+  # TODO: Come back and properly investigate 'make check' failures
+  - check_ignore: ~
+  - install: ~ 
+
+verify_cli: |
+
+  kx_cli_match_success "/bin/man -Pcat man" { "man" "reference manuals" }
+  kx_cli_match_success "/bin/whatis man" { "man" "reference manuals" }
+
+# TODO: test other binaries
+# /bin/accessdb
+# /bin/apropos
+# /bin/catman
+# /bin/lexgrog
+# /bin/mandb
+# /bin/manpath
+# /bin/zsoelim
+

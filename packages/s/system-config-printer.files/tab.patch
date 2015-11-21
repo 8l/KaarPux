@@ -1,0 +1,12 @@
+diff -Naur system-config-printer-1.5.1.ORIG/cupshelpers/cupshelpers.py system-config-printer-1.5.1/cupshelpers/cupshelpers.py
+--- system-config-printer-1.5.1.ORIG/cupshelpers/cupshelpers.py	2014-08-22 13:20:15.000000000 +0200
++++ system-config-printer-1.5.1/cupshelpers/cupshelpers.py	2014-09-15 16:50:20.739842997 +0200
+@@ -685,7 +685,7 @@
+         return options
+ 
+     def iteratePPDOptions(ppd):
+-    	for group in ppd.optionGroups:
++        for group in ppd.optionGroups:
+             for option in getPPDGroupOptions(group):
+             	yield option
+ 

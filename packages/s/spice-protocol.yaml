@@ -1,0 +1,23 @@
+package:
+  name: spice-protocol
+  version: 0.12.10
+  www: http://spice-space.org/
+  short: The Spice project aims to provide a complete open source solution for interaction with virtualized desktop devices or easily enable your application to be extensible in JavaScript. 
+
+download:
+  url: http://spice-space.org/download/releases/
+  file_tar_bz2: ~
+  checksum: 788f0d7195bec5b14371732b562eb55ca82712aab12273b0e87529fb30532efb
+
+version: ~
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

@@ -1,0 +1,37 @@
+
+KX_KCONFIG="${KX_KCONFIG:-kaarpux.conf}"
+KX_KCONFIG_FILE="${KX_BASE}/../${KX_KCONFIG}"
+
+if ! test -f "${KX_KCONFIG_FILE}"; then
+	echo "*** Configuration file [${KX_KCONFIG_FILE}] not found" >/dev/stderr;
+	exit 1
+fi
+
+. "${KX_KCONFIG_FILE}"
+
+KX_CORES=$(nproc)
+KX_JOBS=$((${KX_CORES}+1))
+KX_MAKE_J="-j${KX_JOBS}"
+
+KX_TARGET=$(uname -m)-${KX_TARGET_POSTFIX}
+
+KX_FQDN="${KX_HOSTNAME}.${KX_DOMAINNAME}"
+
+KX_UTC_OR_LOCAL="LOCAL"
+test -z "${CONFIG_HARDWARE_CLOCK_LOCAL+x}" && KX_UTC_OR_LOCAL="UTC"
+
+KX_DISABLE_TEST="${KX_DISABLE_TEST:-}"
+
+if test -z "${KX_BUILD_TYPE_LOCAL+x}"; then
+	T="${KX_VM_TAG}"
+	test -z "${KX_SWAP_IMG_FILENAME+x}" || KX_SWAP_IMG_FILENAME=$(echo ${KX_SWAP_IMG_FILENAME} | sed "s/%/$T/g")
+	test -z "${KX_DOWNLOADS_IMG_FILENAME+x}" || KX_DOWNLOADS_IMG_FILENAME=$(echo ${KX_DOWNLOADS_IMG_FILENAME} | sed "s/%/$T/g")
+	test -z "${KX_TARGET_IMG_FILENAME+x}" || KX_TARGET_IMG_FILENAME=$(echo ${KX_TARGET_IMG_FILENAME} | sed "s/%/$T/g")
+	test -z "${KX_HOST_IMG_FILENAME+x}" || KX_HOST_IMG_FILENAME=$(echo ${KX_HOST_IMG_FILENAME} | sed "s/%/$T/g")
+	test -z "${KX_HOST_ISO_FILENAME+x}" || KX_HOST_ISO_FILENAME=$(echo ${KX_HOST_ISO_FILENAME} | sed "s/%/$T/g")
+	test -z "${KX_CLOUD_HOSTNAME+x}" || KX_CLOUD_HOSTNAME=$(echo ${KX_CLOUD_HOSTNAME} | sed "s/%/$T/g")
+	test -z "${KX_KVM_VGA+x}" || KX_KVM_VGA=$(echo ${KX_KVM_VGA} | sed "s/%/$T/g")
+	test -z "${KX_KVM_MAC+x}" || KX_KVM_MAC=$(echo ${KX_KVM_MAC} | sed "s/%/$T/g")
+	test -z "${KX_KVM_IP+x}" || KX_KVM_IP=$(echo ${KX_KVM_IP} | sed "s/%/$T/g")
+	test -z "${KX_KVM_NET+x}" || KX_KVM_NET=$(echo ${KX_KVM_NET} | sed "s/%/$T/g")
+fi

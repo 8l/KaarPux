@@ -1,0 +1,29 @@
+package:
+  name: libmad
+  version: 0.15.1b
+  www: http://www.underbit.com/products/mad/
+  short: High-quality fixed-point MPEG audio decoder with 24-bit output.
+
+download:
+  url: ftp://ftp.mars.org/pub/mpeg
+  file_tar_gz: ~
+  checksum: 1be543bc30c56fb6bea1d7bf6a64e66c 
+  verify: sign
+
+version:
+  installed: kxver_header_file("MAD", "/usr/include/mad.h", "PATCH");
+  upstream: kxver_scrape_ftp("ftp.mars.org", "/pub/mpeg", qr|libmad-([0-9a-z.]+)\.tar|);
+
+linux:
+  - build:
+    - use_gcc: ~
+    - sh: sed -i '/-fforce-mem/d' configure
+    - configure_kx: --disable-static
+    - make: ~
+  # 'make check' does nothing
+  - install:
+    - use_gcc: ~
+    - install: ~     
+
+
+

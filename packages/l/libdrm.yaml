@@ -1,0 +1,24 @@
+package:
+  name: libdrm
+  version: 2.4.65
+  www: http://dri.freedesktop.org/wiki/
+  short: kernel Direct Rendering Manager
+
+download:
+  url: http://dri.freedesktop.org/libdrm/
+  file_tar_bz2: ~
+  checksum: 71960ac8bde7d710992b1bc8879935e8300a870c36bd06f22412d0447e3d96c4
+
+version:
+  installed_pkgconfig: ~
+
+linux:
+  - build:
+#    - sh: export CFLAGS="-march=native"
+    - configure_kx: ~
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+

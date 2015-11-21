@@ -1,0 +1,30 @@
+package:
+  name: lcms2
+  version: 2.7
+  www: http://www.littlecms.com/
+  short: |
+      Little cms is a color management library.
+      Implements fast transforms between ICC profiles.
+      It is focused on speed, and is portable across several platforms.
+
+download:
+  sourceforge: lcms
+  file_tar_gz: ~
+  checksum: 4524234ae7de185e6b6da5d31d6875085b2198bc63b1211f7dde6e2d197d6a53
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_upstream_sourceforge("lcms", "lcms", "lcms2");
+
+
+linux:
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_send_match_success "transicc -t0" { 30 40 50 }  { R=30 G=40 B=50 }

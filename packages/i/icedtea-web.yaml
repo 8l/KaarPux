@@ -1,0 +1,44 @@
+package:
+  name: icedtea-web
+  version: 1.6.1
+  www: http://icedtea.classpath.org/wiki/IcedTea-Web
+  short: |
+      The IcedTea-Web project provides a Free Software web browser plugin
+      running applets written in the Java programming language
+      and an implementation of Java Web Start,
+      originally based on the NetX project. 
+
+download:
+  url: http://icedtea.classpath.org/download/source
+  file_tar_gz: ~
+  checksum: a9b46ab6c9dc303c89651143596bc5abea29242b9bdcabdd2dab7c606592c920
+
+version:
+  sensitive: 1
+  installed: >
+      kxver_sh_pattern("readlink /opt/lib/mozilla/plugins/IcedTeaPlugin.so",
+      qr|/opt/kaarpux/icedtea-web-([0-9]+[0-9\.]*[0-9]+)/lib|);
+  upstream: >
+      kxver_scrape_url(undef, $url, qr|icedtea-web-([0-9]+[0-9.]*[0-9]+)\.tar|);
+
+opt:
+
+  - build:
+
+    - use_gcc: ~
+    - sh: CXXFLAGS="-std=c++11"; export CXXFLAGS
+    - sh: JAVE_HOME="/opt/kaarpux/${KX_OPENJDK}"; export JAVA_HOME
+    - configure: >
+        --prefix="/opt/kaarpux/${KX_OPENJDK}/jre"
+        --with-jdk-home="/opt/kaarpux/${KX_OPENJDK}"
+        --disable-docs
+    - make: -j1
+
+  - install:
+    - use_gcc: ~
+    - sh: CXXFLAGS="-std=c++11"; export CXXFLAGS
+    - install: ~
+    - sh: |
+        mkdir -pv ${KX_PREFIX}/lib/mozilla/plugins/
+        ln -svf "/opt/kaarpux/${KX_OPENJDK}/jre/lib/IcedTeaPlugin.so"  ${KX_PREFIX}/lib/mozilla/plugins/
+

@@ -1,0 +1,23 @@
+package:
+  name: libcdaudio
+  version: 0.99.12p2
+  www: http://sourceforge.net/projects/libcdaudio/
+  short: libcdaudio is an unmaintained but portable library that provides wrapper functions to audio CD drives and CDDB and CDIndex database access.
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: 1ae52f858c1a5ac9ced8eb7165620372b2a17035
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_upstream_sourceforge("libcdaudio", "libcdaudio", "libcdaudio");
+
+linux:
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+  # 'make check' does nothing
+  - install:
+    - install: ~
+

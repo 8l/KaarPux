@@ -1,0 +1,38 @@
+package:
+  name: lua
+  version: 5.3.1
+  www: http://www.lua.org/
+  short: Powerful, fast, lightweight, embeddable scripting language. 
+
+download:
+  url: http://www.lua.org/ftp
+  file_tar_gz: ~
+  checksum: 072767aad6cc2e62044a66e8562f51770d941e972dc1e4068ba719cd8bffac17
+
+version:
+  installed: kxver_sh_pattern("lua -v", qr|Lua\s([0-9.]+)\s|);
+
+linux:
+  - build:
+    # From ArchLinux
+    # https://projects.archlinux.org/svntogit/packages.git/tree/trunk/liblua.so.patch
+    - patch: liblua.so.patch
+    - sh: sed -e "s/-lreadline/-lreadline -lncurses/" -i.bak src/Makefile
+    - make: MYCFLAGS="-fPIC -DLUA_COMPAT_5_2 -DLUA_COMPAT_5_1" linux
+
+  - test:
+    - make: test
+
+  - install:
+    - sh: >
+        make
+        INSTALL_TOP="${KX_PREFIX}"
+        INSTALL_DATA='cp -d'
+        TO_LIB="liblua.a liblua.so liblua.so.${KX_LUA_VERSION_MM} liblua.so.${KX_LUA_VERSION}"
+        install
+    - install_pkg_file: 644 lua.pc "${KX_PREFIX}/lib/pkgconfig"
+    - sh: sed s/VVV/${KX_LUA_VERSION}/ -i "${KX_PREFIX}/lib/pkgconfig/lua.pc"
+
+verify_cli: |
+  kx_cli_match_success "lua -v" { Lua }
+  kx_cli_send_match_success "lua" { "print(42*42)" "os.exit()" } { 1764 }

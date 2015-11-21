@@ -1,0 +1,27 @@
+package:
+  name: lsb-release
+  version: 1.4
+  www: https://sourceforge.net/projects/lsb/
+  short: Linux Standard Base, providing the lsb_release program
+
+download:
+  sourceforge: lsb
+  file_tar_gz: ~
+  checksum: ecf883ada9bf4e1feca3f2e1494bd798792aee18
+
+version:
+  installed: kxver_file_pattern("/usr/bin/lsb_release", qr|^SCRIPTVERSION="([0-9a-z.]+)"$|);
+  upstream: kxver_upstream_sourceforge("lsb", "lsb_release", "lsb-release");
+
+
+bootstrap_8:
+  - make: ~
+  # No testsuite
+  - echo: install
+  - sh: |
+      prefix="${KX_PREFIX}"
+      install -D -v -m 644 lsb_release.1.gz ${KX_PREFIX}/man/man1/lsb_release.1.gz
+      install -D -v -m 755 lsb_release ${KX_PREFIX}/bin/lsb_release
+
+verify_cli: |
+  kx_cli_match_success "lsb_release -a" { LSB Distributor KaarPux }

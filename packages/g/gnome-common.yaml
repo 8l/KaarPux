@@ -1,0 +1,23 @@
+package:
+  name: gnome-common
+  version: 3.18.0
+  short: Sample files that should be in pretty much every GNOME application.
+
+download:
+  gnomexz: ~
+  checksum: 22569e370ae755e04527b76328befc4c73b62bfd4a572499fde116b8318af8cf
+
+version:
+  installed_na: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

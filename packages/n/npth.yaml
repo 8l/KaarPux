@@ -1,0 +1,24 @@
+package:
+  name: npth
+  version: 1.2
+  www: http://git.gnupg.org/cgi-bin/gitweb.cgi?p=npth.git
+  short: New portable threads library
+
+download:
+  url: ftp://ftp.gnupg.org/gcrypt/npth
+  file_tar_bz2: ~
+  checksum: 6ddbdddb2cf49a4723f9d1ad6563c480d6760dcb63cb7726b8fc3bc2e1b6c08a
+  verify: sig
+
+version: 
+  upstream: kxver_scrape_url(undef, 'http://git.gnupg.org/cgi-bin/gitweb.cgi?p=npth.git;a=tags', qr|>npth-([0-9.]+)<|);
+
+linux:
+  - build:
+    - configure_kx: ~
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+

@@ -1,0 +1,24 @@
+package:
+  name: cabextract
+  version: 1.6
+  www: http://www.cabextract.org.uk/
+  short: extracting Microsoft cabinet files, also called .CAB files.
+
+download:
+  url: http://www.cabextract.org.uk
+  file_tar_gz: ~
+  checksum: cee661b56555350d26943c5e127fc75dd290b7f75689d5ebc1f04957c4af55fb
+
+version:
+  upstream: kxver_scrape_url(undef, $url, qr|cabextract-([0-9]+[0-9.]*[0-9]+)\.tar|);
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

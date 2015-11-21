@@ -1,0 +1,23 @@
+package:
+  name: cdrkit
+  version: 1.1.11
+  www: http://cdrkit.org/
+  short: portable command-line CD/DVD recorder software
+
+download:
+  url: http://cdrkit.org/releases/
+  file_tar_gz: ~
+  checksum: efe08e2f3ca478486037b053acd512e9
+
+version:
+  installed: kxver_sh_trailing('wodim --version 2>&1 | tail -n +2');
+
+linux:
+
+  - build:
+    - make: PREFIX=/
+
+  # No test suite
+
+  - install:
+    - install: PREFIX=/

@@ -1,0 +1,23 @@
+package:
+  name: freeglut
+  version: 3.0.0
+  www: http://sourceforge.net/projects/freeglut/
+  short: A free OpenGL utility toolkit, the open-sourced alternative to the GLUT library.
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: 2a43be8515b01ea82bcfa17d29ae0d40bd128342f0930cd1f375f1ff999f76a2
+
+version:
+  installed: return '?';
+  upstream: kxver_upstream_sourceforge("freeglut", "freeglut", "freeglut");
+
+linux:
+  - build:
+    - cmake_kx: ~
+    - make: ~
+  # 'make check' does nothing
+  - install:
+    - install: ~
+

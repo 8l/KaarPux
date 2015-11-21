@@ -1,0 +1,48 @@
+package:
+  name: net-tools
+  version: 1.60.20120804git
+  www: http://net-tools.sourceforge.net/
+  short: Collection of base networking utilities for Linux.
+
+download:
+  url: https://sources.archlinux.org/other/net-tools/
+  file_tar_xz: ~
+  checksum: c37be6a3775ed41667b8969cef46bfbef5f8fb45aa92c813077331b8a31c0137
+
+version:
+  installed_sh_trailing: ifconfig --version
+
+bootstrap_8:
+
+  - echo: Configuring
+  - sh: |
+      # Patching from http://www.linuxfromscratch.org/blfs/view/svn/basicnet/net-tools.html
+      # Change the default for building obsolete token ring support to no. This is a simpler change than changing the location for the token ring headers.
+      sed -i -e '/Token/s/y$/n/'        config.in
+      # Removes obsolete Metricom radio support that requires a header no longer included in the kernel.
+      sed -i -e '/HAVE_HWSTRIP/s/y$/n/' config.in
+
+      yes "" | make config
+
+  - make: -j1
+
+  - echo: Install
+  - sh: make update
+
+verify_cli: |
+  kx_cli_success /bin/arp
+  #/bin/dnsdomainname
+  #/bin/domainname
+  kx_cli_success /bin/hostname
+  kx_cli_match_success /bin/ifconfig { lo inet 127.0.0.1 inet6 ::1 }
+  kx_cli_success /bin/ipmaddr
+  #/bin/iptunnel
+  #/bin/mii-tool
+  #/bin/nameif
+  kx_cli_match_success /bin/netstat { STREAM }
+  #/bin/nisdomainname
+  #/bin/plipconfig
+  kx_cli_success /bin/route
+  #/bin/slattach
+  #/bin/ypdomainname
+

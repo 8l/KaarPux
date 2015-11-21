@@ -1,0 +1,35 @@
+package:
+  name: pwsafe
+  version: 0.93BETA
+  www: http://passwordsafe.sourceforge.net/
+  short: Securing passwords
+
+download:
+  sourceforge: passwordsafe
+  file: pwsafe-${KX_PWSAFE_VERSION}-src.tgz
+  checksum: 8d4e24d95cc08e1d710384d02c8b27f00691a54a
+  verify: sig
+
+# TODO: could not initialize help subsystem. help will not be available.
+
+doc: |
+    <para>
+      Starting <application>pwsafe</application> may take 10 seconds or more
+      (presumably because reading <filename>/dev/random</filename> takes time).
+      We may also get a "could not initialize help subsystem" error (TODO: Why).
+    </para>
+
+version:
+  installed_na: ~
+  upstream: kxver_upstream_sourceforge("passwordsafe", "Linux-BETA", undef, qr|pwsafe-([0-9]+\.+[0-9A-Z.]+)-src.*/download|);
+
+opt:
+  - build:
+    - sh: CXXFLAGS="-std=gnu++11" WX_CONFIG=/opt/bin/wx-config NO_YUBI=1 make -j ${KX_MAKE_J}
+
+  # No test suite
+
+  - install:
+    - sh: |
+        mkdir -p ${KX_PREFIX}/bin
+        cp ./src/ui/wxWidgets/GCCUnicodeDebug/pwsafe ${KX_PREFIX}/bin

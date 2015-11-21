@@ -1,0 +1,472 @@
+package:
+  name: libreoffice
+  version: 5.0.3.2
+  www: http://www.libreoffice.org/
+  short: |
+      LibreOffice is the power-packed free, libre and open source personal productivity suite for
+      Windows, Macintosh and GNU/Linux,
+      that gives you six feature-rich applications for all your document production and data processing needs:
+      Writer, Calc, Impress, Draw, Math and Base.
+
+download:
+  url:  http://download.documentfoundation.org/libreoffice/src/${KX_LIBREOFFICE_VERSION_MMM}
+  file: libreoffice-${KX_LIBREOFFICE_VERSION}.tar.xz
+  dir: libreoffice-${KX_LIBREOFFICE_VERSION}
+  checksum: 77f9c9569c1199d914f38afa01547c1874535c56ad74b19614a0afc3ad66d4bd
+  verify: asc
+
+additional_downloads:
+
+  # No need to verify GPG signatures, as SHA checksums where taken from signed libreoffice tarball
+
+  - http://download.documentfoundation.org/libreoffice/src/${KX_LIBREOFFICE_VERSION_MMM}/libreoffice-help-${KX_LIBREOFFICE_VERSION}.tar.xz libreoffice-help-${KX_LIBREOFFICE_VERSION}.tar.xz 7e5535b8bd9be88170abdef187d3cf16d2cccdb1fdbd4404a22f1cff55bd953e /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://download.documentfoundation.org/libreoffice/src/${KX_LIBREOFFICE_VERSION_MMM}/libreoffice-translations-${KX_LIBREOFFICE_VERSION}.tar.xz libreoffice-translations-${KX_LIBREOFFICE_VERSION}.tar.xz b16b333bd926ee40af9ae6a49e648bfaa55e3d5d9aee648336558e565fc641ef /libreoffice-${KX_LIBREOFFICE_VERSION}
+
+  - http://dev-www.libreoffice.org/src/2c9b0f83ed5890af02c0df1c1776f39b-commons-httpclient-3.1-src.tar.gz 2c9b0f83ed5890af02c0df1c1776f39b-commons-httpclient-3.1-src.tar.gz 2c9b0f83ed5890af02c0df1c1776f39b /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/d6eef4b4cacb2183f2bf265a5a03a354-boost_1_55_0.tar.bz2 d6eef4b4cacb2183f2bf265a5a03a354-boost_1_55_0.tar.bz2 d6eef4b4cacb2183f2bf265a5a03a354 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/ec1941a74d3ef513c4ce57a9092b74e1-bsh-2.0b5-src.zip ec1941a74d3ef513c4ce57a9092b74e1-bsh-2.0b5-src.zip ec1941a74d3ef513c4ce57a9092b74e1 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/f101a9e88b783337b20b2e26dfd26d5f-cairo-1.10.2.tar.gz f101a9e88b783337b20b2e26dfd26d5f-cairo-1.10.2.tar.gz f101a9e88b783337b20b2e26dfd26d5f /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/48d647fbd8ef8889e5a7f422c1bfda94-clucene-core-2.3.3.4.tar.gz 48d647fbd8ef8889e5a7f422c1bfda94-clucene-core-2.3.3.4.tar.gz 48d647fbd8ef8889e5a7f422c1bfda94 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/5821b806a98e6c38370970e682ce76e8-libcmis-0.5.0.tar.gz 5821b806a98e6c38370970e682ce76e8-libcmis-0.5.0.tar.gz 5821b806a98e6c38370970e682ce76e8 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/4b87018f7fff1d054939d19920b751a0-collada2gltf-master-cb1d97788a.tar.bz2 4b87018f7fff1d054939d19920b751a0-collada2gltf-master-cb1d97788a.tar.bz2 4b87018f7fff1d054939d19920b751a0 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/1f467e5bb703f12cbbb09d5cf67ecf4a-converttexttonumber-1-5-0.oxt 1f467e5bb703f12cbbb09d5cf67ecf4a-converttexttonumber-1-5-0.oxt 1f467e5bb703f12cbbb09d5cf67ecf4a /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/3ade8cfe7e59ca8e65052644fed9fca4-epm-3.7.tar.gz 3ade8cfe7e59ca8e65052644fed9fca4-epm-3.7.tar.gz 3ade8cfe7e59ca8e65052644fed9fca4 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/dd7dab7a5fea97d2a6a43f511449b7cd-expat-2.1.0.tar.gz dd7dab7a5fea97d2a6a43f511449b7cd-expat-2.1.0.tar.gz dd7dab7a5fea97d2a6a43f511449b7cd /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/77e15a92006ddc2adbb06f840d591c0e-fontconfig-2.8.0.tar.gz 77e15a92006ddc2adbb06f840d591c0e-fontconfig-2.8.0.tar.gz 77e15a92006ddc2adbb06f840d591c0e /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/368f114c078f94214a308a74c7e991bc-crosextrafonts-20130214.tar.gz 368f114c078f94214a308a74c7e991bc-crosextrafonts-20130214.tar.gz 368f114c078f94214a308a74c7e991bc /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/c74b7223abe75949b4af367942d96c7a-crosextrafonts-carlito-20130920.tar.gz c74b7223abe75949b4af367942d96c7a-crosextrafonts-carlito-20130920.tar.gz c74b7223abe75949b4af367942d96c7a /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/a4e565e220b5de082c23995e256e3c12-dejavu-fonts-ttf-2.34.zip a4e565e220b5de082c23995e256e3c12-dejavu-fonts-ttf-2.34.zip a4e565e220b5de082c23995e256e3c12 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/35efabc239af896dfb79be7ebdd6e6b9-gentiumbasic-fonts-1.10.zip 35efabc239af896dfb79be7ebdd6e6b9-gentiumbasic-fonts-1.10.zip 35efabc239af896dfb79be7ebdd6e6b9 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/134d8262145fc793c6af494dcace3e71-liberation-fonts-ttf-1.07.4.tar.gz 134d8262145fc793c6af494dcace3e71-liberation-fonts-ttf-1.07.4.tar.gz 134d8262145fc793c6af494dcace3e71 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/5c781723a0d9ed6188960defba8e91cf-liberation-fonts-ttf-2.00.1.tar.gz 5c781723a0d9ed6188960defba8e91cf-liberation-fonts-ttf-2.00.1.tar.gz 5c781723a0d9ed6188960defba8e91cf /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/e7a384790b13c29113e22e596ade9687-LinLibertineG-20120116.zip e7a384790b13c29113e22e596ade9687-LinLibertineG-20120116.zip e7a384790b13c29113e22e596ade9687 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/7a15edea7d415ac5150ea403e27401fd-open-sans-font-ttf-1.10.tar.gz 7a15edea7d415ac5150ea403e27401fd-open-sans-font-ttf-1.10.tar.gz 7a15edea7d415ac5150ea403e27401fd /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/c3c1a8ba7452950636e871d25020ce0d-pt-serif-font-1.0000W.tar.gz c3c1a8ba7452950636e871d25020ce0d-pt-serif-font-1.0000W.tar.gz c3c1a8ba7452950636e871d25020ce0d /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/0279a21fab6f245e85a6f85fea54f511-source-code-font-1.009.tar.gz 0279a21fab6f245e85a6f85fea54f511-source-code-font-1.009.tar.gz 0279a21fab6f245e85a6f85fea54f511 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/edc4d741888bc0d38e32dbaa17149596-source-sans-pro-2.010R-ro-1.065R-it.tar.gz edc4d741888bc0d38e32dbaa17149596-source-sans-pro-2.010R-ro-1.065R-it.tar.gz edc4d741888bc0d38e32dbaa17149596 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/dbf2caca1d3afd410a29217a9809d397-freetype-2.4.8.tar.bz2 dbf2caca1d3afd410a29217a9809d397-freetype-2.4.8.tar.bz2 dbf2caca1d3afd410a29217a9809d397 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/594eb47b4b1210e25438d51825404d5a-glew-1.10.0.zip 594eb47b4b1210e25438d51825404d5a-glew-1.10.0.zip 594eb47b4b1210e25438d51825404d5a /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/bae83fa5dc7f081768daace6e199adc3-glm-0.9.4.6-libreoffice.zip bae83fa5dc7f081768daace6e199adc3-glm-0.9.4.6-libreoffice.zip bae83fa5dc7f081768daace6e199adc3 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/17410483b5b5f267aa18b7e00b65e6e0-hsqldb_1_8_0.zip 17410483b5b5f267aa18b7e00b65e6e0-hsqldb_1_8_0.zip 17410483b5b5f267aa18b7e00b65e6e0 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/4967da60b23413604c9e563beacc63b4-hunspell-1.3.3.tar.gz 4967da60b23413604c9e563beacc63b4-hunspell-1.3.3.tar.gz 4967da60b23413604c9e563beacc63b4 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/5ade6ae2a99bc1e9e57031ca88d36dad-hyphen-2.8.8.tar.gz 5ade6ae2a99bc1e9e57031ca88d36dad-hyphen-2.8.8.tar.gz 5ade6ae2a99bc1e9e57031ca88d36dad /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/e844caed8f2ca24c088505b0d6271bc0-icu4c-54_1-src.tgz e844caed8f2ca24c088505b0d6271bc0-icu4c-54_1-src.tgz e844caed8f2ca24c088505b0d6271bc0 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/ba2930200c9f019c2d93a8c88c651a0f-flow-engine-0.9.4.zip ba2930200c9f019c2d93a8c88c651a0f-flow-engine-0.9.4.zip ba2930200c9f019c2d93a8c88c651a0f /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/d8bd5eed178db6e2b18eeed243f85aa8-flute-1.1.6.zip d8bd5eed178db6e2b18eeed243f85aa8-flute-1.1.6.zip d8bd5eed178db6e2b18eeed243f85aa8 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/eeb2c7ddf0d302fba4bfc6e97eac9624-libbase-1.1.6.zip eeb2c7ddf0d302fba4bfc6e97eac9624-libbase-1.1.6.zip eeb2c7ddf0d302fba4bfc6e97eac9624 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/3bdf40c0d199af31923e900d082ca2dd-libfonts-1.1.6.zip 3bdf40c0d199af31923e900d082ca2dd-libfonts-1.1.6.zip 3bdf40c0d199af31923e900d082ca2dd /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/3404ab6b1792ae5f16bbd603bd1e1d03-libformula-1.1.7.zip 3404ab6b1792ae5f16bbd603bd1e1d03-libformula-1.1.7.zip 3404ab6b1792ae5f16bbd603bd1e1d03 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/db60e4fde8dd6d6807523deb71ee34dc-liblayout-0.2.10.zip db60e4fde8dd6d6807523deb71ee34dc-liblayout-0.2.10.zip db60e4fde8dd6d6807523deb71ee34dc /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/97b2d4dba862397f446b217e2b623e71-libloader-1.1.6.zip 97b2d4dba862397f446b217e2b623e71-libloader-1.1.6.zip 97b2d4dba862397f446b217e2b623e71 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/8ce2fcd72becf06c41f7201d15373ed9-librepository-1.1.6.zip 8ce2fcd72becf06c41f7201d15373ed9-librepository-1.1.6.zip 8ce2fcd72becf06c41f7201d15373ed9 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/f94d9870737518e3b597f9265f4e9803-libserializer-1.1.6.zip f94d9870737518e3b597f9265f4e9803-libserializer-1.1.6.zip f94d9870737518e3b597f9265f4e9803 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/ace6ab49184e329db254e454a010f56d-libxml-1.1.7.zip ace6ab49184e329db254e454a010f56d-libxml-1.1.7.zip ace6ab49184e329db254e454a010f56d /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/39bb3fcea1514f1369fcfc87542390fd-sacjava-1.3.zip 39bb3fcea1514f1369fcfc87542390fd-sacjava-1.3.zip 39bb3fcea1514f1369fcfc87542390fd /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/b63e6340a02ff1cacfeadb2c42286161-JLanguageTool-1.7.0.tar.bz2 b63e6340a02ff1cacfeadb2c42286161-JLanguageTool-1.7.0.tar.bz2 b63e6340a02ff1cacfeadb2c42286161 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/10d61fbaa6a06348823651b1bd7940fe-libexttextcat-3.4.4.tar.bz2 10d61fbaa6a06348823651b1bd7940fe-libexttextcat-3.4.4.tar.bz2 10d61fbaa6a06348823651b1bd7940fe /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/36271d3fa0d9dec1632029b6d7aac925-liblangtag-0.5.1.tar.bz2 36271d3fa0d9dec1632029b6d7aac925-liblangtag-0.5.1.tar.bz2 36271d3fa0d9dec1632029b6d7aac925 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/1f24ab1d39f4a51faf22244c94a6203f-xmlsec1-1.2.14.tar.gz 1f24ab1d39f4a51faf22244c94a6203f-xmlsec1-1.2.14.tar.gz 1f24ab1d39f4a51faf22244c94a6203f /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/9c0cfef285d5c4a5c80d00904ddab380-libxml2-2.9.1.tar.gz 9c0cfef285d5c4a5c80d00904ddab380-libxml2-2.9.1.tar.gz 9c0cfef285d5c4a5c80d00904ddab380 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/9667bf6f9310b957254fdcf6596600b7-libxslt-1.1.28.tar.gz 9667bf6f9310b957254fdcf6596600b7-libxslt-1.1.28.tar.gz 9667bf6f9310b957254fdcf6596600b7 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/26b3e95ddf3d9c077c480ea45874b3b8-lp_solve_5.5.tar.gz 26b3e95ddf3d9c077c480ea45874b3b8-lp_solve_5.5.tar.gz 26b3e95ddf3d9c077c480ea45874b3b8 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/a233181e03d3c307668b4c722d881661-mariadb_client-2.0.0-src.tar.gz a233181e03d3c307668b4c722d881661-mariadb_client-2.0.0-src.tar.gz a233181e03d3c307668b4c722d881661 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/7239a4430efd4d0189c4f24df67f08e5-mysql-connector-c++-1.1.4.tar.gz 7239a4430efd4d0189c4f24df67f08e5-mysql-connector-c++-1.1.4.tar.gz 7239a4430efd4d0189c4f24df67f08e5 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/a8c2c5b8f09e7ede322d5c602ff6a4b6-mythes-1.2.4.tar.gz a8c2c5b8f09e7ede322d5c602ff6a4b6-mythes-1.2.4.tar.gz a8c2c5b8f09e7ede322d5c602ff6a4b6 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/ff369e69ef0f0143beb5626164e87ae2-neon-0.29.5.tar.gz ff369e69ef0f0143beb5626164e87ae2-neon-0.29.5.tar.gz ff369e69ef0f0143beb5626164e87ae2 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/2100bc5a7ea9685928ff68cda2e60569-nss-3.19.2-with-nspr-4.10.8.tar.gz 2100bc5a7ea9685928ff68cda2e60569-nss-3.19.2-with-nspr-4.10.8.tar.gz 2100bc5a7ea9685928ff68cda2e60569 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/804c6cb5698db30b75ad0ff1c25baefd-openldap-2.4.31.tgz 804c6cb5698db30b75ad0ff1c25baefd-openldap-2.4.31.tgz 804c6cb5698db30b75ad0ff1c25baefd /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/7681383be6ce489d84c1c74f4e7f9643-liborcus-0.7.0.tar.bz2 7681383be6ce489d84c1c74f4e7f9643-liborcus-0.7.0.tar.bz2 7681383be6ce489d84c1c74f4e7f9643 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/c63f411b3ad147db2bcce1bf262a0e02-pixman-0.24.4.tar.bz2 c63f411b3ad147db2bcce1bf262a0e02-pixman-0.24.4.tar.bz2 c63f411b3ad147db2bcce1bf262a0e02 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/c0b4799ea9850eae3ead14f0a60e9418-postgresql-9.2.1.tar.bz2 c0b4799ea9850eae3ead14f0a60e9418-postgresql-9.2.1.tar.bz2 c0b4799ea9850eae3ead14f0a60e9418 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/4ceb9316488b0ea01acf011023cf7fff-raptor2-2.0.9.tar.gz 4ceb9316488b0ea01acf011023cf7fff-raptor2-2.0.9.tar.gz 4ceb9316488b0ea01acf011023cf7fff /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/b12c5f9cfdb6b04efce5a4a186b8416b-rasqal-0.9.30.tar.gz b12c5f9cfdb6b04efce5a4a186b8416b-rasqal-0.9.30.tar.gz b12c5f9cfdb6b04efce5a4a186b8416b /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/32f8e1417a64d3c6f2c727f9053f55ea-redland-1.0.16.tar.gz 32f8e1417a64d3c6f2c727f9053f55ea-redland-1.0.16.tar.gz 32f8e1417a64d3c6f2c727f9053f55ea /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/798b2ffdc8bcfe7bca2cf92b62caf685-rhino1_5R5.zip 798b2ffdc8bcfe7bca2cf92b62caf685-rhino1_5R5.zip 798b2ffdc8bcfe7bca2cf92b62caf685 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/35c94d2df8893241173de1d16b6034c0-swingExSrc.zip 35c94d2df8893241173de1d16b6034c0-swingExSrc.zip 35c94d2df8893241173de1d16b6034c0 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/0168229624cfac409e766913506961a8-ucpp-1.3.2.tar.gz 0168229624cfac409e766913506961a8-ucpp-1.3.2.tar.gz 0168229624cfac409e766913506961a8 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/d62650a6f908e85643e557a236ea989c-vigra1.6.0.tar.gz d62650a6f908e85643e557a236ea989c-vigra1.6.0.tar.gz d62650a6f908e85643e557a236ea989c /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/a7983f859eafb2677d7ff386a023bc40-xsltml_2.1.2.zip a7983f859eafb2677d7ff386a023bc40-xsltml_2.1.2.zip a7983f859eafb2677d7ff386a023bc40 /libreoffice-${KX_LIBREOFFICE_VERSION}
+
+  - http://dev-www.libreoffice.org/src/libmwaw-0.3.5.tar.bz2 libmwaw-0.3.5.tar.bz2 bdc58bbf89aaaf6d29b3516d96830a06 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/language-subtag-registry-2015-06-08.tar.bz2 language-subtag-registry-2015-06-08.tar.bz2 d431bd8a70455be1fa8523fa633c005b /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libcdr-0.1.1.tar.bz2 libcdr-0.1.1.tar.bz2 b33fd0be3befdd1b37777e08ce058bd9 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/OpenCOLLADA-master-6509aa13af.tar.bz2 OpenCOLLADA-master-6509aa13af.tar.bz2 4ca8a6ef0afeefc864e9ef21b9f14bd6 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/apr-1.4.8.tar.gz apr-1.4.8.tar.gz eff9d741b0999a9bbab96862dd2a2a3d /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libatomic_ops-7_2d.zip libatomic_ops-7_2d.zip c0b86562d5aa40761a87134f83e6adcf /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/graphite2-1.2.4.tgz graphite2-1.2.4.tgz 2ef839348fe28e3b923bf8cced440227 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/zlib-1.2.8.tar.gz zlib-1.2.8.tar.gz 44d667c142d7cda120332623eab69f40 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/CoinMP-1.7.6.tgz CoinMP-1.7.6.tgz 1cce53bf4b40ae29790d2c5c9f8b1129 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libpagemaker-0.0.2.tar.bz2 libpagemaker-0.0.2.tar.bz2 795cc7a59ace4db2b12586971d668671 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libwpd-0.10.0.tar.bz2 libwpd-0.10.0.tar.bz2 0773d79a1f240ef9f4f20242b13c5bb7 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libodfgen-0.1.4.tar.bz2 libodfgen-0.1.4.tar.bz2 8716be5c22ae8353f9aaa380d74840dc /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libmspub-0.1.2.tar.bz2 libmspub-0.1.2.tar.bz2 ff9d0f9dd8fbc523408ea1953d5bde41 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libfreehand-0.1.1.tar.bz2 libfreehand-0.1.1.tar.bz2 8cf70c5dc4d24d2dc4a107f509d2d6d7 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/poppler-0.26.4.tar.gz poppler-0.26.4.tar.gz 35c0660065d023365e9854c13e289d12 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libwps-0.4.0.tar.bz2 libwps-0.4.0.tar.bz2 e9162d2566421d9d71b3ad2377a68fd5 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/commons-logging-1.2-src.tar.gz commons-logging-1.2-src.tar.gz ce977548f1cbf46918e93cd38ac35163 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libpng-1.5.18.tar.gz libpng-1.5.18.tar.gz 5266905cef49d1224437465ad4d67fd9 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libvisio-0.1.1.tar.bz2 libvisio-0.1.1.tar.bz2 726c1f5be65eb7d649e0d48b63d920e7 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/lcms2-2.6.tar.gz lcms2-2.6.tar.gz f4c08d38ceade4a664ebff7228910a33 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libe-book-0.1.2.tar.bz2 libe-book-0.1.2.tar.bz2 6b48eda57914e6343efebc9381027b78 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/cppunit-1.13.2.tar.gz cppunit-1.13.2.tar.gz d1c6bdd5a76c66d2c38331e2d287bc01 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libabw-0.1.1.tar.bz2 libabw-0.1.1.tar.bz2 7a3815b506d064313ba309617b6f5a0b /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/harfbuzz-0.9.40.tar.bz2 harfbuzz-0.9.40.tar.bz2 0e27e531f4c4acff601ebff0957755c2 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/openssl-1.0.2a.tar.gz openssl-1.0.2a.tar.gz a06c547dac9044161a477211049f60ef /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libgltf/libgltf-0.0.2.tar.bz2 libgltf-0.0.2.tar.bz2 d63a9f47ab048f5009d90693d6aa6424 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libwpg-0.3.0.tar.bz2 libwpg-0.3.0.tar.bz2 17da9770cb8b317b7633f9807b32b71a /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libjpeg-turbo-1.3.1.tar.gz libjpeg-turbo-1.3.1.tar.gz 2c3a68129dac443a72815ff5bb374b05 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libeot-0.01.tar.bz2 libeot-0.01.tar.bz2 aa24f5dd2a2992f4a116aa72af817548 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/Python-3.3.5.tgz Python-3.3.5.tgz 803a75927f8f241ca78633890c798021 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/libetonyek-0.1.3.tar.bz2 libetonyek-0.1.3.tar.bz2 e5947373dd7834f27e93f1636faa419f /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/apr-util-1.5.3.tar.gz apr-util-1.5.3.tar.gz 71a11d037240b292f824ba1eb537b4e3 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/Firebird-2.5.2.26540-0.tar.bz2 Firebird-2.5.2.26540-0.tar.bz2 21154d2004e025c8a3666625b0357bb5 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/mdds_0.12.1.tar.bz2 mdds_0.12.1.tar.bz2 ef2560ed5416652a7fe195305b14cebe /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/curl-7.43.0.tar.bz2 curl-7.43.0.tar.bz2 11bddbb452a8b766b932f859aaeeed39 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/librevenge-0.0.2.tar.bz2 librevenge-0.0.2.tar.bz2 2d4183bf17aea1a71842468a71a68c47 /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/serf-1.2.1.tar.bz2 serf-1.2.1.tar.bz2 4f8e76c9c6567aee1d66aba49f76a58b /libreoffice-${KX_LIBREOFFICE_VERSION}
+  - http://dev-www.libreoffice.org/src/jpegsrc.v9a.tar.gz jpegsrc.v9a.tar.gz 3353992aecaee1805ef4109aadd433e7 /libreoffice-${KX_LIBREOFFICE_VERSION}
+
+
+version:
+  installed: kxver_sh_pattern("soffice --version", qr|LibreOffice ([0-9.]+)|);
+  upstream: |
+      kxver_scrape_url("libreoffice", "http://www.libreoffice.org/download/libreoffice-fresh/");
+
+  wiz_yaml: |
+      my ($pkg, $ver, $dir, $file, $url) = @_;
+      my $mmm=$ver;
+      $mmm =~ /^([0-9]+\.[0-9]+\.[0-9]+)/;
+      $mmm = $1;
+      print("additional_downloads:\n");
+      my $http="http://download.documentfoundation.org/libreoffice/src";
+      foreach my $part (('help', 'translations')) {
+        my $sha256=kxver_scrape_url(undef, "$http/$mmm/libreoffice-$part-$ver.tar.xz.mirrorlist", qr|SHA-256 Hash</a>:.* <tt>([0-9a-f]+)</tt>|);
+        my $f="libreoffice-$part-\${KX_LIBREOFFICE_VERSION}.tar.xz";
+        print "  - $http/\${KX_LIBREOFFICE_VERSION_MMM}/$f $f $sha256 /libreoffice-\${KX_LIBREOFFICE_VERSION}\n"
+      }
+      print "\n";
+      my $download_lst = "${dir}/${pkg}-${ver}/download.lst";
+      my $fh;
+      open($fh, "<", "$download_lst") or print "cannot open [$download_lst]: $!\n";
+      $http="http://dev-www.libreoffice.org/src";
+      my %tarballs = ();
+      my %md5s = ();
+      my %versions = ();
+      while (<$fh>) {
+        if ( $_ =~ /^export \S+_TARBALL := ([0-9a-f]{32})-(.+)$/ ) {
+          print "  - $http/$1-$2 $1-$2 $1 /libreoffice-\${KX_LIBREOFFICE_VERSION}\n";
+        } elsif ( $_ =~ /^export (\S+)_TARBALL := (\S+)$/ ) {
+          $tarballs{$1}=$2;
+        } elsif ( $_ =~ /^export (\S+)_MD5SUM := (\S+)$/ ) {
+          $md5s{$1}=$2;
+        } elsif ( $_ =~ /^export (\S+_VERSION\S*) := (\S+)$/ ) {
+          $versions{$1}=$2;
+        }
+      }
+      print "\n";
+      my $vc = join '|', keys %versions;
+      while ((my $p, my $t) = each(%tarballs)) {
+        my $m=$md5s{$p};
+        $t =~ s/($vc)/$versions{$1}/;
+        $t =~ s/\$|\(|\)//g;
+        my $t1 = $t;
+        $t1 =~ s/libgltf/libgltf\/libgltf/;
+        print "  - $http/$t1 $t $m /libreoffice-\${KX_LIBREOFFICE_VERSION}\n";
+      }
+
+
+opt:
+
+  - build:
+
+    - python3: ~
+ 
+    - echo: "unpacking help and translations"
+    - sh: | 
+        tar xJf ../../../../downloads/libreoffice-${KX_LIBREOFFICE_VERSION}/libreoffice-help-${KX_LIBREOFFICE_VERSION}.tar.xz -C ..
+        tar xJf ../../../../downloads/libreoffice-${KX_LIBREOFFICE_VERSION}/libreoffice-translations-${KX_LIBREOFFICE_VERSION}.tar.xz -C ..
+
+    - echo: "patching"
+
+    # Configure option --with-external-tar does not work
+    # We end up with the config taking place in the external dir
+    # and failing with
+    # config.status: error: cannot find input file: `config_host.mk.in'
+    # so we link manually
+    - sh: ln -svf "${KX_BASE}/../downloads/${KX_LIBREOFFICE}" external/tarballs
+
+    # From LFS
+    - sh: 'sed -e "/ustrbuf/a #include <algorithm>" -i svl/source/misc/gridprinter.cxx'
+
+    - configure: >
+
+        # TRY TO KEEP THE OPTIONS IN THE SAME SEQUENCE AS ./configure --help
+
+        # we use DESTDIR on install
+        --prefix="/opt"
+
+        --with-parallelism="${KX_JOBS}"
+
+        # For debuging: build packages in sequential order
+        # --with-parallelism=1
+
+        # When (re-)building, a sequential build can be achieved with:
+        # make PARALLELISM=1
+
+        # From LFS:
+        # This switch enables a Release Build.
+        # LibreOffice can be built as a Release Build or as a Developer Build,
+        # because their default installation paths and user profile paths are different.
+        # Developer Build displays the words "Dev" and "Beta" in several places
+        # (e.g, menu and splash scren).
+        --enable-release-build=yes
+
+        # Put files into deliver folder as hardlinks instead of copying them over.
+        # Saves space and speeds up build.
+        --enable-hardlink-deliver
+
+        #  Enables the compilation of Graphite smart font rendering.
+        --enable-graphite
+
+        # TODO: --enable-pch
+        # Enables precompiled header support for C++
+
+        # Disable LibreOffice includes self-packaging code
+        --disable-epm
+
+        # This option disables installing the office development kit
+        --disable-odk
+
+        # TODO:  Consider --enable-mathmldtd      Enable bundling of (modified) MathML 1.01 DTD.
+
+        #  Allows the built-in evolution 2 addressbook connectivity build to be enabled.
+        # --enable-evolution2
+
+        --disable-werror
+
+        # Include debugging symbols in output.
+        # WARNING - a complete build needs 8 Gb of space and takes much longer (enables -g compiler flag).
+        # --enable-symbols
+
+        # Enable link-time optimization. Suitable for product builds. Building takes longer but libraries are optimized for speed
+        # TODO: --enable-lto
+
+        # Enables or disables Python support at run-time and build-time.
+        --enable-python=system
+
+        # Determines whether to use Gtk+ 3.0 vclplug on platforms where Gtk+ 3.0 is available.
+        --enable-gtk3
+
+        # Determines whether to enable presentation mode screensaver control under GNOME via DBUS.
+        --enable-dbus
+
+        # Determines whether to use the GConf support
+        --disable-gconf
+
+        # Do not use the deprecated gnome-vfs, but use gvfs from gio instead
+        --disable-gnome-vfs
+        --enable-gio
+
+        # Determines whether to enable Telepathy for collaboration
+        --disable-telepathy
+
+        # Enable building with the new gstreamer 1.0 avmedia backend
+        --enable-gstreamer-1-0
+
+        # Increase build verbosity
+        --enable-verbose
+
+        #   Disable the build of the Firebird-SDBC driver
+        --disable-firebird-sdbc
+
+        # Determines whether to build libraries related to glTF 3D model rendering.
+        --disable-gltf
+
+        # Disable collada support (Rendering 3D models stored in *.dae and *.kmz format)
+        --disable-collada
+
+        # Disable support for scripts in BeanShell.
+        --disable-scripting-beanshell
+
+        # Disable support for scripts in JavaScript.
+        --disable-scripting-javascript
+
+        # TODO: --enable-extra-gallery  Add extra gallery content.
+        # TODO: --enable-extra-template Add extra template content.
+        # TODO: --enable-extra-sample   Add extra sample content.
+        # TODO: --enable-extra-font     Add extra font content.
+
+        # Disable the build of the PostgreSQL-SDBC driver.
+        --disable-postgresql-sdbc
+
+        # --with-external-tar does not work !
+        # Specify path to tarfiles manually.
+        # --with-external-tar="${KX_BASE}/../downloads/${KX_LIBREOFFICE}"
+
+        # TODO: --without-fonts
+        # LibreOffice includes some third-party fonts to provide a reliable basis for help content, templates, samples, etc.
+        # When these fonts are already known to be available on the system then you should use this option.
+
+        # TODO:  --without-afms
+        # Removes bitmap font files from LibreOffice installation set,
+        # for people building for specific distributions where AFM files or TrueType Fonts are known to be available.
+
+        # Use installed system libraries and headers
+        --with-system-cppunit
+        --with-system-cairo
+        --with-system-nss
+
+        # Removes myspell dictionaries from LibreOffice
+        --without-myspell-dicts
+
+        # External directories
+        --with-external-dict-dir=/opt/share/hunspell
+        --with-external-hyph-dir=/opt/share/hyphen
+        --with-external-thes-dir=/opt/share/thesaurus
+
+        # Use installed system libraries and headers
+        --with-system-zlib
+        --with-system-harfbuzz
+        --with-system-openssl
+        --with-system-jpeg
+        --with-system-expat
+        --with-system-lcms2
+        --with-system-libxml
+        --with-system-icu
+        --with-system-poppler
+
+        # TODO: use system rhino
+        # However, LibreOffice uses an old rhino1_5R5
+        # and patches heavily: libreoffice-4.0.0.1/rhino/rhino1_5R5*.patch
+        # --with-system-rhino
+        # --with-rhino-jar=/opt/share/java/js.jar
+
+
+        # Use installed system libraries and headers
+        --with-system-bluez
+        --with-system-mesa-headers
+        --with-system-curl
+        # LO 5.0.2.2 does not compile against boost 1.59.0
+        # --with-system-boost
+        --with-system-neon 
+        --with-system-hunspell
+        --with-system-mythes
+
+        --with-system-libpng
+
+        --without-java
+
+        --without-junit
+        # TODO: --with-junit
+        # Specifies the JUnit 4 jar file to use for JUnit-based tests
+        # So we need to install JUnit first (separate package)
+
+        # TODO: --with-lang
+        # Use this option to build LibreOffice with additional language support
+
+        --with-vendor="KaarPux"
+
+    - echo: downloading sub-projects - there should be none, as they should have been downloaded above
+    - sh: make fetch
+
+    # For more verbose output:
+    # - make: build verbose=t
+    - echo: make
+    - sh: make build
+
+  - test:
+    - sh: make verbose=t unitcheck
+    - sh: make verbose=t slowcheck
+    - sh: make verbose=t subsequentcheck
+
+
+  - install:
+
+    - echo: installing
+
+    - sh: make distro-pack-install DESTDIR=${KX_PREFIX}
+
+    - echo: moving and copying files
+
+    - sh: |
+        mv ${KX_PREFIX}/opt/* ${KX_PREFIX}
+        rmdir ${KX_PREFIX}/opt
+
+# ============================================================
+verify_gui: |
+
+    spawn soffice soffice
+    find menubar _ 4
+    find menu Help 2
+    do
+    await menuitem AboutLibreOffice 2
+    do click
+
+    application
+    find dialog _ 4
+    find pushbutton Close 4
+    do click
+    application
+    away dialog _ 4   
+
+    application
+    await pushbutton WriterDocument 9
+    do press
+    application
+    find rootpane Untitled1LibreOfficeWriter 3
+
+    application
+    find menubar _ 4
+    find menu File 2
+    do click
+    await menuitem ExitLibreOffice 2
+    do click
+
+    desktop
+    away application soffice 1
+
+    spawn soffice soffice
+    await pushbutton CalcSpreadsheet 9
+    do click
+
+    application
+    find rootpane Untitled1LibreOfficeCalc 3
+    find table SheetSheet1 6
+    find tablecell A1 2
+    text =123*45
+
+    application
+    find rootpane Untitled1LibreOfficeCalc 3
+    find table SheetSheet1 6
+    find tablecell B1 2
+    text =1234*56
+
+    application
+    find rootpane Untitled1LibreOfficeCalc 3
+    find table SheetSheet1 6
+    find tablecell A1 2
+    # TODO: verify_gui: LibreOffice says WARNING **: Exception in getText()
+    #verifytext 5535
+
+    application
+    find rootpane Untitled1LibreOfficeCalc 3
+    find table SheetSheet1 6
+    find tablecell B1 2
+    # TODO: verify_gui: LibreOffice says WARNING **: Exception in getText()
+    #verifytext 69104
+
+    application
+    find menubar _ 4
+    find menu File 2
+    do click
+    await menuitem ExitLibreOffice 2
+    do click
+    application
+    find alert Savedocument 4
+    find pushbutton Closewithoutsaving 6
+    do click
+
+    desktop
+    away application soffice 1
+
+# TODO: verify_gui: Test Presentation Drawing Database Formula

@@ -1,0 +1,644 @@
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2012-2014: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+# ============================================================
+
+sub kxver_ftp_login {
+
+	my ($host, $path) = @_;
+
+	print "FTP login [$host] [$path]\n" if $debug;
+	my $n = $n_retry;
+	my $ftp = Net::FTP->new($host, Debug => $debug);
+	while ( (!defined $ftp) && ($n>0) ) {
+		print "Unable to connect to FTP host [$host] - will retry: $@\n" if $debug;
+		usleep(rand(5000*1000));	# wait up to 5 seconds
+		$n--;
+		$ftp = Net::FTP->new($host, Debug => $debug);
+	}
+	if (!$ftp) { print "*** Unable to connect to FTP host [$host]: $@\n"; return undef; }
+	my $rc = $ftp->login("anonymous",'-anonymous@');
+	if (!$rc) { print "*** Unable to log in on FTP host [$host]: " .  $ftp->message . "\n"; return undef; }
+	$rc = $ftp->cwd($path);
+	if (!$rc) { print "*** Unable to change cwd to [$path] on FTP host [$host]: " .  $ftp->message . "\n"; return undef; }
+
+	return $ftp;
+}
+
+# ============================================================
+
+sub kxver_get {
+
+	my ($url) = @_;
+
+	my $ua = LWP::UserAgent->new(keep_alive=>1);
+	$ua->agent('Mozilla/5.0 (X11; Linux x86_64) Gecko/20100101 Firefox/26.0');
+	my $n = $n_retry;
+
+	my $response = $ua->get($url, Accept => '*/*');
+	my $res = $response->content();
+
+	while ( ($response->is_error()) && ($n>0) ) {
+		usleep(rand(5000*1000));	# wait up to 5 seconds
+		$n--;
+		$response = $ua->get($url);
+		$res = $response->content();
+	}
+
+	if ($response->is_error()) { print "*** Unable to get url [$url]: " . $response->status_line() . "\n"; }
+	return $res;
+}
+
+# ============================================================
+
+sub kxver_ftp_dirlist {
+	my ($host, $path) = @_;
+
+	print "FTP directory download [$host] [$path]\n" if $debug;
+	my $ftp = kxver_ftp_login($host, $path);
+	return unless $ftp;
+	my @dir = $ftp->ls;
+	$ftp->quit();
+	return @dir;
+}
+
+# ============================================================
+
+sub kxver_html_download {
+	my ($host, $path) = @_;
+
+	print "HTML download [$host] [$path]\n" if $debug;
+	my $s = Net::HTTP->new(Host => $host) || die "*** Unable to connect to HTTP host [$host]: $@\n";
+	$s->write_request(GET => $path, 'User-Agent' => "Mozilla/5.0");
+	my($code, $mess, %h) = $s->read_response_headers;
+	die "*** Unable to fetch [$host:$path]: [$code] $mess\n" unless $code==200;
+	my $response="";
+	while (1) {
+		my $buf;
+		my $n = $s->read_entity_body($buf, 1024);
+		die "read failed: $!" unless defined $n;
+		last unless $n;
+		$response .= $buf;
+	}
+	return $response;
+}
+
+# ============================================================
+
+sub kxver_https_download {
+	my ($host, $path) = @_;
+
+	print "HTTPS download [$host] [$path]\n" if $debug;
+	my $s = Net::HTTPS->new(Host => $host) || die "*** Unable to connect to HTTPS host [$host]: $@\n";
+	$s->write_request(GET => $path, 'User-Agent' => "Mozilla/5.0");
+	my($code, $mess, %h) = $s->read_response_headers;
+	die "*** Unable to fetch [$host:$path]: [$code] $mess\n" unless $code==200;
+	my $response="";
+	while (1) {
+		my $buf;
+		my $n = $s->read_entity_body($buf, 1024);
+		die "read failed: $!" unless defined $n;
+		last unless $n;
+		$response .= $buf;
+	}
+	return $response;
+}
+# ============================================================
+
+sub kxver_scrape_this {
+	my ($pkg, $content, $pattern, $xml) = @_;
+	if (!defined $pattern) {
+		if ($pkg) {
+			$pattern=qr|$pkg[-_]([0-9]+[0-9.\-_]*[0-9]+)\.|;
+		} else {
+			$pattern=qr|([0-9]+\.+[0-9.\-]*[0-9]+)|;
+		}
+	}
+	print "Scraping content for [$pattern]\n" if $debug;
+	print "\n\n$content\n\n\n" if $insane;
+	my @versions = ();
+	my $s = qr|^|;
+	$s = qr|>| if (defined $xml);
+	for (split $s, $content) { 
+		if ($_ =~ m|$pattern|) {
+			push(@versions, $1);
+			print "Scraped [$1]\n" if $debug;
+		}
+	}
+	my @vsort = sort { versioncmp $a, $b } @versions;
+	return $vsort[$#vsort];
+}
+
+# ============================================================
+
+sub kxver_scrape_url {
+	my ($pkg, $url, $pattern) = @_;
+	if ($debug) {
+		if (defined $pattern) {
+			print "Scraping [$url] for [$pattern]\n";
+		} else {
+			print "Scraping [$url] for [$pkg]\n";
+		}
+	}
+	my $content = kxver_get($url) or print "*** Could not download [${url}]\n";
+	return "???" unless defined $content;
+	return kxver_scrape_this($pkg, $content, $pattern);
+}
+
+# ============================================================
+
+sub kxver_scrape_xml {
+	my ($pkg, $url, $pattern) = @_;
+	if ($debug) {
+		if (defined $pattern) {
+			print "Scraping [$url] for XML [$pattern]\n";
+		} else {
+			print "Scraping [$url] for XML [$pkg]\n";
+		}
+	}
+	my $content = kxver_get($url) or print "*** Could not download [${url}]\n";
+	return "???" unless defined $content;
+	return kxver_scrape_this($pkg, $content, $pattern, 1);
+}
+
+# ============================================================
+
+sub kxver_scrape_ftp {
+	my ($host, $path, $pattern) = @_;
+	my @dir = kxver_ftp_dirlist($host, $path);
+	print "Scaping [$#{dir}] lines for [${pattern}]\n" if $debug;
+	my @versions = ();
+	for (@dir) { 
+		push(@versions, $1) if $_ =~ m|$pattern|; ;
+	}
+	my @vsort = sort { versioncmp $a, $b } @versions;
+	return $vsort[$#vsort];
+}
+
+# ============================================================
+
+sub kxver_sh_trailing {
+	my ($sh) = @_;
+	print "Executing [$sh] for kxver_sh_trailing\n" if $debug;
+	my $v = `$sh 2>&1|head -1`;
+	return "???" unless defined $v;
+	chomp $v;
+	print "Executing [$sh] returned [$v]\n" if $debug;
+	if ( $v =~ m|([0-9\.]+)\s*$| ) {
+		return $1;
+	} else {
+		return "???";
+	}
+}
+
+# ============================================================
+
+sub kxver_sh_version {
+	my ($sh) = @_;
+	print "Executing [$sh] for kxver_sh_version\n" if $debug;
+	my $v = `$sh 2>&1`;
+	return "???" unless defined $v;
+	chomp $v;
+	print "Executing [$sh] returned [$v]\n" if $debug;
+	$v =~ m|[Vv]ersion ([0-9\.]+)|;
+	return $1;
+}
+
+# ============================================================
+
+sub kxver_sh_v {
+	my ($sh) = @_;
+	print "Executing [$sh] for kxver_sh_v\n" if $debug;
+	my $v = `$sh 2>&1`;
+	return "???" unless defined $v;
+	chomp $v;
+	print "Executing [$sh] returned [$v]\n" if $debug;
+	$v =~ m|[Vv]([0-9\.]+)|;
+	return $1;
+}
+
+# ============================================================
+
+sub kxver_sh_pattern {
+	my ($sh, $pattern) = @_;
+	print "Executing [$sh] for [$pattern]\n" if $debug;
+	my $v = `$sh 2>&1`;
+	return "???" unless defined $v;
+	chomp $v;
+	print "Executing [$sh] returned [$v]\n" if $debug;
+	$v =~ m|$pattern|;
+	return $1;
+}
+
+# ============================================================
+
+sub kxver_file_pattern {
+	my ($filename, $pattern) = @_;
+	$pattern=qr|[Vv]ersion=([0-9]+\.+[0-9\.]*[0-9]+)| unless defined $pattern;
+	print "Checking [$filename] for [$pattern]\n" if $debug;
+	my $v = "???";
+	my $fh;
+	if (!open($fh, "<", "$filename")) {
+		print "cannot open [$filename]: $!\n";
+		return "???";
+	}
+	while (<$fh>) {
+		if ( m/$pattern/ ) { $v = $1; last; }
+	}
+	return $v;
+}
+
+# ============================================================
+
+sub kxver_mozilla_addon_installed {
+	use XML::Simple;
+	my ($dir) = @_;
+	my $manifest = XMLin("$dir/install.rdf");
+	return $manifest->{'Description'}->{'em:version'};
+}
+
+# ============================================================
+
+sub kxver_pkgconfig {
+	my ($pkg) = @_;
+	my $v = `pkg-config --modversion $pkg`;
+	return "???" unless defined $v;
+	return $v;
+}
+# ============================================================
+
+sub kxver_config {
+	my ($pkg) = @_;
+	my $v = `$pkg-config --version`;
+	return "???" unless defined $v;
+	return $v;
+}
+
+# ============================================================
+
+sub kxver_sourceforge_page {
+	my ($dir, $pattern) = @_;
+	my $url = "http://sourceforge.net${dir}";
+	print "Downloading [$url] for [$pattern]\n" if $debug;
+	my @versions = ();
+	my $content = kxver_get($url);
+        if (!defined($content)) { print "*** Could not download [$url]\n"; return @versions; }
+	for (split /^/, $content) { 
+		if ($_ =~ m|$pattern|) {
+			push(@versions, $1);
+			print("Found version [$1]\n") if $debug;
+		} else {
+			if ($_ =~ m|href="(${dir}[^/]+/)"|) {
+				print("Found subdir [$1]\n") if $debug;
+				@versions = (@versions, kxver_sourceforge_page($1, $pattern));
+			}
+		}
+	}
+
+	return @versions;
+}
+
+# ============================================================
+
+sub kxver_upstream_sourceforge {
+	my ($project, $subdir, $prefix, $pattern) = @_;
+	$pattern=qr|.*$prefix-?([0-9]+\.+[0-9.-]*[0-9]+([a-z][0-9]+)?).*/download| unless defined $pattern;
+	my $dir="/projects/${project}/files/";
+	$dir="${dir}${subdir}/" if $subdir;
+	my @versions = kxver_sourceforge_page($dir, $pattern);
+	my @vsort = sort { versioncmp $a, $b } @versions;
+	return $vsort[$#vsort];
+
+}
+
+# ============================================================
+
+sub kxver_upstream_mozilla_addon {
+	my ($pkg) = @_;
+	my $html = kxver_https_download("addons.mozilla.org", "/en-US/firefox/addon/${pkg}/");
+	return "n/a" unless $html;
+	my $version="n/a";
+	$version = $1 if ( $html =~ /itemprop=.version.>([0-9]+\.+[0-9.]*[0-9]+)<\/span>/ );
+	return $version;
+
+}
+
+# ============================================================
+
+sub kxver_even_minor {
+	my @even = ();
+	foreach (@_) {
+		push(@even, $_) if /^[0-9]+\.[0-9]*(0|2|4|6|8)\.[0-9]+/;
+	}
+	return @even;
+}
+
+# ============================================================
+
+sub kxver_upstream_pypi {
+	my ($pkg) = @_;
+	my $url = "https://pypi.python.org/pypi/${pkg}";
+	my $qr = qr|"/pypi/${pkg}/([0-9]+[0-9.]*)"|;
+	my @versions = kxver_scrape_url(undef, $url, $qr);
+	my @vsort = sort { versioncmp $a, $b } @versions;
+	return $vsort[$#vsort];
+}
+
+# ============================================================
+
+sub kxver_upstream_gnome {
+	my ($pkg) = @_;
+	my @versions;
+	my $host = "ftp.gnome.org";
+	my $path = "/pub/gnome/sources/${pkg}";
+	my $ftp = kxver_ftp_login($host, $path);
+	return unless $ftp;
+	print "FTP upstream gnome [$host] [$path]\n" if $debug;
+	my @topdir = $ftp->ls;
+	foreach my $subdir (@topdir) {
+		next unless $subdir =~ "^([0-9\.]+)\$";
+		my $subpath = "${path}/${subdir}";
+		print "FTP sub-directory download [$subpath]\n" if $debug;
+		my $rc = $ftp->cwd($subpath);
+		if (!$rc) { print "*** Unable to change cwd to [$subpath] on FTP host [$host]: " .  $ftp->message . "\n"; return; }
+		my @subdir = $ftp->ls;
+		foreach my $f (@subdir) {
+			if ($f =~ m/^LATEST-IS-([0-9\.]+)$/) { push(@versions, $1); }
+		}
+	}
+	$ftp->quit();
+        my @even = kxver_even_minor @versions;
+	my @vsort = sort { versioncmp $a, $b } @even;
+	return $vsort[$#vsort];
+}
+
+# ============================================================
+
+sub kxver_upstream_gnome_uneven {
+	my ($pkg) = @_;
+	my @versions;
+	my $host = "ftp.gnome.org";
+	my $path = "/pub/gnome/sources/${pkg}";
+	my $ftp = kxver_ftp_login($host, $path);
+	return unless $ftp;
+	print "FTP upstream gnome [$host] [$path]\n" if $debug;
+	my @topdir = $ftp->ls;
+	foreach my $subdir (@topdir) {
+		next unless $subdir =~ "^([0-9\.]+)\$";
+		my $subpath = "${path}/${subdir}";
+		print "FTP sub-directory download [$subpath]\n" if $debug;
+		my $rc = $ftp->cwd($subpath);
+		if (!$rc) { print "*** Unable to change cwd to [$subpath] on FTP host [$host]: " .  $ftp->message . "\n"; return; }
+		my @subdir = $ftp->ls;
+		foreach my $f (@subdir) {
+			if ($f =~ m/^LATEST-IS-([0-9\.]+)$/) { push(@versions, $1); }
+		}
+	}
+	$ftp->quit();
+	my @vsort = sort { versioncmp $a, $b } @versions;
+	return $vsort[$#vsort];
+}
+
+# ============================================================
+
+sub kxver_internal_ftp_subdirs {
+	my ($ftp, $path, $pattern, $versions) = @_;
+	print "FTP directory scan processing [$path] for [$pattern]\n" if $debug;
+	my @dir = $ftp->ls;
+	foreach my $f (@dir) {
+		if ($f =~ m|$pattern|) {
+			push(@$versions, $1);
+		} else {
+			my $path2 = "$path/$f";
+			if ($ftp->cwd($path2)) { kxver_internal_ftp_subdirs($ftp, $path2, $pattern, $versions); }
+		}
+	}
+}
+
+
+# ============================================================
+
+sub kxver_ftp_subdirs {
+	my ($host, $path, $pattern) = @_;
+	my @versions;
+	my $ftp = kxver_ftp_login($host, $path);
+	return unless $ftp;
+	print "FTP insternal subdirs [$host] [$path]\n" if $debug;
+	kxver_internal_ftp_subdirs($ftp, $path, $pattern, \@versions);
+	$ftp->quit();
+	my @vsort = sort { versioncmp $a, $b } @versions;
+	return $vsort[$#vsort];
+}
+
+
+# ============================================================
+
+sub kxver_header_file {
+	my ($prefix, $filename, $last) = @_;
+	$last = "MICRO" unless defined $last;
+	my $major = "?";
+	my $minor = "?";
+	my $micro = "?";
+	my $pat_major = qr|${prefix}_VERSION_MAJOR\s*([0-9]+)|;
+	my $pat_minor = qr|${prefix}_VERSION_MINOR\s*([0-9]+)|;
+	my $pat_micro = qr|${prefix}_VERSION_${last}\s*([0-9]+)|;
+	my $fh;
+	open($fh, "<", "$filename") or print "cannot open [$filename]: $!\n";
+	my $line;
+	while (defined($line = <$fh>) ) {
+		chomp $line;
+		if ($line =~ s/\\$//) {
+			$line .= <$fh>;
+			chomp $line;
+			redo unless eof(FH);
+		}
+		$major = $1 if $line =~ m|$pat_major|;
+		$minor = $1 if $line =~ m|$pat_minor|;
+		$micro = $1 if $line =~ m|$pat_micro|;
+	}
+	print "Header file [$filename]: [$major].[$minor].[$micro]\n" if $debug;
+	return "$major.$minor.$micro";
+}
+
+
+# ============================================================
+
+sub kxver_header_file_mm {
+	my ($prefix, $filename) = @_;
+	my $major = "?";
+	my $minor = "?";
+	my $pat_major = qr|${prefix}_VERSION_MAJOR\s*([0-9]+)|;
+	my $pat_minor = qr|${prefix}_VERSION_MINOR\s*([0-9]+)|;
+	my $fh;
+	open($fh, "<", "$filename") or print "cannot open [$filename]: $!\n";
+	my $line;
+	while (defined($line = <$fh>) ) {
+		chomp $line;
+		if ($line =~ s/\\$//) {
+			$line .= <$fh>;
+			chomp $line;
+			redo unless eof(FH);
+		}
+		$major = $1 if $line =~ m|$pat_major|;
+		$minor = $1 if $line =~ m|$pat_minor|;
+	}
+	return "$major.$minor";
+}
+
+
+# ============================================================
+
+sub kxver_header_file_full {
+	my ($filename, $pat_major, $pat_minor, $pat_micro) = @_;
+	my $major = "?";
+	my $minor = "?";
+	my $micro = "?";
+	my $fh;
+	open($fh, "<", "$filename") or print "cannot open [$filename]: $!\n";
+	my $line;
+	while (defined($line = <$fh>) ) {
+		chomp $line;
+		if ($line =~ s/\\$//) {
+			$line .= <$fh>;
+			chomp $line;
+			redo unless eof(FH);
+		}
+		$major = $1 if $line =~ m|$pat_major|;
+		$minor = $1 if $line =~ m|$pat_minor|;
+		$micro = $1 if $line =~ m|$pat_micro|;
+	}
+	return "$major.$minor.$micro";
+}
+
+
+# ============================================================
+
+sub kxver_header_file_full_mmmm {
+	my ($filename, $pat_major, $pat_minor, $pat_micro, $pat_pico) = @_;
+	my $major = "?";
+	my $minor = "?";
+	my $micro = "?";
+	my $pico  = "?";
+	my $fh;
+	open($fh, "<", "$filename") or print "cannot open [$filename]: $!\n";
+	my $line;
+	while (defined($line = <$fh>) ) {
+		chomp $line;
+		if ($line =~ s/\\$//) {
+			$line .= <$fh>;
+			chomp $line;
+			redo unless eof(FH);
+		}
+		$major = $1 if $line =~ m|$pat_major|;
+		$minor = $1 if $line =~ m|$pat_minor|;
+		$micro = $1 if $line =~ m|$pat_micro|;
+		$pico  = $1 if $line =~ m|$pat_pico|;
+	}
+	return "$major.$minor.$micro.$pico";
+}
+
+# ============================================================
+
+sub kxver_header_file_one {
+	my ($filename, $tag) = @_;
+	my $pat = qr|${tag}\s*"*([0-9]+[0-9.]*[0-9]+)|;
+	my $version = "?";
+	my $fh;
+	open($fh, "<", "$filename") or print "cannot open [$filename]: $!\n";
+	my $line;
+	while (defined($line = <$fh>) ) {
+		chomp $line;
+		if ($line =~ s/\\$//) {
+			$line .= <$fh>;
+			chomp $line;
+			redo unless eof(FH);
+		}
+		$version = $1 if $line =~ m|$pat|;
+	}
+	return $version;
+}
+
+# ============================================================
+# ============================================================
+
+sub kxver_pkg_ref_from_name {
+	my ($pkg_name) = @_;
+	my $pkg_ref = $pkg_name;
+	$pkg_ref =~ tr/a-z/A-Z/;
+	$pkg_ref =~ s/\+/_PLUS/g;
+	$pkg_ref =~ tr/a-zA-Z0-9/_/cs;
+	return $pkg_ref;
+}
+
+# ============================================================
+
+sub kxver_replace_version {
+	my ($str, $pkg, $ver) = @_;
+
+	my $pkgref = kxver_pkg_ref_from_name($pkg);
+
+	my $ver_mm = $ver;
+	$ver_mm = $1 if $ver_mm =~ /^([0-9]+\.[0-9]+)/;
+
+	my $ver_mmm = $ver;
+	$ver_mmm = $1 if $ver_mmm =~ /^([0-9]+\.[0-9]+\.[0-9]+)/;
+
+	my $ver_uscore = $ver;
+	$ver_uscore =~ s|\.|_|g;
+
+	my $s = $str;
+	$s =~ s/\${KX_${pkgref}}/$pkg-$ver/;
+	$s =~ s/\${KX_${pkgref}_VERSION}/$ver/;
+	$s =~ s/\${KX_${pkgref}_VERSION_MM}/$ver_mm/;
+	$s =~ s/\${KX_${pkgref}_VERSION_MMM}/$ver_mmm/;
+	$s =~ s/\${KX_${pkgref}_VERSION_USCORE}/$ver_uscore/;
+
+	return $s;
+}
+
+# ============================================================
+
+sub kxver_wiz_url {
+	my ($pkg_ver, $pkg, $ver) = @_;
+
+	my $file = kxver_replace_version($pkg_ver->{'file'}, $pkg, $ver);
+	my $url = kxver_replace_version($pkg_ver->{'url'}, $pkg, $ver);
+
+	return ($file, "$url/$file");
+}
+
+# ============================================================
+
+sub kxver_fusionforge_url {
+	my($group_id, $pkg_ver, $pkg, $ver) = @_;
+	my $file = kxver_replace_version($pkg_ver->{'file'}, $pkg, $ver);
+	my $url = kxver_replace_version($pkg_ver->{'url'}, $pkg, $ver);
+	$url = $1 if $url =~ /^(.*\/frs\/)/;
+	return "???" unless $url;
+	my $gurl = $url . "?group_id=${group_id}";
+	my $html=kxver_get($gurl);
+	return "???" unless $html;
+	my $dl = 0;
+	$dl = $1 if $html =~ m|(download.php/[0-9]+)/${file}|;
+	return "???" unless $dl;
+	$dl = "${url}${dl}";
+	return ($file, "$dl/$file");
+}
+
+# ============================================================
+
+sub kxver_fusionforge_yaml {
+	my ($group_id, $pkg, $up, $udir, $ufile, $uurl) = @_;
+	$uurl = $1 if $uurl =~ /^(.*)\/$ufile/;
+	print "  url: $uurl\n";
+}
+
+# ============================================================
+
+1;
+

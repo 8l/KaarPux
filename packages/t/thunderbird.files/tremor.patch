@@ -1,0 +1,12 @@
+diff -Naur thunderbird-31.1.1.ORIG/mozilla/configure thunderbird-31.1.1/mozilla/configure
+--- thunderbird-31.1.1.ORIG/mozilla/configure	2014-09-08 20:12:13.000000000 +0200
++++ thunderbird-31.1.1/mozilla/configure	2014-09-20 19:16:45.526650168 +0200
+@@ -16152,7 +16152,7 @@
+ MOZ_JSDEBUGGER=1
+ MOZ_AUTH_EXTENSION=1
+ MOZ_RAW=
+-MOZ_VORBIS=
++MOZ_VORBIS=1
+ MOZ_TREMOR=
+ MOZ_WAVE=1
+ MOZ_SAMPLE_TYPE_FLOAT32=

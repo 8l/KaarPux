@@ -1,0 +1,44 @@
+package:
+  name: gnome-nettool
+  version: 3.8.1
+
+download:
+  gnomexz: ~
+  checksum: f0a4510d9fe5eae4c91b63ade9848992b2795108e76eff7f51dc3decf7df2cb1
+
+version:
+  installed_na: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static --disable-schemas-compile
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+verify_gui: |
+    spawn gnomenettool gnome-nettool
+    await pagetab Devices 5
+    application
+    find pagetab Ping 5
+    application
+    find pagetab Netstat 5
+    application
+    find pagetab Traceroute 5
+    application
+    find pagetab PortScan 5
+
+    application
+    find menu Tool 4
+    children 2
+
+    find menuitem Quit 2
+    do click
+    desktop
+    away application gnomenettool 1

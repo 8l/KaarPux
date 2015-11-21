@@ -1,0 +1,30 @@
+package:
+  name: openvas-cli
+  version: 1.4.2
+  www: http://www.openvas.org/
+  short: |
+      OpenVAS is a framework of several services and tools
+      offering a comprehensive and powerful vulnerability scanning and vulnerability management solution. 
+
+download:
+  url: http://wald.intevation.org/frs/download.php/2141
+  file_tar_gz: ~
+  checksum: ac06aac59af3a7d2bbccc17bf64915d0651b47b51a4b9c23efda5b0e76c8aff9
+
+version:
+  installed_sh_trailing: omp --version
+  upstream: kxver_scrape_url("openvas-cli", "http://wald.intevation.org/frs/?group_id=29");
+  wiz_url: return kxver_fusionforge_url(29, @_);
+  wiz_yaml: kxver_fusionforge_yaml(20, @_);
+  source: https://wald.intevation.org/scm/viewvc.php/trunk/?root=openvas
+  news: CHANGES
+  changelog: ChangeLog
+
+linux:
+  - build:
+    - sh: mkdir build; cd build
+    - cmake_kx: -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+    - make: ~
+  - install:
+    - sh: cd build
+    - install: ~

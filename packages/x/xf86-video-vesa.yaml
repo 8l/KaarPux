@@ -1,0 +1,29 @@
+package:
+  name: xf86-video-vesa
+  version: 2.3.4
+
+
+download:
+  url: http://xorg.freedesktop.org/releases/individual/driver
+  checksum: 7bddf4d879dd6f67088ecb203a31e12334aab980174bd0909930a21f32e251c1
+
+version: ~
+
+linux:
+  - build:
+
+    # From Linux From Scratch
+    # http://www.linuxfromscratch.org/blfs/view/svn/x/x7driver.html#xorg-vesa-driver
+    - sh: >
+        sed -e "/mibstore.h/d" -e "/miInitializeBackingStore/d"
+            -e "s/MODE_QUERY < 0/function < MODE_QUERY/g"
+            -i src/vesa.c
+
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~     
+

@@ -1,0 +1,36 @@
+package:
+  name: caribou
+  version: 0.4.19
+  www: https://live.gnome.org/Caribou
+  short: Caribou is a text entry and UI navigation application being developed as an alternative to the Gnome On-screen Keyboard.
+
+download:
+  gnomexz: ~
+  checksum: 2f0bd0c14c5f94cf5ac3a7627018919addf7a054ac84aaa8e62356957c175a44
+
+doc: |
+  <para>
+    The installed binary <command>caribou</command> does not work at runtime,
+    as it needs <systemitem>pyatspi2</systemitem>,
+    but this is fine, we only need the libraries.
+  </para>
+
+version:
+  installed_pkgconfig: caribou-1.0
+  upstream_gnome: ~
+
+
+linux:
+
+  - build:
+    - python3: ~
+    - echo: 2to3
+    - sh: 2to3 ${KX_MAKE_J} -v -w .
+    - configure_kx: --disable-docs --disable-static --enable-gtk3-module --enable-gtk2-module --disable-schemas-compile
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - python3: ~
+    - install: ~

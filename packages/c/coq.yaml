@@ -1,0 +1,25 @@
+package:
+  name: coq
+  version: 8.4pl6
+  www: http://coq.inria.fr/
+  short: |
+      Coq is a formal proof management system.
+      It provides a formal language to write mathematical definitions, executable algorithms and theorems
+      together with an environment for semi-interactive development of machine-checked proofs.
+
+download:
+  url: http://coq.inria.fr/distrib/V${KX_COQ_VERSION}/files/
+  file_tar_gz: ~
+  checksum: a540a231a9970a49353ca039f3544616ff86a208966ab1c593779ae13c91ebd6
+
+version:
+  upstream: kxver_scrape_url(undef, "http://coq.inria.fr/download", qr|coq-([0-9]+[0-9.]+[0-9a-z]+)\.tar|);
+
+opt:
+
+  - build:
+    - configure: -prefix ${KX_PREFIX}
+    - make: ~
+
+  - install:
+    - install: ~

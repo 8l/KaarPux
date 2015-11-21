@@ -1,0 +1,27 @@
+package:
+  name: xsane
+  version: 0.999
+  www: http://www.xsane.org
+  short: XOrg interface to Scanner Access Now Easy.
+
+download:
+  url: http://www.xsane.org/download/
+  file_tar_gz: ~
+  checksum: 5782d23e67dc961c81eef13a87b17eb0144cae3d1ffc5cf7e0322da751482b4b
+
+version:
+  installed: kxver_sh_pattern "xsane --version", qr|xsane-([0-9]+[0-9.\-_]*[0-9]+)|
+
+linux:
+
+  - build:
+    - sh: sed -i -e 's:png_ptr->jmpbuf:png_jmpbuf(png_ptr):' src/xsane-save.c
+    # Do not use --prefix=/
+    - configure: >
+        --prefix=/usr
+    - make: ~
+
+  # No test suite
+
+  - install:
+    - install: ~

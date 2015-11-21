@@ -1,0 +1,31 @@
+package:
+  name: groff
+  version: 1.22.3
+  www: http://www.gnu.org/software/groff/
+
+download:
+  gnuz: ~
+  checksum: 3a48a9d6c97750bfbd535feeb5be0111db6406ddb7bb79fc680809cda6d828a5
+
+version:
+  upstream_gnu: ~
+  wiz_savannah: ~
+  news: NEWS
+  changelog: ChangeLog
+
+bootstrap_8:
+  - echo: configure
+  - sh: PAGE="${KX_PAGESIZE}" ./configure --prefix="${KX_PREFIX}"
+  - make_repeat: ~
+  # No testsuite
+  - install: ~
+  - echo: post install
+  - sh: |
+      ln -svf eqn /bin/geqn
+      ln -svf tbl /bin/gtbl
+
+verify_cli: |
+  kx_cli_success /bin/groff -v
+
+# TODO: Test other binaries
+

@@ -1,0 +1,80 @@
+package:
+  name: elfutils
+  version: 0.164
+  www: https://fedorahosted.org/elfutils/
+  short: A collection of libraries and utilities for working with ELF object files and DWARF debugging information.
+
+download:
+  url: https://fedorahosted.org/releases/e/l/elfutils/${KX_ELFUTILS_VERSION}
+  file_tar_bz2: ~
+  checksum: 9683c025928a12d06b7fe812928aa6235249e22d197d086f7084606a48165900
+  verify: sig
+
+version:
+  installed: kxver_sh_trailing "eu-nm -V"
+  upstream: kxver_scrape_url undef, "https://fedorahosted.org/releases/e/l/elfutils/", qr|"([0-9]+[0-9.]+[0-9]+)/"|;
+
+bootstrap_8:
+
+  # -g required for test-suite success
+  - sh: export CFLAGS="-g"
+
+  # The --program-prefix prefix is very important.
+  # If left out, we will overwrite the system linker etc.
+  - configure_kx: --program-prefix="eu-"
+
+  - make: ~
+
+  # Note: some tests will fail, unless
+  # /proc/sys/kernel/core_pattern contains just "core"
+
+  # If running under systemtap, we get
+  # ----------------------------------------
+  # FAIL: run-backtrace-native.sh
+  # backtrace-child: backtrace-child.c:152: stdarg: Assertion `sigusr2_orig == ((__sighandler_t) 0)' failed.
+  # FAIL: run-backtrace-native-core.sh
+  # backtrace-child: backtrace-child.c:152: stdarg: Assertion `sigusr2_orig == ((__sighandler_t) 0)' failed.
+  # ----------------------------------------
+  # because those testcases assume SIGUSR2 is set to SIG_DFL
+  # but systemtap has already set SIGUSR2 to enable swap of outputfile.
+  - sh: |
+      if test -n "${KX_SYSTEMTAP:-}"; then
+      sed -e's/run-backtrace-native.sh//' -e's/run-backtrace-native-core.sh//' -i tests/Makefile
+      fi
+
+  - check: ~
+
+  - install: ~
+
+# ==========================================================
+
+verify_cli: |
+
+  kx_cli_match_success "/bin/eu-nm --version" { elfutils }
+  kx_cli_match_success "/bin/eu-nm /lib/libelf.so" { LOCAL GLOBAL OBJECT FUNC .text }
+
+  kx_cli_match_success "/bin/eu-objdump --version" { elfutils }
+  kx_cli_match_success "/bin/eu-objdump /lib/libelf.so --disassemble" { mov retq }
+
+  kx_cli_match_success "/bin/eu-readelf --version" { elfutils }
+  kx_cli_match_success "/bin/eu-readelf /lib/libelf.so --all" { Header Magic Section }
+
+  kx_cli_match_success "/bin/eu-size --version" { elfutils }
+  kx_cli_match_success "/bin/eu-size /lib/libelf.so" { text data bss dec hex filename libelf.so }
+
+  kx_cli_match_success "/bin/eu-strings --version" { elfutils }
+  kx_cli_match_success "/bin/eu-strings /lib/libelf.so" { elf_ }
+
+  # TODO: Better tests for the following programs
+
+  kx_cli_match_success "/bin/eu-addr2line --version" { elfutils }
+  kx_cli_match_success "/bin/eu-ar --version" { elfutils }
+  kx_cli_match_success "/bin/eu-elfcmp --version" { elfutils }
+  kx_cli_match_success "/bin/eu-elflint --version" { elfutils }
+  kx_cli_match_success "/bin/eu-findtextrel --version" { elfutils }
+  kx_cli_match_success "/bin/eu-ld --version" { elfutils }
+  kx_cli_match_success "/bin/eu-make-debug-archive --version" { elfutils }
+  kx_cli_match_success "/bin/eu-ranlib --version" { elfutils }
+  kx_cli_match_success "/bin/eu-strip --version" { elfutils }
+  kx_cli_match_success "/bin/eu-unstrip --version" { elfutils }
+

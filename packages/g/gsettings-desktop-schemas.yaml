@@ -1,0 +1,22 @@
+package:
+  name: gsettings-desktop-schemas
+  version: 3.18.1
+
+download:
+  gnomexz: ~
+  checksum: 258713b2a3dc6b6590971bcfc81f98d78ea9827d60e2f55ffbe40d9cd0f99a1a
+
+version:
+  installed_pkgconfig: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages --enable-introspection=yes
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

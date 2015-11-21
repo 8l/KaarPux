@@ -1,0 +1,32 @@
+package:
+  name: qemu
+  version: 2.4.1
+  www: http://www.linux-kvm.org/page/Main_Page
+  short: KVM (for Kernel-based Virtual Machine) is a full virtualization solution for Linux on x86 hardware containing virtualization extensions (Intel VT or AMD-V).
+
+download:
+  url: http://wiki.qemu-project.org/download/
+  file_tar_bz2: ~
+  checksum: e3d5cf4c8b1f9129c9c797329a515bfb6b3b1ded0ab8b394c8a316490fe3a177
+  verify: sig
+
+version:
+  installed: kxver_sh_pattern("qemu-x86_64 -version", qr|qemu-x86_64 version ([0-9.]+)|);
+
+
+linux:
+  - build:
+    - configure: --prefix=/ --audio-drv-list=pa --enable-linux-aio
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success "qemu-system-x86_64 --version" { QEMU emulator }
+  kx_cli_match_success "qemu-system-i386 --version" { QEMU emulator }
+  kx_cli_match_success "qemu-system-x86_64 --help" { "Standard options:" "Block device options:" "Display options:" "Network options:" "Character device options:" }
+  # TODO: real verify_cli testcases

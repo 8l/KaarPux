@@ -1,0 +1,196 @@
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2012-2013: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+# ============================================================
+kx_prepare () {
+	local PASS=$1
+	local NAME=$2
+
+	local BB="${KX_BASE}/build/${PASS}"
+	local DD="${KX_BASE}/../downloads"
+	
+	kx_step_echo "Unpacking and preparing ${NAME}"
+	
+	eval "local SD=\"${BB}/\${KX_${NAME}}\""
+	rm -rf "${SD}"
+	mkdir -pv "${SD}"
+
+	eval "local FF=\"\${KX_${NAME}_FILE:-}\""
+	if test -z "${FF}"; then
+		echo "Nothing to untar"
+	else
+		local DF="${DD}/${FF}"
+		kx_untar "${BB}" "${DF}"
+	fi
+	
+	cd "${SD}"
+	}
+
+
+# ============================================================
+kx_separate_builddir () {
+	local PASS=$1
+	local NAME=$2
+	local BB="${KX_BASE}/build/${PASS}"
+	local DD="${KX_BASE}/../downloads"
+	
+	eval "local BD=\"${BB}/\${KX_${NAME}}-build\""
+	echo "KAARPUX: Build dir [${BD}]"
+	rm -rf "${BD}"
+	mkdir -pv "${BD}"
+
+	cd "${BD}"
+	}
+
+# ============================================================
+kx_install_done () {
+	local PASS=$1
+	local NAME=$2
+
+	local BB="${KX_BASE}/build/${PASS}"
+
+	eval "local SD=\"${BB}/\${KX_${NAME}}\""
+	rm -rf "${SD}"*
+}
+
+# ============================================================
+kx_install_file () {
+	local FILE=$1
+	kx_echo "Installing [${FILE}]"
+	cp -f "${KX_BASE}/../master/files${FILE}" "${FILE}" 
+}
+
+# ============================================================
+kx_build_host_pkg () {
+	local WHERE="$1"
+	local PASS="$2"
+	local PKG="$3"
+
+	kx_log KX_PKG_INFO "Building pass [${PASS}] package: [$PKG]"
+	local START_SECS=$(date +%s)
+
+	su -l kaarpux <<- EOF || kx_log_error_exit $? KX_PKG_FAIL "Host pass ${PASS} package ${PKG} FAILED [$?]"
+		export PATH="/tools/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin"
+		cd "${KX_MNT}/home/kaarpux/kaarpux"
+		"./bootstrap/host_scripts/${PASS}/${PKG}.sh" > "./bootstrap/log/${PASS}/${PKG}.log" 2>&1
+	EOF
+
+	kx_time_diff "${PKG}" "${START_SECS}"
+	}
+
+# ============================================================
+kx_build_host_pkg_parallel () {
+	if test -n "${KX_PARALLEL:-}"; then
+		{ ( kx_build_host_pkg "$@" ) || echo $3 >> "${KX_BASE}/.kaarpux_parallel_error"; } &
+	else
+		kx_build_host_pkg "$@"
+	fi
+}
+
+# ============================================================
+kx_exe_host_script () {
+	local PASS="$1"
+	local SCRIPT="$2"
+	local START_SECS=$(date +%s)
+
+	kx_log KX_PKG_INFO "Executing pass [${PASS}] script: [$SCRIPT]"
+
+	su -l kaarpux<<- EOF || kx_log_error_exit $? KX_PKG_FAIL "Chroot pass [${PASS}] script [${SCRIPT}] FAILED [$?]"
+		export PATH="/tools/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin"
+		cd "${KX_MNT}/home/kaarpux/kaarpux"
+		"./bootstrap/host_scripts/${SCRIPT}" > "./bootstrap/log/${PASS}/${SCRIPT}.log" 2>&1
+	EOF
+
+	kx_time_diff "${SCRIPT}" "${START_SECS}"
+	}
+
+# ============================================================
+
+kx_exe_host_sudo () {
+	local PASS="$1"
+	local SCRIPT="$2"
+	local START_SECS=$(date +%s)
+
+	kx_log KX_PKG_INFO "Executing pass [${PASS}] sudo script: [$SCRIPT]"
+	"${KX_MNT}/home/kaarpux/kaarpux/bootstrap/host_scripts/${SCRIPT}" > \
+		"${KX_MNT}/home/kaarpux/kaarpux/bootstrap/log/${PASS}/${SCRIPT}.log" 2>&1 || \
+		kx_log_error_exit $? KX_PKG_FAIL "Host pass [${PASS}] script [${SCRIPT}] FAILED [$?]"
+
+	kx_time_diff "${SCRIPT}" "${START_SECS}"
+}
+
+# ============================================================
+kx_build_chroot_pkg () {
+	local TOOLS="$1"
+	local PASS="$2"
+	local PKG="$3"
+
+	kx_log KX_PKG_INFO "Building package: [$PKG]"
+	local START_SECS=$(date +%s)
+
+	if test -z "${KX_SYSTEMTAP:-}"; then
+		"${KX_BASE}/host_scripts/enter_${TOOLS}chroot.sh" <<- EOF || kx_log_error_exit $? KX_PKG_FAIL "Chroot pass [${PASS}] package [${PKG}] FAILED [$?]"
+			cd "/home/kaarpux/kaarpux"
+			"./bootstrap/chroot_scripts/${PASS}/${PKG}.sh" > "./bootstrap/log/${PASS}/${PKG}.log" 2>&1
+		EOF
+	else
+
+		cd "${KX_BASE}"
+
+		local T=$(mktemp "${PASS}_${PKG}.XXXXXX")
+		cat > $T <<- EOF
+			cd "/home/kaarpux/kaarpux"
+			"./bootstrap/chroot_scripts/${PASS}/${PKG}.sh"
+		EOF
+
+		local PIPE="./kaarpux_${PASS}_${PKG}_stap_pipe"
+		rm -f "${PIPE}"
+		mkfifo "${PIPE}"
+
+		cat ${PIPE} | egrep -v '^??pipe:|^??UNKNOWN:|^??/home|^??/dev|^??/proc|^??/sys|^??/tmp|^??/etc/ld.so.cache' | awk '!x[$0]++' \
+			> "../flist/${PASS}_${PKG}.rw" &
+
+		(
+			staprun /lib/modules/$(uname -r)/systemtap/kx_open.ko -R \
+				-c "${KX_BASE}/host_scripts/enter_${TOOLS}chroot.sh > ${KX_BASE}/log/${PASS}/${PKG}.log 2>&1 < ${KX_BASE}/$T" > "${PIPE}"
+		) || kx_log_error_exit $? KX_PKG_FAIL "Chroot pass [${PASS}] package [${PKG}] FAILED [$?]"
+
+		rm -f $T
+		rm -f "${PIPE}"
+	fi
+
+	kx_time_diff "${PKG}" "${START_SECS}"
+	}
+
+# ============================================================
+
+kx_build_chroot_pkg_parallel () {
+	if test -n "${KX_PARALLEL:-}"; then
+		{ ( kx_build_chroot_pkg "$@" ) || echo $3 >> "${KX_BASE}/.kaarpux_parallel_error"; } &
+	else
+		kx_build_chroot_pkg "$@"
+	fi
+}
+
+# ============================================================
+kx_exe_chroot_script () {
+	local TOOLS="$1"
+	local PASS="$2"
+	local SCRIPT="$3"
+
+	kx_log KX_PKG_INFO "Executing chroot pass [${PASS}] script: [$SCRIPT]"
+	local START_SECS=$(date +%s)
+
+	"${KX_BASE}/host_scripts/enter_${TOOLS}chroot.sh" <<- EOF || kx_log_error_exit $? KX_PKG_FAIL "Chroot pass [${PASS}] script [${SCRIPT}] FAILED"
+		cd "/home/kaarpux/kaarpux"
+		"./bootstrap/chroot_scripts/${SCRIPT}" > "./bootstrap/log/${PASS}/${SCRIPT}.log" 2>&1
+	EOF
+
+	kx_time_diff "${SCRIPT}" "${START_SECS}"
+	}
+

@@ -1,0 +1,90 @@
+#!/bin/sh
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2015: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+# ============================================================
+# CONFIGURE KAARPUX
+# ============================================================
+
+set -o nounset
+set -o errexit
+KX_BASE="$(cd $(dirname "$0")/../..; pwd -P)"
+
+# ============================================================
+
+KX_KCONFIG_COMMANDS="config|nconfig|menuconfig|xconfig|gconfig|oldconfig|silentoldconfig"
+
+# ============================================================
+
+usage () {
+	P=$(basename "$0")
+	cat >> /dev/stderr <<-EOF
+		Usage:
+		$P: <configuration_file_name> ${KX_KCONFIG_COMMANDS}
+	EOF
+}
+
+# ============================================================
+
+error_exit () {
+	echo "***" "$@" >> /dev/stderr
+	usage
+	exit 1
+}
+
+# ============================================================
+# DEFAULTS
+# ============================================================
+
+KX_KCONF_LINUX="kconfig-linux-3.18.9"
+KX_KCONFIG="${KX_BASE}/${KX_KCONF_LINUX}"
+KX_TAR="${KX_KCONF_LINUX}.tar.gz"
+
+# ============================================================
+# CHECK ARGS
+# ============================================================
+
+test "$#" -eq 2 || error_exit "Please specify exactly two arguments"
+
+C=$(basename $1)
+CONFIG="${KX_BASE}/$C"
+
+COMMAND="$2"
+
+echo "${COMMAND}" | grep -Eqx "${KX_KCONFIG_COMMANDS}" || error_exit "Invalid command [${COMMAND}]"
+
+# ============================================================
+# CD TO KNOWN LOCATION
+# ============================================================
+
+cd "${KX_BASE}"
+
+# ============================================================
+# DOWNLOAD LINUX KCONFIG
+# ============================================================
+
+if ! test -e "${KX_KCONFIG}"; then
+	echo ">>> Downloading Linux Kconfig"
+	TMP=$(mktemp --tmpdir kconfig.XXXXXX)
+	wget -O "${TMP}" http://downloads.sourceforge.net/project/kaarpux/misc/kconfig-linux-3.18.9.tar.gz
+	echo ">>> Uncompressing Linux Kconfig"
+	tar xf "${TMP}"
+	echo ">>> Patching Linux Kconfig"
+	patch -p0 < master/kconfig.patch
+	rm "${TMP}"
+	echo ">>> Linux Kconfig READY"
+fi
+
+# ============================================================
+# CONFIGURE
+# ============================================================
+
+cd "${KX_KCONF_LINUX}"
+
+export CONFIG_=KX_
+make KCONFIG_CONFIG="${CONFIG}" KBUILD_KCONFIG="../master/config/Kconfig" ${COMMAND}

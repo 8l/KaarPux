@@ -1,0 +1,21 @@
+package:
+  name: taglib
+  version: 1.9.1
+  www: http://taglib.github.com/
+  short: library for reading and editing the meta-data of several popular audio formats.
+
+download:
+  url: http://taglib.github.io/releases
+  file_tar_gz: ~
+  checksum: 72d371cd1419a87ae200447a53bff2be219283071e80fd12337928cc967dc71a
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_scrape_url(undef, "http://taglib.github.com/", qr|taglib-([0-9]+\.[0-9]+\.[0-9]+)\.tar|);
+
+linux:
+  - build:
+    - cmake_kx: ~
+    - make: ~
+  - install:
+    - install: ~

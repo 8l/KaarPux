@@ -1,0 +1,44 @@
+package:
+  name: pcre
+  version: 8.37
+  www: http://www.pcre.org/
+  short: The PCRE library is a set of functions that implement regular expression pattern matching using the same syntax and semantics as Perl 5. 
+
+download:
+  sourceforge: ~
+  file_tar_bz2: ~
+  checksum: 51679ea8006ce31379fb0860e46dd86665d864b5020fc9cd19e71260eef4789d
+  verify: sig
+
+version:
+  installed_pkgconfig: libpcre
+  upstream: kxver_upstream_sourceforge("pcre", "pcre", "pcre");
+
+bootstrap_7:
+
+    - configure_kx: >
+        --disable-static
+        --enable-pcre8
+        --enable-pcre16
+        --enable-pcre32
+        --enable-utf
+        --enable-unicode-properties
+        --enable-pcregrep-libz
+        --enable-pcregrep-libbz2
+        --enable-jit
+    - make: ~
+    - check: ~
+    - install: ~
+
+
+# ==========================================================
+
+verify_cli: |
+
+  kx_cli_match_success "/bin/pcre-config --cflags" { include }
+  kx_cli_match_success "/bin/pcre-config --libs" { lib  }
+  kx_cli_send_match_success "/bin/pcretest" { /ab/ aaxbb aabb } { "No match" "0: ab" }
+  kx_cli_send_match_success "pcregrep ab -" { aa bb aabb } { aabb }
+
+# TODO: better testcases
+

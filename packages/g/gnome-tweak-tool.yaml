@@ -1,0 +1,24 @@
+package:
+  name: gnome-tweak-tool
+  version: 3.18.0
+
+download:
+  gnomexz: ~
+  checksum: 6c07b9b869d8fdd8625506003bd2c9869fdc798bfb6ba14e168fae7a54ad9b72
+
+version:
+  installed_na: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - python3: ~
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - python3: ~
+    - install: DESTDIR="${KX_PREFIX}"

@@ -1,0 +1,25 @@
+package:
+  name: oraclejdk-bin
+  # remember to update download section if version is changed
+  version: 7u79-b15
+  www: 
+  short: Binary version of Oracle Java Development Kit
+doc: |
+  <para>
+    We are using <systemitem>oraclejdk-bin</systemitem> in <application>KaarPux</application>
+    to bootstrap <xref linkend="pkg_openjdk" /> (<systemitem>Java 8</systemitem>).
+  </para>
+
+download:
+  url: http://download.oracle.com/otn-pub/java/jdk/7u79-b15/
+  file: jdk-7u79-linux-x64.tar.gz
+  dir: jdk1.7.0_79
+  checksum: 29d75d0022bfa211867b876ddd31a271b551fa10727401398295e6e666a11d90
+
+opt:
+
+  - build:
+    - echo: "No build."
+
+  - install_keep:
+    - echo: "No Install. Only used for bootstrapping."

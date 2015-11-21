@@ -1,0 +1,26 @@
+package:
+  name: yelp-tools
+  version: 3.18.0
+  www: http://projects.gnome.org/yelp/
+  short: A set of command-line tools to build and check your documentation, as well as an M4 file to use in your autotools-based build chain.
+
+download:
+  gnomexz: ~
+  checksum: c6c1d65f802397267cdc47aafd5398c4b60766e0a7ad2190426af6c0d0716932
+
+version:
+  installed_na: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~
+
+# No verify_cli as the tools are used extensively during building gnome

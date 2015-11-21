@@ -1,0 +1,20 @@
+package:
+  name: poppler-data
+  version: 0.4.7
+  www: http://poppler.freedesktop.org/
+  short: encoding files for use with poppler.
+
+download:
+  url: http://poppler.freedesktop.org/
+  file_tar_gz: ~
+  checksum: e752b0d88a7aba54574152143e7bf76436a7ef51977c55d6bd9a48dccde3a7de
+
+version:
+  installed_na: ~
+
+linux:
+  - build:
+    - echo: No building
+  # No test suite
+  - install:
+    - install: prefix=/

@@ -1,0 +1,22 @@
+package:
+  name: gucharmap
+  version: 3.18.1
+
+download:
+  gnomexz: ~
+  checksum: b286d09dcd7811e6678e3d5830970d310d5730f7be5657ec400295df0b36fa35
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --disable-schemas-compile
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

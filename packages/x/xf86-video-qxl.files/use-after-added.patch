@@ -1,0 +1,37 @@
+From c3dd01524bfbd2554fff219112bd8a312b4d8f9e Mon Sep 17 00:00:00 2001
+From: Alon Levy <alevy@redhat.com>
+Date: Mon, 21 Oct 2013 14:08:18 +0300
+Subject: [PATCH] spiceqxl_display: only use qxl interface after it is added -
+ spice server
+
+before 1d18b7e98ab268c755933061d77ccc7a981815e2 we get a segfault from
+using the st->dispatcher before it is set since during the attach_worker
+callback st->dispatcher is still not set.
+---
+ src/spiceqxl_display.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/spiceqxl_display.c b/src/spiceqxl_display.c
+index a3a8978..066b1a1 100644
+--- a/src/spiceqxl_display.c
++++ b/src/spiceqxl_display.c
+@@ -95,7 +95,6 @@ static void interface_attach_worker(QXLInstance *sin, QXLWorker *qxl_worker)
+         return;
+     }
+     dprint(qxl, 1, "%s:\n", __FUNCTION__);
+-    spice_qxl_add_memslot(sin, &slot);
+     qxl->worker = qxl_worker;
+ }
+ 
+@@ -346,6 +345,7 @@ void qxl_add_spice_display_interface(qxl_screen_t *qxl)
+     qxl->display_sin.id = 0;
+     qxl->display_sin.st = (struct QXLState*)qxl;
+     spice_server_add_interface(qxl->spice_server, &qxl->display_sin.base);
++    spice_qxl_add_memslot(&qxl->display_sin.base, &slot);
+ }
+ 
+ void spiceqxl_display_monitors_config(qxl_screen_t *qxl)
+-- 
+1.8.3.1
+
+

@@ -1,0 +1,33 @@
+package:
+  name: curl
+  version: 7.45.0
+  www: http://curl.haxx.se/
+  short: |
+      curl is a command line tool for transferring data with URL syntax, supporting
+      DICT, FILE, FTP, FTPS, Gopher, HTTP, HTTPS, IMAP, IMAPS, LDAP, LDAPS, POP3, POP3S, RTMP, RTSP, SCP, SFTP, SMTP, SMTPS, Telnet and TFTP.
+
+download:
+  url: http://curl.haxx.se/download/
+  file_tar_lzma: ~
+  checksum: 96cd9711d8f38fa6f99af085a67ad1e0ebca339f2a9a00a2aa59c40a66c4552d
+  verify: asc
+
+version:
+  installed: kxver_sh_pattern("curl --version", qr|^curl ([0-9\.]+)|);
+
+linux:
+  - build:
+    - configure_kx: >
+        --disable-static
+        --enable-threaded-resolver
+        --with-ca-path=/etc/ssl/certs
+    - make: ~     
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+
+
+verify_cli: |
+  kx_cli_match_success "curl-config --libs" { curl }
+  kx_cli_match_success "curl https://google.com" { HTML HEAD TITLE  }

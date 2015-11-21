@@ -1,0 +1,35 @@
+package:
+  name: gcr
+  version: 3.18.0
+  www: https://live.gnome.org/GnomeKeyring
+  short: GNOME Keyring is a collection of components in GNOME that store secrets, passwords, keys, certificates and make them available to applications.
+
+doc: |
+  <para>
+    GNOME Keyring is a collection of components in GNOME that store secrets, passwords, keys, certificates and make them available to applications.
+  </para><para>
+    GNOME Keyring is integrated with the user's login, so that their secret storage can be unlocked when the user logins into their session.
+  </para><para>
+    GNOME Keyring is based around a standard called PKCS#11,
+    which is a standard way for applications to manage certificates and keys on smart cards or secure storage. 
+  </para>
+
+download:
+  gnomexz: ~
+  checksum: d4d16da5af55148a694055835ccd07ad34daf0ad03bdad929bf7cad15637ce00
+
+version:
+  installed_sh_trailing: gcr-viewer --version
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --disable-schemas-compile
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

@@ -1,0 +1,31 @@
+package:
+  name: ghostscript-fonts-other
+  version: 6.0
+  www: http://sourceforge.net/projects/gs-fonts/
+  short: | 
+      Fonts and font metrics customarily distributed with Ghostscript.
+      Currently includes the 35 standard PostScript fonts and a grab-bag of others.
+
+download:
+  sourceforge: gs-fonts
+  file_tar_gz: ~
+  checksum: da62dfcb9c10d96743c7e30c1eebe7166489798c
+
+version:
+  installed: return "???";
+  upstream: kxver_upstream_sourceforge("gs-fonts", "gs-fonts", "ghostscript-fonts-other")
+
+linux:
+  - build: 
+    - sh: |
+        cd ..
+        rmdir "${KX_GHOSTSCRIPT_FONTS_OTHER}"
+        mv fonts "${KX_GHOSTSCRIPT_FONTS_OTHER}"
+    - sh: echo "Nothing to build"
+  # No test suite
+  - install:
+    - echo: "Installing fonts"
+    - sh: |
+        mkdir -pv /share/ghostscript/fonts
+        cp -r * /share/ghostscript/fonts
+        fc-cache -v /share/ghostscript/fonts/

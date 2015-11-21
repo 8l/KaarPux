@@ -1,0 +1,30 @@
+package:
+  name: libgphoto2
+  version: 2.5.8
+  www: http://www.gphoto.org/proj/libgphoto2/
+  short: core library designed to allow access to digital camera by external programs.
+
+download:
+  sourceforge: gphoto/libgphoto/${KX_LIBGPHOTO2_VERSION}
+  file_tar_bz2: ~
+  checksum: 031a262e342fae43f724afe66787947ce1fb483277dfe5a8cf1fbe92c58e27b6
+
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_upstream_sourceforge("gphoto", "libgphoto", "libgphoto2");
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+    - sh: |
+        /lib/libgphoto2/print-camera-list udev-rules version 136 > /lib/udev/rules.d/40-libgphoto2.rules
+        /lib/libgphoto2/print-camera-list hwdb > /lib/udev/hwdb.d/20-libgphoto2.rules

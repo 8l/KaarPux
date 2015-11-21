@@ -1,0 +1,23 @@
+package:
+  name: startup-notification
+  version: 0.12
+  www: http://www.freedesktop.org/wiki/Software/startup-notification
+  short: Reference implementation of the startup notification protocol. 
+
+download:
+  url: http://freedesktop.org/software/startup-notification/releases
+  file_tar_gz: ~
+  checksum: 3c391f7e930c583095045cd2d10eb73a64f085c7fde9d260f2652c7cb3cfbe4a
+
+version:
+  installed_pkgconfig: libstartup-notification-1.0
+
+linux:
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+

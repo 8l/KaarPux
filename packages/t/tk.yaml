@@ -1,0 +1,36 @@
+package:
+  name: tk
+  version: 8.6.1
+  www: http://tcl.sourceforge.net/
+  short: GUI toolkit for Tcl.
+
+download:
+  sourceforge: tcl
+  file: tk${KX_TK_VERSION}-src.tar.gz
+  dir: tk${KX_TK_VERSION}
+  checksum: ecfcc20833c04d6890b14a7920a04d16f2123a51
+
+version:
+  installed: kxver_header_file_full "/lib/tkConfig.sh", qr|TK_MAJOR_VERSION='([0-9]+)'|, qr|TK_MINOR_VERSION='([0-9]+)'|, qr|TK_PATCH_LEVEL='\.([0-9]+)'|;
+  upstream: kxver_upstream_sourceforge("tcl", "Tcl", "tk");
+
+linux:
+  - build:
+    - sh: cd unix
+    - configure_kx: -enable-threads 
+    - sh: >
+        sed -e "s@^\(TK_SRC_DIR='\).*@\1/include'@"
+            -e "/TK_B/s@='\(-L\)\?.*unix@='\1/lib@"
+            -i tkConfig.sh
+    - make: ~
+
+  # No test suite
+
+  - install:
+    - sh: cd unix
+    - install: ~
+    - make: install-private-headers
+    - sh: |
+        ln -v -sf wish${KX_TK_VERSION_MM} /bin/wish
+        chmod -v 755 /lib/libtk${KX_TK_VERSION_MM}.so
+

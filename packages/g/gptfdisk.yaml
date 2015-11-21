@@ -1,0 +1,27 @@
+package:
+  name: gptfdisk
+  version: 1.0.0
+  www: http://www.rodsbooks.com/gdisk/
+  short: GPT fdisk (consisting of the gdisk, cgdisk, sgdisk, and fixparts programs) is a set of text-mode partitioning tools.
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: 5b66956743a799fc0471cdb032665c1391e82f9c5b3f1d7d726d29fe2ba01d6c
+
+version:
+  installed_sh_trailing: gdisk -l /dev/null 2>/dev/null
+  upstream: kxver_upstream_sourceforge("gptfdisk", "gptfdisk", "gptfdisk");
+
+bootstrap_8:
+
+  - make: ~
+
+  # No testsuite
+
+  - sh: |
+      for f in gdisk sgdisk cgdisk fixparts ; do 
+        install -D -p -m 0755 $f /bin/$f
+        install -D -p -m 0644 $f.8 /share/man/man8/$f.8
+      done
+

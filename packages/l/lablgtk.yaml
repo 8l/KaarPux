@@ -1,0 +1,25 @@
+package:
+  name: lablgtk
+  version: 2.18.0
+  www: http://lablgtk.forge.ocamlcore.org/
+  short: LablGtk is an OCaml interface to GTK+ 1.2 and 2.x.
+
+download:
+  url: https://forge.ocamlcore.org/frs/download.php/1261/
+  file_tar_gz: ~
+  checksum: c76a7ae9454e89365666cf19728dbb51edb6810e2e57032b3bebd53ccec5946e
+  # verify: sig
+
+version: 
+  upstream: kxver_scrape_url(undef, "https://forge.ocamlcore.org/frs/?group_id=220", qr|lablgtk-([0-9]+\.+[0-9\.]*[0-9]+).tar|);
+
+opt:
+
+  - build:
+    - configure_kx: ~
+    - make: -j 1 world
+    - make: -j 1 opt
+
+  - install:
+    - sh: umask 022
+    - install: ~

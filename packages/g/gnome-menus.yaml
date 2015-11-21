@@ -1,0 +1,22 @@
+package:
+  name: gnome-menus
+  version: 3.13.3
+
+download:
+  gnomexz: ~
+  checksum: 7c446eb8ff381df52b8ba04e5886497595e84d1bc46caf7af764d894736c654e
+
+version:
+  installed_pkgconfig: libgnome-menu-3.0
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

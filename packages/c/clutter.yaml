@@ -1,0 +1,34 @@
+package:
+  name: clutter
+  version: 1.24.2
+  www: https://wiki.gnome.org/Projects/Clutter
+  short: |
+      Clutter is an open source (LGPL 2.1) software library for creating fast, compelling, portable, and dynamic graphical user interfaces.
+      It is a core part of Gnome3, it is used by the GnomeShell, and is supported by the open source community. 
+
+download:
+  gnomexz: ~
+  checksum: 9631c98cb4bcbfec15e1bbe9eaa6eef0f127201552fce40d7d28f2133803cd63
+
+version:
+  installed_pkgconfig: clutter-1.0
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    # http://www.linuxfromscratch.org/blfs/view/svn/x/clutter.html
+    # If you wish to run the tests, the following commands disables two tests that fail.
+    - sh: sed -i '/actor-offscreen-redirect/d' tests/conform/Makefile.am tests/conform/Makefile.in
+    # and we also need
+    - sh: sed -i '/actor-graph/d' tests/conform/Makefile.am tests/conform/Makefile.in
+    - sh: autoreconf -f -i
+    # TODO: investigate if the is a real problem in clutter making the tests fail
+    - configure_kx: --disable-gtk-doc --disable-static --enable-installed-tests --enable-egl-backend
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

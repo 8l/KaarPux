@@ -1,0 +1,25 @@
+package:
+  name: libarchive
+  version: 3.1.2
+  www: http://www.libarchive.org/
+  short: Multi-format archive and compression library 
+
+download:
+  url: http://www.libarchive.org/downloads
+  file_tar_gz: ~
+  checksum: eb87eacd8fe49e8d90c8fdc189813023ccc319c5e752b01fb6ad0cc7b2c53d5e
+
+version:
+  installed_sh_trailing: bsdtar --version
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

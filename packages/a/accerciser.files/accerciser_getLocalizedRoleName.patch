@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "/lib/python3.3/site-packages/accerciser/accessible_treeview.py", line 327, in _popOnIdle
+    row = self._buildRow(child)
+  File "/lib/python3.3/site-packages/accerciser/accessible_treeview.py", line 454, in _buildRow
+    role = accessible.getLocalizedRoleName()
+  File "/lib/python3.3/site-packages/gi/types.py", line 113, in function
+    return info.invoke(*args, **kwargs)
+gi._glib.GError: The name :1.0 was not provided by any .service files
+
+diff -Naur accerciser-3.8.2.ORIG/src/lib/accerciser/accessible_treeview.py accerciser-3.8.2/src/lib/accerciser/accessible_treeview.py
+--- accerciser-3.8.2.ORIG/src/lib/accerciser/accessible_treeview.py	2013-03-18 23:34:20.000000000 +0100
++++ accerciser-3.8.2/src/lib/accerciser/accessible_treeview.py	2013-07-09 15:01:20.155574328 +0200
+@@ -451,7 +451,10 @@
+     if accessible is not None:
+       icon = getIcon(accessible)
+       name = accessible.name
+-      role = accessible.getLocalizedRoleName()
++      try:
++        role = accessible.getLocalizedRoleName()
++      except:
++        role = None
+       count = str(accessible.childCount)
+     else:
+       icon = None

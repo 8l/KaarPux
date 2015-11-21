@@ -1,0 +1,30 @@
+package:
+  name: libmpeg2
+  version: 0.5.1
+  www: http://libmpeg2.sourceforge.net/
+  short: MPEG-2 video stream decoder.
+
+download:
+  url: http://libmpeg2.sourceforge.net/files/
+  file_tar_gz: ~
+  checksum: 0f92c7454e58379b4a5a378485bbd8ef 
+
+# TODO: Investigate the fate of this package.
+# Seems to be abandoned.
+# Do we need it? Alternatives?
+
+version:
+  installed_na: ~
+  upstream: return "n/a";
+
+linux:
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+

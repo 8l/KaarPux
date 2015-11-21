@@ -1,0 +1,30 @@
+package:
+  name: ocaml
+  version: 4.02.3
+  www: http://ocaml.org/
+  short: |
+      OCaml is an implementation of the ML language, based on the Caml Light
+      dialect extended with a complete class-based object system and a
+      powerful module system in the style of Standard ML.
+
+download:
+  url: http://caml.inria.fr/distrib/ocaml-${KX_OCAML_VERSION_MM}
+  file_tar_xz: ~
+  checksum: 83c6697e135b599a196fd7936eaf8a53dd6b8f3155a796d18407b56f91df9ce3
+
+version: 
+  installed: return `ocaml -vnum`
+  upstream: kxver_scrape_url(undef, "http://ocaml.org/releases/", qr|>([0-9]+[0-9.]+[0-9]+)</a>, released|);
+
+opt:
+
+  - build:
+    - configure: --prefix ${KX_PREFIX}
+    # Do not try parallel make; it will fail...
+    - make: -j 1 world
+    - make: -j 1 opt
+    - make: -j 1 opt.opt
+
+  - install:
+    - sh: umask 022
+    - install: ~

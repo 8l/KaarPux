@@ -1,0 +1,40 @@
+package:
+  name: dogecoin
+  version: 1.8.3
+  www: https://github.com/dogecoin/dogecoin/
+  short: LiteCoin wallet.
+
+download:
+  full_url: https://github.com/dogecoin/dogecoin/archive/v${KX_DOGECOIN_VERSION}.tar.gz
+  file_tar_gz: ~
+  checksum: 58b0914ea8275423407ac52eaa5473719ed658d4fcf406aa41fa8f453b79aab3
+
+version:
+  installed_na: ~
+  upstream: kxver_scrape_url(undef, "https://github.com/dogecoin/dogecoin/releases", qr|/v?([0-9]+[0-9.\-_]*[0-9]+)\.tar|);
+  wiz_url: |
+      my ($pkg_ver, $pkg, $ver) = @_;
+      my $file = kxver_replace_version($pkg_ver->{'file'}, $pkg, $ver);
+      my $url = kxver_replace_version("https://github.com/dogecoin/dogecoin/archive/\${KX_DOGECOIN_VERSION}.tar.gz", $pkg, $ver);
+      return ($file, $url);
+
+opt:
+
+  - build:
+    - use_gcc: ~
+    - patch: fPIC.patch
+    - sh: ./autogen.sh
+    - configure_kx_bash: >
+        --with-incompatible-bdb
+        --without-daemon
+        --without-miniupnpc
+        --without-qrencode
+    - make_repeat: ~
+
+  - install:
+    - install: ~
+    - sh: mkdir -pv ${KX_PREFIX}/share/applications/
+    - install_pkg_file: 644 dogecoin.desktop ${KX_PREFIX}/share/applications/
+    - sh: | 
+        install -Dm644 share/pixmaps/bitcoin256.png "${KX_PREFIX}/share/pixmaps/dogecoin256.png"
+

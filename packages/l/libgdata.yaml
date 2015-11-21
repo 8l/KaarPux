@@ -1,0 +1,24 @@
+package:
+  name: libgdata
+  version: 0.17.3
+  www: https://live.gnome.org/libgdata
+  short: |
+      libgdata is a GLib-based library for accessing online service APIs using the GData protocol -- most notably, Google's services.
+      It provides APIs to access the common Google services, and has full asynchronous support.
+
+download:
+  gnomexz: ~
+  checksum: ff280b031c50a99ed735c3fa18fbea9ae3e4cc5e3d7dd58ebae09994b01b513b
+
+version:
+  installed_pkgconfig: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static
+    - make: ~
+
+  - install:
+    - install: ~

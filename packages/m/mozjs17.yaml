@@ -1,0 +1,39 @@
+package:
+  name: mozjs17
+  version: 17.0.0
+  www: https://developer.mozilla.org/en-US/docs/SpiderMonkey
+  short: Mozilla's JavaScript engine written in C/C++.
+
+download:
+  url: https://ftp.mozilla.org/pub/mozilla.org/js
+  file: mozjs${KX_MOZJS17_VERSION}.tar.gz
+  dir: mozjs${KX_MOZJS17_VERSION}
+  checksum: 321e964fe9386785d3bf80870640f2fa1c683e32fe988eeb201b04471c172fba
+
+version:
+  installed: kxver_sh_pattern("js17-config --version", qr|(.*)|);
+  upstream: kxver_scrape_url(undef, $url, qr|mozjs(17[0-9.]+[0-9])|);
+
+linux:
+  - build:
+    - patch: optparse.patch
+    - patch: moz_perl.patch
+    # https://bugzilla.mozilla.org/show_bug.cgi?id=784631
+    - patch: 784631.patch
+    - sh: cd js/src
+    - configure_kx: >
+        --enable-threadsafe
+        --disable-readline
+        --with-system-nspr
+        --with-system-ffi
+    - make: ~
+  - test:
+    - sh: cd js/src
+    - sh: TZ=US/Pacific; export TZ
+    - check: ~
+  - install:
+    - sh: cd js/src
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success "js17-config --libs" { mozjs-17 }

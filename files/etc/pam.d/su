@@ -1,0 +1,19 @@
+#%PAM-1.0
+#
+# pam.d configuration file for
+# su - change user ID or become superuser
+#
+
+# Allow root to use su without password prompt
+auth      sufficient  pam_rootok.so
+
+# System defaults
+auth      include     system-auth
+account   include     system-auth
+session   include     system-auth
+password  include     system-auth
+
+# forward xauth keys between users
+session     optional        pam_xauth.so
+
+

@@ -1,0 +1,15 @@
+package:
+  name: xorg-apps
+  version: 7.7
+
+xorg:
+
+  - app_modules: |
+
+      P 23ceeca94e3e20a6c26a703ac7f789066d4517f8d2cb717ae7cb28a617d97dd0 xclock-1.0.7.tar.bz2    ##### Not part of Xorg katamari 
+      . d6b3a09ccfe750868e26bd2384900ab5ff0d434f7f40cd272a50eda8aaa1f8bd  xwud-1.0.4.tar.bz2
+      . c1a32222fbb891e46f9a82ebab005bc5e54ce006a2586195ec9ea7ab308e2759 xfd-1.1.2.tar.bz2               ##### Not part of Xorg katamari 
+      . 170d8550b96fb47b04db6181b947e6f6b8b97f4df5d691c351a278480cc931bf xfontsel-1.0.5.tar.bz2          ##### Not part of Xorg katamari 
+      . a3035dcecdbdb89e864177c080924981  xeyes-1.1.1.tar.bz2             ##### Not part of Xorg katamari 
+      . c575167ac33edf3bd1592f1bedfe0559debb128ed5fb4873c1278e3be166310a twm-1.0.9.tar.bz2               ##### Not part of Xorg katamari 
+

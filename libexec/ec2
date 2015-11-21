@@ -1,0 +1,519 @@
+#!/usr/bin/python3
+
+# ######################################################################
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2015: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+# ######################################################################
+#
+# Utilities for manipulating Amazon EC2
+# Called by kx_virtual
+# Do *not* call directly
+#
+# ######################################################################
+
+import os
+import sys
+import time
+import datetime
+import shlex
+import boto3
+import base64
+
+# ######################################################################
+# HELPER FUNCTIONS
+# ######################################################################
+
+def read_config(filename):
+
+    config = {}
+    with open(filename) as file:
+        lexer = shlex.shlex(file)
+        token = lexer.get_token()
+        while (token):
+            lexer.get_token()    # skip =
+            value = lexer.get_token()
+            if (value[0]=='"'): value = value[1:-1]    # strip ""
+            config[token]=value
+            token = lexer.get_token()
+    tag = config['KX_VM_TAG']
+    for c in config:
+        config[c] = config[c].replace('%', tag)
+    return config
+
+# ######################################################################
+
+def tprint(s):
+    print(datetime.datetime.now().strftime('%H:%M:%S.%f:'), s, flush=True)
+
+# ######################################################################
+
+def fprint(s):
+    print(s, flush=True)
+
+# ######################################################################
+
+def print_attributes(prefix, obj, key_list):
+
+    ol = []
+    for k in key_list:
+        ol.append("{0}=[{1}]".format(k, getattr(obj, k)))
+    print ( prefix + " ".join(ol) )
+
+# ######################################################################
+
+def launch_img(c_ami_name, c_instance_type, n_volumes):
+
+    tprint('===>    Preparing instance')
+
+    image_id = "unknown_image_id"
+    for image in ec2.images.filter(Filters=[{'Name': 'name', 'Values': [config[c_ami_name]]}]).limit(1):
+        image_id = image.id
+
+    for network_interface in ec2.network_interfaces.filter(Filters=[{'Name': 'description', 'Values': [config['KX_EC2_NETWORK_INTERFACE_DESCRIPTION']]}]).limit(1):
+        network_interface_id = network_interface.id
+    
+
+    tprint('===>    Creating instance')
+    instances = ec2.create_instances(
+        ImageId = image_id,
+        MinCount = 1,
+        MaxCount = 1,
+        Placement = { 'AvailabilityZone': config['KX_EC2_AVAILABILITY_ZONE'] },
+        InstanceType = config[c_instance_type],
+        NetworkInterfaces = [{ 'NetworkInterfaceId': network_interface_id, 'DeviceIndex': 0}],
+        )
+
+    instance = instances[0];
+    print_attributes("", instance, ['id'])
+
+    tprint('===>    Instance created')
+
+    tprint('===>    Wait for instance to run')
+    waiter = ec2c.get_waiter('instance_running')
+    waiter.wait(InstanceIds=[instance.id])
+    tprint('===>    Instance is running')
+
+    tprint('===>    Getting instance data')
+
+    instance.reload()
+    print_attributes("", instance, ['id', 'image_id', 'state', 'public_ip_address'])
+
+    with open(os.environ['TARGET_INSTANCE_FILE'], 'a') as F:
+        F.write(instance.id)
+    with open(os.environ['TARGET_IP_FILE'], 'a') as F:
+        F.write(instance.public_ip_address)
+
+    tprint('===>    Got instance data')
+
+    tprint('===>    Attaching swap image')
+
+    swap_vol = "unknown_swap_vol"
+    for v in ec2.volumes.filter(Filters=[{'Name': 'tag:Name', 'Values': [config['KX_SWAP_IMG_FILENAME']]}]).limit(1):
+        swap_vol = v.id
+    print("swap_vol=[{0}]".format(swap_vol))
+    swap = instance.attach_volume(
+        VolumeId = swap_vol,
+        Device = config['KX_EC2_SWAP_DEV']
+    )
+
+    tprint('===>    Attaching downloads image')
+
+    downloads_vol = "unknown_downloads_vol"
+    for v in ec2.volumes.filter(Filters=[{'Name': 'tag:Name', 'Values': [config['KX_DOWNLOADS_IMG_FILENAME']]}]).limit(1):
+        downloads_vol = v.id
+    print("downloads_vol=[{0}]".format(downloads_vol))
+    downloads = instance.attach_volume(
+        VolumeId = downloads_vol,
+        Device = config['KX_EC2_DOWNLOADS_DEV']
+    )
+
+    if n_volumes>2:
+        tprint('===>    Attaching target image')
+        target_vol = "unknown_target_vol"
+        for v in ec2.volumes.filter(Filters=[{'Name': 'tag:Name', 'Values': [config['KX_TARGET_IMG_FILENAME']]}]).limit(1):
+            target_vol = v.id
+        print("target_vol=[{0}]".format(target_vol))
+        target = instance.attach_volume(
+            VolumeId = target_vol,
+            Device = config['KX_EC2_KAARPUX_DEV']
+        )
+
+    tprint('===>    Wait for image attachments')
+
+    waiter = ec2c.get_waiter('volume_in_use')
+    waiter.wait(VolumeIds=[swap_vol])
+
+    waiter = ec2c.get_waiter('volume_in_use')
+    waiter.wait(VolumeIds=[downloads_vol])
+
+    if n_volumes>2:
+        waiter = ec2c.get_waiter('volume_in_use')
+        waiter.wait(VolumeIds=[target_vol])
+
+    tprint('===>    Images attached')
+    tprint('===>    Running...')
+
+# ######################################################################
+
+def create_ami(instance_id, volume_id, ami_name):
+
+    tprint('===>    Wait for instance to stop')
+    waiter = ec2c.get_waiter('instance_stopped')
+    waiter.wait(InstanceIds=[instance_id])
+    tprint('===>    Instance is stopped')
+
+    tprint('===>    Create volume snapshot')
+
+    snapshot_description = ami_name
+    snapshot = ec2.create_snapshot(VolumeId=volume_id, Description=snapshot_description)
+    print ("{0} [{1}] {2} [{3}]".format(snapshot.id, snapshot.description, snapshot.volume_size, snapshot.progress))
+    tprint('===>    Volume snapshot is being created')
+
+
+    waiter = ec2c.get_waiter('snapshot_completed')
+    for i in range(20):
+        try:
+            tprint('===>    Wait for volume snapshot')
+            waiter.wait(SnapshotIds=[snapshot.id]);
+            break
+        except:
+            snapshot.reload()
+            tprint ("        progress=[{0}]".format(snapshot.progress))
+    tprint('===>    Volume snapshot created')
+
+    tprint('===>    Terminate instance')
+    for i in ec2.instances.filter(InstanceIds=[instance_id]).limit(1):
+        instance=i
+    instance.terminate()
+    waiter = ec2c.get_waiter('instance_terminated')
+    waiter.wait(InstanceIds=[instance_id]);
+    tprint('===>    Instance terminated')
+
+    tprint('===>    Register AMI image')
+
+    BlockDeviceMappings=[{
+        #'VirtualName': 'string', only for ephemeral devices
+        'DeviceName': config['KX_EC2_ROOT_DEV'],
+        'Ebs': {
+            'SnapshotId': snapshot.id,
+            # 'VolumeSize': default is snapshot size
+            'DeleteOnTermination': True,
+            'VolumeType': 'gp2',
+        }
+    }];
+
+    ami = ec2.register_image(
+        # NO ImageLocation (it is only for S3)
+        Name = ami_name,
+        Architecture = 'x86_64',
+        RootDeviceName = config['KX_EC2_ROOT_DEV'],
+        VirtualizationType = 'hvm',
+	BlockDeviceMappings = BlockDeviceMappings
+    )
+    tprint('===>    AMI image registered')
+    print_attributes(ami.name + ": ", ami, ['id', 'root_device_type', 'state'])
+
+# ######################################################################
+# MAIN FUNCTIONS
+# ######################################################################
+
+def ec2_info():
+
+    print("========================================================================")
+    print("Configuration")
+    print("========================================================================")
+    import pprint
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(config)
+
+    print("========================================================================")
+    print("Generic EC2 information")
+    print("========================================================================")
+
+    zz = ec2c.describe_availability_zones()
+    print( 'AvailabilityZones:' )
+    for z in zz['AvailabilityZones']:
+        print( "\t" + z['ZoneName'] )
+
+    print("========================================================================")
+    print("EC2 information for this user")
+    print("========================================================================")
+    print("EBS volumes:")
+    for volume in ec2.volumes.all():
+        name="n/a"
+        if volume.tags:
+            for tag in volume.tags:
+                if tag['Key'] == 'Name':
+                    name=tag['Value']
+        print_attributes("\t" + name + ": ", volume, ['id', 'size', 'volume_type', 'state'])
+
+    print("Snapshots:")
+    for snapshot in ec2.snapshots.filter(OwnerIds=['self']):
+        print_attributes("\t" + snapshot.description + ": ", snapshot, ['id', 'volume_id', 'volume_size', 'state'])
+
+    print("AMI images:")
+    for image in ec2.images.filter(Owners=['self']):
+        print_attributes("\t" + image.name + ": ", image, ['id', 'root_device_type', 'virtualization_type', 'state'])
+
+    print("EC2 instances:")
+    for instance in ec2.instances.all():
+        name="n/a"
+        if instance.tags:
+            for tag in instance.tags:
+                if tag['Key'] == 'Name':
+                    name=tag['Value']
+        print_attributes("\t" + name + ": ", instance, ['id', 'image_id', 'instance_type', 'public_ip_address', 'state'])
+    fprint("========================================================================")
+
+# ######################################################################
+
+def create_swap_img():
+    img = ec2.create_volume(
+        Size = int(config['KX_SWAP_IMG_GB']),
+        AvailabilityZone = config['KX_EC2_AVAILABILITY_ZONE'],
+        VolumeType='standard'
+    )
+    tag = img.create_tags(
+        Tags=[
+            {
+                'Key': 'Name',
+                'Value': config['KX_SWAP_IMG_FILENAME']
+            },
+        ]
+    )
+
+# ######################################################################
+
+def create_downloads_img():
+    img = ec2.create_volume(
+        Size = int(config['KX_DOWNLOADS_IMG_GB']),
+        AvailabilityZone = config['KX_EC2_AVAILABILITY_ZONE'],
+        VolumeType='standard'
+    )
+    tag = img.create_tags(
+        Tags=[
+            {
+                'Key': 'Name',
+                'Value': config['KX_DOWNLOADS_IMG_FILENAME']
+            },
+        ]
+    )
+
+# ######################################################################
+
+def create_target_img():
+    img = ec2.create_volume(
+        Size = int(config['KX_TARGET_IMG_GB']),
+        AvailabilityZone = config['KX_EC2_AVAILABILITY_ZONE'],
+        VolumeType='standard'
+    )
+    tag = img.create_tags(
+        Tags=[
+            {
+                'Key': 'Name',
+                'Value': config['KX_TARGET_IMG_FILENAME']
+            },
+        ]
+    )
+
+# ######################################################################
+
+def create_host_img(user_data_filename):
+
+    tprint('===>    Preparing data for image')
+    with open(user_data_filename) as f: user_data = f.read()
+    user_data = user_data.replace('${KX_PUBLIC_KEY}',os.environ['KX_PUBLIC_KEY'])
+    user_data = user_data.replace('${KX_SWAP_DEV}',config['KX_EC2_SWAP_DEV'])
+
+    image_id = "unknown_image_id"
+    for image in ec2.images.filter(Filters=[{'Name': 'name', 'Values': [config['KX_CLOUD_IMG_FILENAME']]}]).limit(1):
+        image_id = image.id
+
+    # TODO: Why does this not work for "name" or "Name"
+    for network_interface in ec2.network_interfaces.filter(Filters=[{'Name': 'description', 'Values': [config['KX_EC2_NETWORK_INTERFACE_DESCRIPTION']]}]).limit(1):
+        network_interface_id = network_interface.id
+    
+    tprint('===>    Creating instance')
+    instances = ec2.create_instances(
+        ImageId = image_id,
+        MinCount = 1,
+        MaxCount = 1,
+        Placement = { 'AvailabilityZone': config['KX_EC2_AVAILABILITY_ZONE'] },
+        InstanceType = config['KX_EC2_INSTANCE_TYPE_HOST'],
+        NetworkInterfaces = [{ 'NetworkInterfaceId': network_interface_id, 'DeviceIndex': 0}],
+        UserData = user_data,
+        )
+
+    instance = instances[0];
+    print_attributes("", instance, ['id'])
+
+    tprint('===>    Instance created')
+
+    instance.load()
+    print_attributes("", instance, ['id', 'root_device_name', 'public_ip_address', 'kernel_id', 'ramdisk_id', 'state'])
+    root_device_name = instance.root_device_name
+    kernel_id = instance.kernel_id
+    ramdisk_id = instance.ramdisk_id
+
+    tprint('===>    Wait for instance to run')
+    waiter = ec2c.get_waiter('instance_running')
+    waiter.wait(InstanceIds=[instance.id])
+    tprint('===>    Instance is running')
+
+    # TODO: is swap attached too late to be formatted?
+    tprint('===>    Attach swap image')
+    swap_vol = "unknown_swap_vol"
+    for v in ec2.volumes.filter(Filters=[{'Name': 'tag:Name', 'Values': [config['KX_SWAP_IMG_FILENAME']]}]).limit(1):
+        swap_vol = v.id
+    print("swap_vol=[{0}]".format(swap_vol))
+    response = instance.attach_volume(
+        VolumeId = swap_vol,
+        Device = config['KX_EC2_SWAP_DEV']
+    )
+    tprint('===>    Swap image attached')
+
+    waiter = ec2c.get_waiter('instance_stopped')
+    for i in range(20):
+        try:
+            tprint('===>    Wait for instance to stop')
+            waiter.wait(InstanceIds=[instance.id])
+            break
+        except:
+            pass
+    tprint('===>    Instance is stopped')
+
+    tprint('===>    Create root volume snapshot')
+    root_vol = "unknown_root_vol"
+    for b in instance.block_device_mappings:
+        if b['DeviceName'] == root_device_name:
+            root_vol = str(b['Ebs']['VolumeId'])
+    print("root_vol=[{0}]".format(root_vol))
+    snapshot_description = config['KX_EC2_AMI_HOST']
+    snapshot = ec2.create_snapshot(VolumeId=root_vol, Description=snapshot_description)
+    print ("{0} [{1}] {2} [{3}]".format(snapshot.id, snapshot.description, snapshot.volume_size, snapshot.progress))
+    tprint('===>    Root volume snapshot is being created')
+
+    tprint('===>    Get console output')
+    out = instance.console_output()
+    fn = "/tmp/%s.log" % str(instance.id)
+    with open(fn, "w") as f:
+        f.write(out['Output'])
+    tprint('===>    Got console output. Saved in file [%s] ' % fn)
+
+    waiter = ec2c.get_waiter('snapshot_completed')
+    for i in range(20):
+        try:
+            tprint('===>    Wait for root volume snapshot')
+            waiter.wait(SnapshotIds=[snapshot.id]);
+            break
+        except:
+            snapshot.reload()
+            tprint ("        progress=[{0}]".format(snapshot.progress))
+    tprint('===>    root volume snapshot created')
+
+    tprint('===>    Terminate instance')
+    instance.terminate()
+    waiter = ec2c.get_waiter('instance_terminated')
+    waiter.wait(InstanceIds=[instance.id]);
+    tprint('===>    Instance terminated')
+
+    tprint('===>    Register AMI image')
+
+    BlockDeviceMappings=[{
+        'DeviceName': config['KX_EC2_ROOT_DEV'],
+        'Ebs': {
+            'SnapshotId': snapshot.id,
+            'DeleteOnTermination': True,
+            'VolumeType': 'gp2',
+        }
+    }];
+
+    ami = ec2.register_image(
+        # NO ImageLocation (it is only for S3)
+        Name = config['KX_EC2_AMI_HOST'],
+        Architecture = 'x86_64',
+        RootDeviceName = config['KX_EC2_ROOT_DEV'],
+        VirtualizationType = 'hvm',
+	BlockDeviceMappings = BlockDeviceMappings
+    )
+    tprint('===>    AMI image registered')
+    print_attributes(ami.name + ": ", ami, ['id', 'root_device_type', 'state'])
+
+# ######################################################################
+
+def launch_host_img():
+    launch_img('KX_EC2_AMI_HOST', 'KX_EC2_INSTANCE_TYPE_BUILD', 3)
+
+# ######################################################################
+
+def launch_download_img():
+    launch_img('KX_EC2_AMI_HOST', 'KX_EC2_INSTANCE_TYPE_DOWNLOADS', 2)
+
+# ######################################################################
+
+def launch_bootstrap_img():
+    launch_img('KX_EC2_AMI_BOOTSTRAP', 'KX_EC2_INSTANCE_TYPE_BUILD', 3)
+
+# ######################################################################
+
+def launch_final_img():
+    launch_img('KX_EC2_AMI_FINAL', 'KX_EC2_INSTANCE_TYPE_BUILD', 2)
+
+# ######################################################################
+
+def create_ami_from_bootstrap(instance_id):
+
+    target_vol = "unknown_target_vol"
+    for v in ec2.volumes.filter(Filters=[{'Name': 'tag:Name', 'Values': [config['KX_TARGET_IMG_FILENAME']]}]).limit(1):
+        target_vol = v.id
+    print("target_vol=[{0}]".format(target_vol))
+
+    create_ami(instance_id, target_vol, config['KX_EC2_AMI_BOOTSTRAP'])
+
+# ######################################################################
+
+def create_ami_from_final(instance_id):
+
+    for i in ec2.instances.filter(InstanceIds=[instance_id]).limit(1):
+        instance=i
+    root_device_name = instance.root_device_name
+
+    root_vol = "unknown_root_vol"
+    for b in instance.block_device_mappings:
+        if b['DeviceName'] == root_device_name:
+            root_vol = str(b['Ebs']['VolumeId'])
+    print("root_vol=[{0}]".format(root_vol))
+
+    create_ami(instance_id, root_vol, config['KX_EC2_AMI_FINAL'])
+
+# ######################################################################
+
+def terminate_instance(instance_id):
+    tprint('===>    Terminate instance')
+    for i in ec2.instances.filter(InstanceIds=[instance_id]).limit(1):
+        instance=i
+    instance.terminate()
+    waiter = ec2c.get_waiter('instance_terminated')
+    waiter.wait(InstanceIds=[instance.id]);
+    tprint('===>    Instance terminated')
+
+# ######################################################################
+# MAIN
+# ######################################################################
+
+ec2 = boto3.resource('ec2')
+ec2c = boto3.client('ec2')
+config = read_config(sys.argv[1])
+
+# Call the function specified as first argument to call
+
+if len(sys.argv)>3:
+    globals()[sys.argv[2]](sys.argv[3])
+else:
+    globals()[sys.argv[2]]()
+

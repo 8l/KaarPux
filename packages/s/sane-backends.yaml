@@ -1,0 +1,45 @@
+package:
+  name: sane-backends
+  version: 1.0.24
+  www: http://www.sane-project.org
+  short: Scanner Access Now Easy.
+
+download:
+  url: http://cdn.debian.net/debian/pool/main/s/sane-backends
+  file: sane-backends_${KX_SANE_BACKENDS_VERSION}.orig.tar.gz
+  checksum: 27c7085a54f1505d8b551e6f1e69d30e1ee57328b18429bb2225dabf4c45462d
+
+version:
+  installed_sh_trailing: scanimage --version
+  upstream: kxver_scrape_url("sane-backends", "https://alioth.debian.org/frs/?group_id=30186");
+
+linux:
+
+  - build:
+    # Do not use --prefix=/
+    - configure: >
+        --prefix=/usr
+        --sysconfdir=/etc
+        --localstatedir=/var
+        --with-group=scanner
+        --enable-libusb_1_0
+        --with-gnu-ld
+        --disable-latex
+        --disable-dependency-tracking
+    - make: ~
+
+  # the test suite includes a lot of hard-coded dates, which are wrong
+  # TODO: can we fix the test suite?
+
+  - install:
+    - sh: groupadd -fg ${KX_SCANNER_GID} scanner
+    - install: ~
+    - sh: |
+        install -m644 -v tools/udev/libsane.rules /etc/udev/rules.d/65-scanner.rules
+        install -m644 -v tools/sane-backends.pc "${KX_PREFIX}/lib/pkgconfig/sane-backends.pc"
+        # chgrp -v scanner  /var/lock/sane
+
+verify_cli: |
+  kx_cli_success "sane-find-scanner"
+  kx_cli_success "scanimage" "-L"
+

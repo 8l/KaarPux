@@ -1,0 +1,39 @@
+package:
+  name: sed
+  version: 4.2.2
+  www: http://www.gnu.org/software/sed/
+  short: |
+      Sed (streams editor) isn't really a true text editor or text processor.
+      Instead, it is used to filter text, i.e., it takes text input
+      and performs some operation (or set of operations) on it and outputs the modified text.
+      Sed is typically used for extracting part of a file
+      using pattern matching or substituting multiple occurrences of a string within a file.
+
+download:
+  gnu: ~
+  checksum: f048d1838da284c8bc9753e4506b85a1e0cc1ea8999d36f6995bcb9460cddbd7
+  # Paolo Bonzini
+  # This key has been revoked by its owner!
+  # reason for revocation: Key is superseded
+  # TODO: Add verify back in when new version arrives
+  verify: no
+
+version:
+  wiz_savannah: ~
+  news: ChangeLog
+
+bootstrap_3:
+  - configure_tools: ~
+  - make: ~
+  - install: ~ 
+
+bootstrap_7:
+  - configure_kx: --bindir=/bin
+  - make: ~
+  - check: ~
+  - install: ~ 
+
+verify_cli: |
+  kx_cli_match_success "/bin/sed --version"  { "GNU sed" }
+  kx_cli_send_match_success "/bin/sed s/e/E/ -" { "Lorem ipsum" "dolor sit amet" } { "LorEm ipsum" "dolor sit amEt" }
+

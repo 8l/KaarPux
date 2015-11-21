@@ -1,0 +1,45 @@
+package:
+  name: openvas-scanner
+  version: 5.0.4
+  www: http://www.openvas.org/
+  short: |
+      OpenVAS is a framework of several services and tools
+      offering a comprehensive and powerful vulnerability scanning and vulnerability management solution. 
+
+download:
+  url: http://wald.intevation.org/frs/download.php/2129
+  file_tar_gz: ~
+  checksum: f35bc66fe8590e3875e224a123dc110b7d32093a96887288d9e4fd18c547b14c
+
+version:
+  installed_sh_trailing: openvassd --version
+  upstream: kxver_scrape_url("openvas-scanner", "http://wald.intevation.org/frs/?group_id=29");
+  wiz_url: return kxver_fusionforge_url(29, @_);
+  wiz_yaml: kxver_fusionforge_yaml(20, @_);
+  source: https://wald.intevation.org/scm/viewvc.php/trunk/?root=openvas
+  news: CHANGES
+  changelog: ChangeLog
+
+linux:
+  - build:
+    - sh: mkdir build; cd build
+    - cmake_kx: -DOPENVAS_PID_DIR="/run/user/${KX_OPENVAS_ID}" -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+    - make: ~
+  - install:
+    - sh: cd build
+    - install: ~
+    - install_pkg_file: 644 openvassd.conf /etc/openvas/openvassd.conf
+    - sh: >
+        install --directory --mode=0755 --group=openvas --owner=openvas
+        /var/lib/openvas/CA
+    - sh: >
+        install --directory --mode=0700 --group=openvas --owner=openvas
+        /var/lib/openvas/private
+    - install_pkg_file: 644 gnupg_genkey_batch.txt /var/lib/openvas/gnupg
+    - install_pkg_file: 644 OpenVAS_TI.asc /var/lib/openvas/gnupg
+    - install_pkg_file: 644 auth.conf /var/lib/openvas
+    - sh: >
+        chown -R openvas:openvas
+        /etc/openvas/openvassd.conf
+        /var/lib/openvas/plugins
+        /var/lib/openvas/auth.conf

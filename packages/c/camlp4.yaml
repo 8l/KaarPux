@@ -1,0 +1,29 @@
+package:
+  name: camlp4
+  version: 4.02+6
+  www: https://github.com/ocaml/camlp4
+  short: Camlp4 is a software system for writing extensible parsers for programming languages.
+
+download:
+  full_url: https://github.com/ocaml/camlp4/archive/${KX_CAMLP4_VERSION}.tar.gz
+  file: ${KX_CAMLP4}.tar.gz
+  dir: camlp4-4.02-6
+  checksum: 820c35b69fdff3225bda6045fabffe5d7c54dda00fb157444ac8bda5e1778d45
+
+version:
+  installed_na: ~
+  upstream: kxver_scrape_url(undef, "https://github.com/ocaml/camlp4/releases", qr|v([0-9]+[0-9.\-_]*[0-9]+)\.tar|);
+
+opt:
+
+  - build:
+    - sh: >
+        ./configure
+        --bindir=${KX_PREFIX}/bin
+        --libdir=${KX_PREFIX}/lib/ocaml
+        --pkgdir=${KX_PREFIX}/lib/ocaml
+    - make: byte
+    - make: native
+
+  - install:
+    - install: ~

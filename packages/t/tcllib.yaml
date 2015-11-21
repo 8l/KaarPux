@@ -1,0 +1,25 @@
+package:
+  name: tcllib
+  version: 1_17
+  www: http://core.tcl.tk/tcllib
+  short: The Tcl Library is a kitchen sink of packages across a broad spectrum of things
+
+download:
+  url: https://github.com/tcltk/tcllib/archive/
+  file: tcllib_${KX_TCLLIB_VERSION_USCORE}.tar.gz
+  dir: tcllib-tcllib_${KX_TCLLIB_VERSION_USCORE}
+  checksum: 95c676130ce2fdb00e8a6f79c4fea9e79d071063783a61db9274647920d97a03
+
+version:
+  upstream: kxver_scrape_url(undef, "https://github.com/tcltk/tcllib/releases", qr|tcllib_([0-9]+[0-9.\-_]*[0-9]+)\.tar|);
+
+bootstrap_7:
+  - sh: >
+      tclsh installer.tcl
+        -pkg-path ${KX_PREFIX}/lib/tcllib
+        -app-path ${KX_PREFIX}/bin
+        -nroff-path ${KX_PREFIX}/share/man/mann
+        -no-examples
+        -no-html
+        -no-wait
+        -no-gui

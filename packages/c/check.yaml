@@ -1,0 +1,20 @@
+package:
+  name: check
+  version: 0.10.0
+  www: http://check.sourceforge.net/
+  short: Unit Testing Framework for C
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: f5f50766aa6f8fe5a2df752666ca01a950add45079aa06416b83765b1cf71052
+
+version: ~
+
+bootstrap_8:
+
+    - configure_kx: --disable-static
+    - make: ~
+    - check: ~
+    - install: ~
+

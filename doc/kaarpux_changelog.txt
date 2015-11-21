@@ -1,0 +1,15 @@
+.. 
+   KaarPux: http://kaarpux.kaarposoft.dk
+   Copyright (C) 2015: Henrik Kaare Poulsen
+   License: http://kaarpux.kaarposoft.dk/license.html
+
+.. _kaarpux_changelog:
+
+
+=================
+KaarPux Changelog
+=================
+
+.. toctree::
+   :maxdepth: 2
+

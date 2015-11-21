@@ -1,0 +1,40 @@
+package:
+  name: findutils
+  version: 4.4.2
+  www: http://www.gnu.org/software/findutils/
+  short: The GNU Find Utilities are the basic directory searching utilities of the GNU operating system.
+
+download:
+  url: http://ftp.gnu.org/gnu/findutils
+  file_tar_gz: ~
+  # ignore signature from weak key
+  checksum: 351cc4adb07d54877fa15f75fb77d39f
+
+version:
+  installed_sh_trailing: find --version
+  wiz_savannah: ~
+  news: NEWS
+  changelog: ChangeLog
+
+bootstrap_3:
+  # We do not really want or use locate, and the testsuite fails
+  - sh: sed 's/locate//' -i Makefile.in
+  - configure: --prefix="${KX_TOOLS}"
+  - make: ~
+  - install: ~ 
+
+bootstrap_7:
+  # We do not really want or use locate, and the testsuite fails
+  - sh: sed 's/locate//' -i Makefile.in
+  - configure_kx: --libexecdir=/lib/findutils --localstatedir=/var/lib/locate
+  - make: ~
+  - check: ~
+  - install: ~ 
+
+# ==========================================================
+
+# TODO: Better tests
+
+verify_cli: |
+  kx_cli_success find
+

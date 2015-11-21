@@ -1,0 +1,50 @@
+package:
+  name: docbook-sgml
+  version: 4.5
+  www: http://www.docbook.org/
+  short: |
+      DocBook is a schema maintained by the DocBook Technical Committee of OASIS.
+      It is particularly well suited to books and papers about computer hardware and software (though it is by no means limited to these applications).
+
+download:
+  url: http://www.docbook.org/sgml/${KX_DOCBOOK_SGML_VERSION}
+  file: docbook-${KX_DOCBOOK_SGML_VERSION}.zip
+  dir: docbook-sgml/docbook-${KX_DOCBOOK_SGML_VERSION}
+  checksum: 07c581f4bbcba6d3aac85360a19f95f7
+
+version:
+  installed_sh_trailing: ls -d1 /usr/share/sgml/docbook/sgml-dtd-*
+  upstream: kxver_scrape_url("docbook", $url);
+
+linux:
+
+# The docbook zip has no directory names, so we need to umpack by hand...
+
+  - prepare_and_build:
+
+    - echo: Unpacking
+    - sh: |
+        mkdir -pv "${KX_BASE}/build/linux/${KX_DOCBOOK_SGML}"
+        rm -rf "${KX_BASE}/build/linux/${KX_DOCBOOK_SGML}"/*
+        cd "${KX_BASE}/build/linux/${KX_DOCBOOK_SGML}"
+        unzip "${KX_BASE}/../downloads/${KX_DOCBOOK_SGML_FILE}"
+
+  # No test suite
+
+  - install:
+    - sh: |
+        X="/usr/share/sgml/docbook/sgml-dtd-${KX_DOCBOOK_SGML_VERSION}"; export X
+        install -v -d $X
+        install -v docbook.cat $X
+        cp -v -af *.dtd *.mod *.dcl $X
+    - sh: |
+        if [ ! -d /etc/sgml ]; then install -v -m755 -d /etc/sgml; fi
+        install-catalog --add /etc/sgml/sgml-docbook-dtd-${KX_DOCBOOK_SGML_VERSION}.cat $X
+        install-catalog --add /etc/sgml/sgml-docbook-dtd-${KX_DOCBOOK_SGML_VERSION}.cat /etc/sgml/sgml-docbook.cat
+        cat >> /usr/share/sgml/docbook/sgml-dtd-${KX_DOCBOOK_SGML_VERSION}/catalog << "EOF"
+        -- Begin Single Major Version catalog changes --
+        PUBLIC "-//OASIS//DTD DocBook V4.4//EN" "docbook.dtd"
+        PUBLIC "-//OASIS//DTD DocBook V4.3//EN" "docbook.dtd"
+        PUBLIC "-//OASIS//DTD DocBook V4.2//EN" "docbook.dtd"
+        -- End Single Major Version catalog changes --
+        EOF

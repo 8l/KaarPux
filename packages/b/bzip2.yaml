@@ -1,0 +1,50 @@
+package:
+  name: bzip2
+  version: 1.0.6
+  www: http://www.bzip.org/
+  short: bzip2 is a freely available, patent free, high-quality data compressor.
+
+download:
+  url_ver: http://www.bzip.org/
+  file_tar_gz: ~
+  checksum: 00b516f4704d4a7cb50a1d97e6e8e15b
+
+version:
+  installed: |
+    my $v = `echo "" | bzip2 -V 2>&1 >/dev/null | head -1`;
+    $v =~ m|Version ([0-9\.]+)|;
+    return $1;
+  upstream: kxver_scrape_url("bzip2", "http://www.bzip.org/downloads.html");
+
+bootstrap_3:
+  - make: ~
+  - install: PREFIX="${KX_TOOLS}"
+
+bootstrap_7:
+  - echo: pre-configure
+  - doc: The following command ensures installation of symbolic links are relative 
+  - sh: sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
+  - make: -f Makefile-libbz2_so
+  - sh: make clean
+  - make: ~
+  - test: ~
+  - install: PREFIX="${KX_PREFIX}"
+  - sh: |
+      cp -av libbz2.so* /lib
+      ln -svf libbz2.so.1.0 /lib/libbz2.so
+
+verify_cli: |
+  if [catch {
+    set filename "bzip2test_[pid]_[clock microseconds].sh"
+    set file [open $filename [list RDWR CREAT EXCL TRUNC] 0700]
+    puts $file "echo 12345678 | bzip2 - | bunzip2 - | md5sum"
+    close $file
+  } reason] then {
+    fail "bzip2 test failed: $reason";
+  } else {
+    kx_cli_match_success "./$filename" "23cdc18507b52418db7740cbb5543e54"
+  }
+  catch { file delete "$filename" }
+
+# TODO: Test other programs installed by bzip2
+

@@ -1,0 +1,31 @@
+package:
+  name: meld
+  version: 1.6.0
+  www: http://meldmerge.org/
+  short: |
+      Meld is a visual diff and merge tool targeted at developers.
+      Meld helps you compare files, directories, and version controlled projects.
+      It provides two- and three-way comparison of both files and directories, and has support for many popular version control systems. 
+
+doc: |
+  <para>
+  Note that meld does not work in this version of KaarPux.
+  It relies on Python2 and a number of old gnome/python dependencies, which are only used by meld.
+  But meld is working on porting to Python3, so hopefully it will be back soon
+  </para>
+
+download:
+  gnomexz: ~
+  checksum: a0ec4e19e85ea4df0214da4c92a4069095d37a252ab240fc1bc00f29a627fea8
+
+version:
+  installed_sh_trailing: "meld --version | tail -1"
+  upstream_gnome: ~
+
+opt:
+
+  - build:
+    - make: prefix=/opt/kaarpux/${KX_MELD}
+
+  - install:
+    - install: prefix=/opt/kaarpux/${KX_MELD}

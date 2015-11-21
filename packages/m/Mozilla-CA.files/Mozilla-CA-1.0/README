@@ -1,0 +1,13 @@
+Mozilla::CA version 1.0
+=======================
+
+Mozilla::CA - Fake version of perl's Mozilla's CA module
+
+The official perl module Mozilla::CA
+provides a copy of Mozilla's bundle of Certificate Authority
+certificates in a form that can be consumed by modules and libraries
+based on OpenSSL.
+
+The present module simply points to the bundle
+we already have in KaarPux.
+

@@ -1,0 +1,23 @@
+diff -Naur setlocale-0.0.3.ORIG/setlocale.cabal setlocale-0.0.3/setlocale.cabal
+--- setlocale-0.0.3.ORIG/setlocale.cabal	2008-04-06 02:50:55.000000000 +0200
++++ setlocale-0.0.3/setlocale.cabal	2014-08-24 16:35:34.822699103 +0200
+@@ -13,3 +13,4 @@
+   Exposed-Modules:	System.Locale.SetLocale
+   Build-Depends:	base
+   Ghc-Options:		-O2 -Wall
++  Extensions:		DeriveDataTypeable
+diff -Naur setlocale-0.0.3.ORIG/System/Locale/SetLocale.hsc setlocale-0.0.3/System/Locale/SetLocale.hsc
+--- setlocale-0.0.3.ORIG/System/Locale/SetLocale.hsc	2008-04-06 02:50:55.000000000 +0200
++++ setlocale-0.0.3/System/Locale/SetLocale.hsc	2014-08-24 16:35:39.652898703 +0200
+@@ -21,10 +21,8 @@
+     | LC_MONETARY
+     | LC_NUMERIC
+     | LC_TIME
+-    deriving (Eq, Ord, Read, Show, Enum, Bounded)
++    deriving (Eq, Ord, Read, Show, Enum, Bounded, Typeable)
+ 
+-instance Typeable Category where
+-    typeOf _ = mkTyConApp (mkTyCon "System.Locale.SetLocale.Category") []
+ 
+ #include <locale.h>
+ 

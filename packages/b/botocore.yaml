@@ -1,0 +1,25 @@
+package:
+  name:  botocore
+  version: 1.1.12
+  www: https://github.com/boto/botocore
+  short: JMESPath is a query language for JSON
+
+
+download:
+  url: https://pypi.python.org/packages/source/b/botocore
+  file_tar_gz: ~
+  checksum: 29bab9a006b45676ec1a559f337415e5a7d8a690d29578d116d5d73d01b9bde5
+
+version:
+  upstream_pypi: ~
+
+linux:
+  - build:
+    - python3: ~
+    - sh: python3 setup.py build
+  # TODO tests?
+  - install:
+    - python3: ~
+    - sh: python3 setup.py install --prefix=${KX_PREFIX}
+
+

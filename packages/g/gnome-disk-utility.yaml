@@ -1,0 +1,24 @@
+package:
+  name: gnome-disk-utility
+  version: 3.18.1
+  short: Disk Management Utility for GNOME
+
+download:
+  gnomexz: ~
+  checksum: 24ccd43436a31546eea31b57b5355251efcbc7ec090431dd7f6916bc63c4e676
+
+version:
+  installed_na: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - use_gcc: ~
+    - configure_kx: --disable-static
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

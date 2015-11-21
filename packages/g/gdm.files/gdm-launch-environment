@@ -1,0 +1,15 @@
+#%PAM-1.0
+#
+# pam.d configuration file for 
+# the gdm welcome screen
+#
+
+auth       required    pam_env.so
+auth       required    pam_permit.so
+
+account   include     login
+session   include     login
+
+password  include     login
+
+

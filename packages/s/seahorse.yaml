@@ -1,0 +1,39 @@
+package:
+  name: seahorse
+  version: 3.18.0
+  www: https://live.gnome.org/Seahorse
+  short: Seahorse is a GNOME application for managing encryption keys and passwords in the GnomeKeyring.
+
+download:
+  gnomexz: ~
+  checksum: 530c889a01c4cad25df4c9ab58ab95d24747875789bc6116bef529d60fc1b667
+
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static --disable-schemas-compile
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+verify_gui: |
+    spawn seahorse seahorse
+    find menu Edit 7
+    application
+    find menu Remote 7
+    application
+    find menu View 7
+    application
+    find menu File 7
+    find menuitem Quit 3
+    do click
+
+    desktop
+    away application seahorse 1

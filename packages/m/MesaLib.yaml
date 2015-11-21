@@ -1,0 +1,48 @@
+package:
+  name: MesaLib
+  version: 11.0.4
+  www: http://www.mesa3d.org/
+  short: Mesa is an open-source implementation of the OpenGL specification - a system for rendering interactive 3D graphics.
+
+download:
+  url: ftp://ftp.freedesktop.org/pub/mesa/${KX_MESALIB_VERSION}
+  file: mesa-${KX_MESALIB_VERSION}.tar.xz
+  checksum: 40201bf7fc6fa12a6d9edfe870b41eb4dd6669154e3c42c48a96f70805f5483d
+  dir: mesa-${KX_MESALIB_VERSION}
+
+version:
+  installed_pkgconfig: dri
+  upstream: "kxver_scrape_ftp('ftp.freedesktop.org', '/pub/mesa/', qr|([0-9.]+)|);"
+
+linux:
+  - build:
+    - use_gcc: ~
+
+    - configure_kx: >
+        --enable-egl
+        --enable-gles1
+        --enable-gles2
+        --enable-openvg
+        --enable-gallium-osmesa
+        --enable-gallium-llvm
+        --enable-xa
+        --enable-gbm
+        --disable-xvmc
+        --enable-texture-float
+        --enable-opencl
+        --enable-opencl-icd
+        --enable-glx
+        --enable-glx-tls
+        --enable-shared-glapi
+        --enable-r600-llvm-compiler
+        --with-egl-platforms="drm,x11"
+        --with-gallium-drivers="i915,svga,swrast,r300,r600,nouveau,radeonsi"
+        --with-llvm-shared-libs
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+

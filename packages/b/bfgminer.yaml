@@ -1,0 +1,55 @@
+package:
+  name: bfgminer
+  version: 5.3.0
+  www: https://bitcointalk.org/?topic=168174
+  short: Miner of crypto currencies.
+
+download:
+  url: http://luke.dashjr.org/programs/bitcoin/files/bfgminer/${KX_BFGMINER_VERSION}/
+  file_zip: ~
+  checksum: 03978f01c7770a47c2612059d02d385ece6f5d99f8688446469a55fbd5adfa5a
+
+version:
+  installed: kxver_sh_trailing "bfgminer --version"
+  upstream: kxver_scrape_url(undef, "http://luke.dashjr.org/programs/bitcoin/files/bfgminer/", qr|"([0-9]+[0-9.\-_]*[0-9]+)/"|);
+
+doc: |
+      ----
+      Note
+      ----
+
+      Miners for crypto currencies are included just for the proof-of-concept.
+      Mining with CPU / GPU is probably not profitable...
+
+opt:
+  - build:
+    - configure_kx: >
+        CFLAGS="-I/opt/include"
+        --enable-scrypt
+        --enable-cpumining
+        --enable-opencl
+        --disable-adl
+        --disable-bitforce
+        --disable-icarus
+        --disable-avalon
+        --disable-modminer
+        --disable-klondike
+        --disable-x6500
+        --disable-ztex
+        --disable-bifury
+        --disable-bitfury
+        --disable-bigpic
+        --disable-drillbit
+        --disable-twinfury
+        --disable-littlefury
+        --disable-nanofury
+        --disable-hashbuster
+        --disable-hashbusterusb
+        --disable-hashfast
+        --without-libudev
+        --with-udevrulesdir=/tmp
+        --with-system-libblkmaker
+    - make: ~
+
+  - install:
+    - install: ~

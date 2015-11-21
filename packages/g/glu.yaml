@@ -1,0 +1,24 @@
+package:
+  name: glu
+  version: 9.0.0
+  www: http://www.mesa3d.org/
+  short: |
+      GLU is the OpenGL Utility Library.
+      This is a set of functions to create texture mipmaps from a base image,
+      map coordinates between screen and object space, and draw quadric surfaces and NURBS
+
+download:
+  url: ftp://ftp.freedesktop.org/pub/mesa/glu
+  checksum: 1f7ad0d379a722fcbd303aa5650c6d7d5544fde83196b42a73d1193568a4df12
+
+version:
+  installed_pkgconfig: ~
+
+linux:
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+  # No test suite
+  - install:
+    - install: ~
+

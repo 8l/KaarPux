@@ -1,0 +1,26 @@
+package:
+  name: d-feet
+  version: 0.3.10
+  www: https://live.gnome.org/DFeet/
+  short: |
+      D-Feet is an easy to use D-Bus debugger.
+      D-Feet can be used to inspect D-Bus interfaces of running programs and invoke methods on those interfaces. 
+
+download:
+  url: http://download.gnome.org/sources/d-feet/${KX_D_FEET_VERSION_MM}
+  file_tar_xz: ~
+  checksum: 88f0df5fcb862387ff3d1793873c5eb368c3e4db0bbd82ea65f748cbf70a6359
+
+version:
+  installed_na: ~
+
+linux:
+  - build:
+    - python3: ~
+    - configure_kx: ~
+    - make: ~
+  # No test suite
+  - install:
+    - python3: ~
+    - install: ~
+

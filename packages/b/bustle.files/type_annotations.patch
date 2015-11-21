@@ -1,0 +1,196 @@
+diff -Naur bustle-0.4.7.ORIG/Bustle/Diagram.hs bustle-0.4.7/Bustle/Diagram.hs
+--- bustle-0.4.7.ORIG/Bustle/Diagram.hs	2014-07-19 14:14:10.000000000 +0200
++++ bustle-0.4.7/Bustle/Diagram.hs	2014-08-25 17:59:18.057899564 +0200
+@@ -66,6 +66,8 @@
+ -- Sorry Mum
+ import System.IO.Unsafe (unsafePerformIO)
+ 
++--import Data.Text.Internal (Text)
++
+ type Point = (Double, Double)
+ type Rect = (Double, Double, Double, Double)
+ 
+@@ -450,7 +452,7 @@
+ mkLayout s e a = liftIO $ do
+     ctx <- cairoCreateContext Nothing
+     layout <- layoutEmpty ctx
+-    layoutSetMarkup layout (Markup.unMarkup s)
++    (layoutSetMarkup layout (Markup.unMarkup s)) :: IO [Char]
+     layoutSetFontDescription layout (Just font)
+     layoutSetEllipsize layout e
+     layoutSetAlignment layout a
+diff -Naur bustle-0.4.7.ORIG/Bustle/UI/Canvas.hs bustle-0.4.7/Bustle/UI/Canvas.hs
+--- bustle-0.4.7.ORIG/Bustle/UI/Canvas.hs	2014-07-19 14:14:10.000000000 +0200
++++ bustle-0.4.7/Bustle/UI/Canvas.hs	2014-08-25 17:59:14.674533046 +0200
+@@ -33,6 +33,8 @@
+ import Data.IORef
+ import Control.Monad (when)
+ 
++import System.Glib (glibToString)
++
+ import Graphics.UI.Gtk
+ 
+ import Bustle.Diagram
+@@ -102,7 +104,8 @@
+ 
+     layout `on` keyPressEvent $ tryEvent $ do
+       [] <- eventModifier
+-      key <- eventKeyName
++      k <- eventKeyName
++      let key = glibToString k
+       case key of
+         "Left"      -> io $ decStep hadj
+         "Right"     -> io $ incStep hadj
+@@ -122,7 +125,8 @@
+     -- Keyboard navigation
+     layout `on` keyPressEvent $ tryEvent $ do
+       [] <- eventModifier
+-      key <- eventKeyName
++      k <- eventKeyName
++      let key = glibToString k
+       case key of
+         "Up"        -> updateWith regionSelectionUp
+         "Down"      -> updateWith regionSelectionDown
+diff -Naur bustle-0.4.7.ORIG/Bustle/UI/DetailsView.hs bustle-0.4.7/Bustle/UI/DetailsView.hs
+--- bustle-0.4.7.ORIG/Bustle/UI/DetailsView.hs	2014-07-19 14:14:10.000000000 +0200
++++ bustle-0.4.7/Bustle/UI/DetailsView.hs	2014-08-25 17:59:11.211165743 +0200
+@@ -27,6 +27,8 @@
+ import Data.List (intercalate)
+ import Graphics.UI.Gtk hiding (Signal, Markup)
+ 
++import Data.Text.Internal (Text)
++
+ import qualified DBus as D
+ 
+ import Bustle.Translation (__)
+@@ -55,7 +57,7 @@
+          -> Int
+          -> IO Label
+ addValue table row = do
+-    label <- labelNew Nothing
++    label <- labelNew (Nothing :: Maybe Data.Text.Internal.Text)
+     miscSetAlignment label 0 0
+     labelSetEllipsize label EllipsizeStart
+     labelSetSelectable label True
+@@ -77,7 +79,7 @@
+                 , tableColumnSpacing := 6
+                 ]
+ 
+-    title <- labelNew Nothing
++    title <- labelNew (Nothing :: Maybe Data.Text.Internal.Text)
+     miscSetAlignment title 0 0
+     tableAttach table title 0 2 0 1 [Fill] [Fill] 0 0
+ 
+diff -Naur bustle-0.4.7.ORIG/Bustle/UI/FilterDialog.hs bustle-0.4.7/Bustle/UI/FilterDialog.hs
+--- bustle-0.4.7.ORIG/Bustle/UI/FilterDialog.hs	2014-07-19 14:14:10.000000000 +0200
++++ bustle-0.4.7/Bustle/UI/FilterDialog.hs	2014-08-25 17:59:07.967800597 +0200
+@@ -28,6 +28,7 @@
+ 
+ import Graphics.UI.Gtk
+ 
++import Data.Text.Internal (Text)
+ import Bustle.Translation (__)
+ import Bustle.Types
+ 
+@@ -99,7 +100,7 @@
+     nameStore <- makeStore names currentlyHidden
+     sw <- makeView nameStore
+ 
+-    instructions <- labelNew Nothing
++    instructions <- labelNew (Nothing :: Maybe Data.Text.Internal.Text)
+     widgetSetSizeRequest instructions 600 (-1)
+     labelSetMarkup instructions
+         (__ "Unticking a service hides its column in the diagram, \
+diff -Naur bustle-0.4.7.ORIG/Bustle/UI/Recorder.hs bustle-0.4.7/Bustle/UI/Recorder.hs
+--- bustle-0.4.7.ORIG/Bustle/UI/Recorder.hs	2014-07-19 14:14:10.000000000 +0200
++++ bustle-0.4.7/Bustle/UI/Recorder.hs	2014-08-25 17:59:04.977771269 +0200
+@@ -78,7 +78,7 @@
+                 i <- takeMVar n
+                 let j = i + (length pending)
+                 labelSetMarkup label $
+-                    printf (__ "Logged <b>%u</b> messages…") j
++                    (printf (__ "Logged <b>%u</b> messages…") :: Int->[Char]) j
+                 putMVar n j
+ 
+                 incoming rr'
+@@ -97,8 +97,8 @@
+     maybe (return ()) (windowSetTransientFor dialog) mwindow
+     dialog `set` [ windowModal := True ]
+ 
+-    label <- labelNew Nothing
+-    labelSetMarkup label $ printf (__ "Logged <b>%u</b> messages…") (0 :: Int)
++    label <- labelNew ( Nothing :: Maybe [Char])
++    labelSetMarkup label $ (printf (__ "Logged <b>%u</b> messages…") :: Int->[Char]) (0 :: Int)
+     loaderStateRef <- newMVar Map.empty
+     pendingRef <- newMVar []
+     let updateLabel µs body = do
+diff -Naur bustle-0.4.7.ORIG/Bustle/UI/Util.hs bustle-0.4.7/Bustle/UI/Util.hs
+--- bustle-0.4.7.ORIG/Bustle/UI/Util.hs	2014-07-19 14:14:10.000000000 +0200
++++ bustle-0.4.7/Bustle/UI/Util.hs	2014-08-25 17:59:00.384392877 +0200
+@@ -22,6 +22,8 @@
+   )
+ where
+ 
++import Data.Text.Internal (Text)
++
+ import Graphics.UI.Gtk
+ 
+ import Bustle.Util (maybeM)
+@@ -29,7 +31,7 @@
+ -- Displays a modal error dialog, with the given strings as title and body
+ -- respectively.
+ displayError :: Maybe Window
+-             -> String
++             -> Text
+              -> Maybe String
+              -> IO ()
+ displayError mwindow title mbody = do
+diff -Naur bustle-0.4.7.ORIG/Bustle/UI.hs bustle-0.4.7/Bustle/UI.hs
+--- bustle-0.4.7.ORIG/Bustle/UI.hs	2014-07-19 14:14:10.000000000 +0200
++++ bustle-0.4.7/Bustle/UI.hs	2014-08-25 17:58:57.301029297 +0200
+@@ -32,7 +32,8 @@
+ import Data.Time
+ import Data.Monoid (mempty)
+ import Text.Printf
+-
++import Data.Text(pack)
++import Data.Text.Internal (showText)
+ import Paths_bustle
+ import Bustle.Application.Monad
+ import Bustle.Renderer
+@@ -205,7 +206,7 @@
+ 
+     case ret of
+       Left (LoadError f e) -> io $
+-          displayError Nothing (printf (__ "Could not read '%s'") f) (Just e)
++          displayError Nothing (pack ((printf (__ "Could not read '%s'") :: [Char]->[Char]) f)) (Just e)
+       Right () -> return ()
+ 
+ startRecording :: B ()
+@@ -281,7 +282,7 @@
+     case mdetails of
+         Just (RecordedLog tempFilePath) -> do
+             let tempFileName = takeFileName tempFilePath
+-                title = printf (__ "Save log '%s' before closing?") tempFileName
++                title = (printf (__ "Save log '%s' before closing?") :: [Char]->[Char]) tempFileName
+             prompt <- messageDialogNew (Just (wiWindow wi))
+                                        [DialogModal]
+                                        MessageWarning
+@@ -459,7 +460,7 @@
+                 -> IO ()
+ wiSetLogDetails wi logDetails = do
+     writeIORef (wiLogDetails wi) (Just logDetails)
+-    windowSetTitle (wiWindow wi) (printf (__ "%s - Bustle") (logWindowTitle logDetails))
++    windowSetTitle (wiWindow wi) ((printf (__ "%s - Bustle") :: [Char]->[Char]) (logWindowTitle logDetails))
+ 
+ setPage :: MonadIO io
+         => WindowInfo
+@@ -525,7 +526,7 @@
+ loadPixbuf filename = do
+   iconName <- getDataFileName $ "data/" ++ filename
+   C.catch (fmap Just (pixbufNewFromFile iconName))
+-          (\(GError _ _ msg) -> warn msg >> return Nothing)
++          (\(GError _ _ msg) -> warn (showText msg) >> return Nothing)
+ 
+ openDialogue :: Window -> B ()
+ openDialogue window = embedIO $ \r -> do

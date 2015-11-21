@@ -1,0 +1,13 @@
+diff -Naur libtool-2.4.4.ORIG/tests/mdemo.at libtool-2.4.4/tests/mdemo.at
+--- libtool-2.4.4.ORIG/tests/mdemo.at	2014-11-19 13:28:51.000000000 +0100
++++ libtool-2.4.4/tests/mdemo.at	2014-12-20 16:00:34.849804181 +0100
+@@ -678,7 +678,7 @@
+ _LT_SETUP
+ 
+ LT_AT_CHECK_CONFIG([--with-included-ltdl])
+-LT_AT_MAKE([all-local libltdl/libltdlc.la])
++LT_AT_MAKE([config.h all-local libltdl/libltdlc.la])
+ 
+ # create 'before' and 'after' in a directory deep within objdir,
+ # so that their creation and removal does not modify even a timestamp
+

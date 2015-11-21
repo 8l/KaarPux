@@ -1,0 +1,78 @@
+package:
+  name: sharutils
+  version: 4.15.2
+  www: http://www.gnu.org/software/sharutils/
+  short: GNU shar makes so-called shell archives out of many files, preparing them for transmission by electronic mail services.
+
+download:
+  gnuz: ~
+  checksum: ee336e68549664e7a19b117adf02edfdeac6307f22e5ba78baca457116914637
+
+version:
+  installed_sh_trailing: "uuencode --version"
+  wiz_savannah: ~
+  news: NEWS
+  changelog: ChangeLog
+
+linux:
+
+  - build:
+    - configure_kx: --sysconfdir=/etc --localstatedir=/var
+    - make: ~
+
+  - test:
+    - check: ~
+ 
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_success /bin/shar --version
+
+  if [catch {
+    set pm "_[pid]_[clock microseconds]"
+    set shname "shartest$pm.sh"
+    set shfile [open $shname [list RDWR CREAT EXCL TRUNC] 0700]
+    set tname "shartest$pm.txt"
+    set aname "shartest$pm"
+    puts $shfile "echo 12345678 > $tname"
+    puts $shfile "/bin/shar $tname > $aname"
+    puts $shfile "rm $tname"
+    puts $shfile "sh ./$aname"
+    puts $shfile "md5sum $tname"
+    close $shfile
+  } reason] then {
+    fail "shar test failed: $reason";
+  } else {
+    kx_cli_match_success "./$shname" "23cdc18507b52418db7740cbb5543e54"
+  }
+  catch {
+    file delete "$shname"
+    file delete "$ahname"
+    file delete "$tname"
+  }
+
+  # Same as above, but with uuencode
+  if [catch {
+    set pm "_[pid]_[clock microseconds]"
+    set shname "shartest$pm.sh"
+    set shfile [open $shname [list RDWR CREAT EXCL TRUNC] 0700]
+    set tname "shartest$pm.txt"
+    set aname "shartest$pm"
+    puts $shfile "echo 12345678 > $tname"
+    puts $shfile "/bin/shar --uuencode $tname > $aname"
+    puts $shfile "rm $tname"
+    puts $shfile "sh ./$aname"
+    puts $shfile "md5sum $tname"
+    close $shfile
+  } reason] then {
+    fail "shar test failed: $reason";
+  } else {
+    kx_cli_match_success "./$shname" "23cdc18507b52418db7740cbb5543e54"
+  }
+  catch {
+    file delete "$shname"
+    file delete "$ahname"
+    file delete "$tname"
+  }
+

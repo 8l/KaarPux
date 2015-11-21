@@ -1,0 +1,4 @@
+KX_SWAP_DEV="/dev/xvda3"
+KX_ROOT_DEV="/dev/xvda1"
+KX_GKERNEL="3.0.0"
+KX_DEFINITIONS_CUSTOMIZED="yes"

@@ -1,0 +1,29 @@
+package:
+  name: gnutls
+  version: 3.3.18
+  www: http://www.gnutls.org/
+  doc: GnuTLS is a secure communications library implementing the SSL, TLS and DTLS protocols and technologies around them
+
+download:
+  url: ftp://ftp.gnutls.org/gcrypt/gnutls/v${KX_GNUTLS_VERSION_MM}
+  file_tar_xz: ~
+#  dir: gnutls-${KX_GNUTLS_VERSION_MMM}
+  checksum: 7a87e7f486d1ada10007356917a412cde6c6114dac018e3569e3aa09e9f29395
+  verify: sig
+
+version:
+  sensitive: 1
+  installed_pkgconfig: ~
+
+linux:
+  - build:
+    - configure_kx: --disable-doc --disable-static
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+    - echo:  "Install manual pages"
+    - sh: |
+        install -v -m644 doc/manpages/*.1     "${KX_PREFIX}/man/man1"
+        install -v -m644 doc/manpages/*.3     "${KX_PREFIX}/man/man3"

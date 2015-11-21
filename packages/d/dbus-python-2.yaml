@@ -1,0 +1,37 @@
+package:
+  name: dbus-python-2
+  version: 1.2.0
+  www: http://www.freedesktop.org/wiki/Software/dbus
+  short: python bindings for dbus
+
+download:
+  url: http://dbus.freedesktop.org/releases/dbus-python
+  file: dbus-python-${KX_DBUS_PYTHON_2_VERSION}.tar.gz
+  dir: dbus-python-${KX_DBUS_PYTHON_2_VERSION}
+  checksum: e12c6c8b2bf3a9302f75166952cbe41d6b38c3441bbc6767dbd498942316c6df
+
+doc: |
+  <para>
+    Note that we have 2 related packages:
+    <itemizedlist>
+    <listitem><para><xref linkend="pkg_dbus-python-2" /> (for Python2)</para></listitem>
+    <listitem><para><xref linkend="pkg_dbus-python" /> (for Python3)</para></listitem>
+    </itemizedlist>
+  </para>
+
+version:
+  installed_na: ~
+  upstream: kxver_scrape_url('dbus-python', "$url");
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+

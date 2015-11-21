@@ -1,0 +1,25 @@
+package:
+  name: libepoxy
+  version: 1.3.1
+  short: A library for handling OpenGL function pointer management
+
+download:
+  full_url: https://github.com/anholt/libepoxy/archive/v${KX_LIBEPOXY_VERSION}.tar.gz
+  file: ${KX_LIBEPOXY}.tar.gz
+  checksum: 6700ddedffb827b42c72cce1e0be6fba67b678b19bf256e1b5efd3ea38cc2bb4
+
+version:
+ installed_pkgconfig: epoxy
+ upstream: kxver_scrape_url(undef, "https://github.com/anholt/libepoxy/releases", qr|v([0-9]+[0-9.\-_]*[0-9]+)\.tar|);
+
+linux:
+  - build:
+    - sh: ./autogen.sh --prefix=${KX_PREFIX}
+
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

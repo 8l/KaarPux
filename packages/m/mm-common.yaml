@@ -1,0 +1,23 @@
+package:
+  name: mm-common
+  version: 0.9.8
+  short: The mm-common module provides the build infrastructure and utilities shared among the GNOME C++ binding libraries.
+
+download:
+  gnomexz: ~
+  checksum: c9ab5fd3872fbe245fbc35347acf4a95063111f81d54c43df3af662dad0a03d5
+
+version:
+  upstream_gnome_uneven: ~
+  installed_pkgconfig: mm-common-util
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

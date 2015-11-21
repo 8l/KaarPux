@@ -1,0 +1,20 @@
+package:
+  name: dconf-editor
+  version: 3.18.1
+
+download:
+  url: https://download.gnome.org/sources/dconf-editor/${KX_DCONF_EDITOR_VERSION_MM}
+  file_tar_xz: ~
+  checksum: 35c17852acc7dc9015d35148c1c4ebec1477c252f1d979cb324e1e6010d1db13
+
+version:
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages 
+    - make: ~
+
+  - install:
+    - install: ~

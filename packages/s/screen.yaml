@@ -1,0 +1,50 @@
+package:
+  name: screen
+  version: 4.3.1
+  www: http://www.gnu.org/software/screen/
+  short: Screen is a full-screen window manager that multiplexes a physical terminal between several processes, typically interactive shells.
+
+download:
+  gnuz: ~
+  checksum: fa4049f8aee283de62e283d427f2cfd35d6c369b40f7f45f947dbfd915699d63
+
+version:
+  installed_sh_version: screen --version
+  wiz_savannah: ~
+  news: NEWS
+
+bootstrap_8:
+
+    - configure_kx: >
+        --with-socket-dir=/var/run/screen
+        --with-pty-group=${KX_ADM_GID}
+        --with-sys-screenrc=/etc/screenrc
+    - make_repeat: ~
+
+    # No testsuite
+
+    - install: ~
+    - sh: install -m 644 etc/etcscreenrc /etc/screenrc
+
+verify_cli: |
+  if [catch "spawn screen" reason] then { fail "spawning \[screen] failed: $reason"; return }
+  expect {
+    "Screen version" {}
+    eof { fail "screen DID NOT MATCH $m"; return }
+    timeout { fail "screen TIMEOUT 1"; return }
+  }
+  expect {
+    "Press Space or Return" {}
+    eof { fail "screen DID NOT MATCH $m"; return }
+    timeout { fail "screen TIMEOUT 2"; return }
+  }
+  send "\r"
+  send "ls\r"
+  send "\001k"
+  send "y"
+  expect {
+    "screen is terminating" {}
+    eof { fail "screen DID NOT MATCH $m"; return }
+    timeout { fail "screen TIMEOUT 3"; return }
+  }
+

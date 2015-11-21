@@ -1,0 +1,33 @@
+package:
+  name: expat
+  version: 2.1.0
+  www: http://www.libexpat.org/
+  short: |
+      Expat is an XML parser library written in C.
+      It is a stream-oriented parser in which an application registers handlers for things the parser might find in the XML document (like start tags).
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: 823705472f816df21c8f6aa026dd162b280806838bb55b3432b0fb1fcca7eb86
+
+version:
+  installed_sh_trailing: xmlwf -v
+  upstream: kxver_upstream_sourceforge("expat", "expat", "expat");
+
+bootstrap_8:
+
+    # CVE-2015-1283
+    # https://hg.mozilla.org/releases/mozilla-esr31/rev/2f3e78643f5c
+    - patch: 2f3e78643f5c.patch
+
+    - configure: --prefix='' --disable-static
+    - make: ~
+
+    - check: ~
+
+    - install: ~
+
+
+
+

@@ -1,0 +1,38 @@
+package:
+  name: nspr
+  version: 4.10.10
+  www: http://www.mozilla.org/projects/nspr/
+  short: Netscape Portable Runtime (NSPR) provides a platform-neutral API for system level and libc like functions
+
+download:
+  url:  https://ftp.mozilla.org/pub/mozilla.org/nspr/releases/v${KX_NSPR_VERSION}/src
+  file_tar_gz: ~
+  checksum: 343614971c30520d0fa55f4af0a72578e2d8674bb71caf7187490c3379523107
+
+version:
+  installed_pkgconfig: ~
+  upstream: |
+      kxver_scrape_url(undef, "https://ftp.mozilla.org/pub/mozilla.org/nspr/releases/", qr|v([0-9]+[0-9.]*[0-9]+)/|);
+
+linux:
+
+  - build:
+    - sh: cd nspr
+    - configure_kx: >
+        --with-mozilla
+        --with-pthreads
+        --enable-optimize=-O2
+        --enable-debug-symbols=-g
+        $([ $(uname -m) = x86_64 ] && echo --enable-64bit)
+    - make: -j 1
+
+  # No test suite
+
+  - install:
+    - sh: cd nspr
+    - install: ~
+
+verify_cli: |
+
+  kx_cli_success nspr-config --version
+

@@ -1,0 +1,24 @@
+package:
+  name: libnotify
+  version: 0.7.6
+  www: http://developer.gnome.org/libnotify/
+  short: Library that sends desktop notifications to a notification daemon, as defined in the Desktop Notifications spec
+
+download:
+  gnomexz: ~
+  checksum: 0ef61ca400d30e28217979bfa0e73a7406b19c32dd76150654ec5b2bdf47d837
+
+version:
+  installed_pkgconfig: ~
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

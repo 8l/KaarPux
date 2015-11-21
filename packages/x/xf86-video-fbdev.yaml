@@ -1,0 +1,26 @@
+package:
+  name: xf86-video-fbdev
+  version: 0.4.4
+
+
+download:
+  url: http://xorg.freedesktop.org/releases/individual/driver
+  checksum: 9dd4b326498223abbfdf786089a46ea3db4fa6bbd341308eb48a9e00bc3fd51b
+
+version: ~
+
+linux:
+  - build:
+
+    # From Linux From Scratch
+    # http://www.linuxfromscratch.org/blfs/view/svn/x/x7driver.html#xorg-fbdev-driver
+    - sh: sed -e "/mibstore.h/d" -e "/miInitializeBackingStore/d" -i src/fbdev.c
+
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~     
+

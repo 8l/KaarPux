@@ -1,0 +1,41 @@
+package:
+  name: gzip
+  version: 1.6
+  www: http://www.gnu.org/software/gzip/
+
+download:
+  gnuz: ~
+  checksum: 97eb83b763d9e5ad35f351fe5517e6b71521d7aac7acf3e3cacdb6b1496d8f7e
+
+version: ~
+
+bootstrap_3:
+  - configure_tools: ~
+  - make: ~
+  - install: ~ 
+
+bootstrap_7:
+  - configure_kx: --bindir=/bin
+  - make: ~
+  - check: ~
+  - install: ~ 
+
+
+verify_cli: |
+
+  kx_cli_success /bin/gzip -V
+
+  if [catch {
+    set filename "gziptest_[pid]_[clock microseconds].sh"
+    set file [open $filename [list RDWR CREAT EXCL TRUNC] 0700]
+    puts $file "echo 12345678 | gzip - | gunzip - | md5sum"
+    close $file
+  } reason] then {
+    fail "gzip test failed: $reason";
+  } else {
+    kx_cli_match_success "./$filename" "23cdc18507b52418db7740cbb5543e54"
+  }
+  catch { file delete "$filename" }
+
+  # TODO: Test other commands installed by gzip
+

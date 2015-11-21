@@ -1,0 +1,45 @@
+package:
+  name: NetworkManager
+  version: 1.0.6
+  www: http://projects.gnome.org/NetworkManager/
+  short: |
+      NetworkManager is a set of co-operative tools that make networking simple and straightforward.
+      Whether WiFi, wired, 3G, or Bluetooth, NetworkManager allows you to quickly move from one network to another:
+      once a network has been configured and joined once, it can be detected and re-joined automatically the next time its available. 
+
+download:
+  gnomexz: ~
+  checksum: 38ea002403e3b884ffa9aae25aea431d2a8420f81f4919761c83fb92648254bd
+version:
+  upstream_gnome_uneven: ~
+
+linux:
+  - build:
+    - configure_kx: >
+        --with-session-tracking=systemd
+        --disable-gtk-doc
+        --disable-static
+        --with-crypto=gnutls
+        --disable-ppp
+        --disable-wimax
+        --disable-more-warnings
+        --with-dhclient=no
+        --with-dhcpcd=yes
+
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+    - install_pkg_file: 644 NetworkManager.conf /etc/NetworkManager/
+
+doc: |
+    <para>
+        Note that <application>NetworkManager</application> is not
+        used by default in KaarPux, as we are using
+        <application>systemd-networkd</application>.
+        See <xref linkend="networking" /> on
+        how to enable <application>NetworkManager</application> instead.
+    </para>

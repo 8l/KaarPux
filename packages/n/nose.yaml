@@ -1,0 +1,25 @@
+package:
+  name: nose
+  version: 1.3.7
+  www: https://nose.readthedocs.org
+  short: nicer testing for python
+
+
+download:
+  url: https://pypi.python.org/packages/source/n/nose
+  file_tar_gz: ~
+  checksum: f1bffef9cbc82628f6e7d7b40d7e255aefaa1adb6a1b1d26c69a8b79e6208a98
+
+version:
+  upstream_pypi: ~
+
+linux:
+  - build:
+    - sh: python setup.py build
+  # No test suite
+  - install:
+    - sh: python setup.py install --prefix=${KX_PREFIX}
+
+verify_cli: |
+  kx_cli_success nosetests --version
+

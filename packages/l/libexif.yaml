@@ -1,0 +1,26 @@
+package:
+  name: libexif
+  version: 0.6.21
+  www: http://libexif.sourceforge.net/
+  short: library which reads and writes EXIF metainformation from and to image files
+
+download:
+  sourceforge: libexif/${KX_LIBEXIF_VERSION}
+  file_tar_bz2: ~
+  checksum: a52219b12dbc8d33fc096468591170fda71316c0
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_upstream_sourceforge("libexif", "libexif", "libexif");
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

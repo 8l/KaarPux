@@ -1,0 +1,23 @@
+package:
+  name: libpcap
+  version: 1.7.4
+  www: http://www.tcpdump.org/pcap3_man.html
+  short: Packet Capture library
+
+download:
+  url: http://www.tcpdump.org/release/
+  file_tar_gz: ~
+  checksum: 7ad3112187e88328b85e46dce7a9b949632af18ee74d97ffc3f2b41fe7f448b0
+  verify: sig
+
+version:
+  installed: kxver_sh_pattern("strings /lib/libpcap.so", qr|libpcap version ([0-9.]*)|);
+
+bootstrap_8:
+
+    - sh: sed -i s'|-lusb-1.0|-lusb-1.0 -lpthread|' ./configure
+    - configure_kx: ~
+    - make: ~
+
+    - install: ~
+

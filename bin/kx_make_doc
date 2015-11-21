@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2015: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+# ============================================================
+# CREATE KAARPUX DOCUMENTATION
+# ============================================================
+
+set -o nounset
+set -o errexit
+KX_BASE="$(cd $(dirname "$0")/..; pwd -P)"
+
+T=html
+test "$#" -eq 0 || T="$1"
+
+B="${KX_BASE}/../doc"
+mkdir -pv "$B"
+
+cd "${KX_BASE}/doc"
+make SPHINXOPTS="-j $(nproc)" BUILDDIR="$B" "$T"

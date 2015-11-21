@@ -1,0 +1,9 @@
+prefix=@PREFIX@
+libdir=${prefix}/lib
+includedir=${prefix}/include/nss
+Name: NSS
+Description: Network Security Services
+Version: @NSS_VMAJOR@.@NSS_VMINOR@.@NSS_VPATCH@
+Requires: nspr >= 4.10
+Libs: -L${libdir} -lnss@NSS_VMAJOR@ -lnssutil@NSS_VMAJOR@ -lsmime@NSS_VMAJOR@ -lssl@NSS_VMAJOR@ -lsoftokn@NSS_VMAJOR@
+Cflags: -I${includedir}

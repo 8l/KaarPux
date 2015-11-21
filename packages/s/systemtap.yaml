@@ -1,0 +1,33 @@
+package:
+  name: systemtap
+  version: 2.7-0.284.gc1e8354302ba
+  www: http://sourceware.org/systemtap/
+  short:  Infrastructure to simplify the gathering of information about the running Linux system.
+
+download:
+  # Official systemtap releases:
+  # https://sourceware.org/systemtap/ftp/releases/
+  # Point releases by fedora:
+  # http://pkgs.fedoraproject.org/repo/pkgs/systemtap/
+  url: http://pkgs.fedoraproject.org/repo/pkgs/systemtap/systemtap-${KX_SYSTEMTAP_VERSION}.tar.gz/aa55c3de51d064ec568da039657e596d
+  file_tar_gz: ~
+  dir: systemtap-2.7
+  checksum: aa55c3de51d064ec568da039657e596d
+
+version:
+  installed: kxver_sh_version "stap --version"
+
+bootstrap_8:
+
+  - configure_kx_posix: ~
+  - make: ~
+
+  - check: ~
+
+  - sh: |
+      . "${KX_BASE}/shinc/uid_gid.shinc"
+      groupadd -fg ${KX_STAPUSR_GID} stapusr
+      groupadd -fg ${KX_STAPSYS_GID} stapsys
+      groupadd -fg ${KX_STAPDEV_GID} stapdev
+  - install: ~
+

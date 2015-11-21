@@ -1,0 +1,45 @@
+package:
+  name: WebKit2
+  version: 2.11.1
+  www: http://webkitgtk.org/
+  short: WebKitGTK+ is the port of the portable web rendering engine WebKit to the GTK+ platform.
+
+download:
+  url: http://webkitgtk.org/releases
+  file: webkitgtk-${KX_WEBKIT2_VERSION}.tar.xz
+  dir: webkitgtk-${KX_WEBKIT2_VERSION}
+  checksum: 2e13ca3ab384887cd687bc96aed857ba0191567e3fd579974f17b537e9cb2138
+  verify: sha1.asc
+
+version:
+  installed: >
+    kxver_header_file_full("/include/webkitgtk-4.0/webkit2/WebKitVersion.h",
+    qr|WEBKIT_MAJOR_VERSION\s*\(([0-9]+)|,
+    qr|WEBKIT_MINOR_VERSION\s*\(([0-9]+)|,
+    qr|WEBKIT_MICRO_VERSION\s*\(([0-9]+)|);
+
+  upstream: kxver_scrape_url("webkitgtk", $url);
+
+linux:
+  - build:
+#    - use_gcc: ~
+
+    - sh: mkdir -pv build
+    - sh: cd build
+    - cmake_kx: >
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_SKIP_RPATH=ON
+        -DPORT=GTK
+        -DLIB_INSTALL_DIR=/usr/lib
+        -Wno-dev
+        ..
+    - make: ~
+
+
+  # 'make check' does nothing
+
+  - install:
+#    - use_gcc: ~
+    - sh: cd build
+    - install: ~
+

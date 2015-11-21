@@ -1,0 +1,32 @@
+package:
+  name: iptables
+  version: 1.4.21
+  www: http://www.netfilter.org/projects/iptables/
+  short: The userspace command line program used to configure the Linux kernel packet filtering ruleset
+
+download:
+  url: http://www.netfilter.org/projects/iptables/files/
+  file_tar_bz2: ~
+  checksum: 52004c68021da9a599feed27f65defcfb22128f7da2c0531c0f75de0f479d3e0
+  verify: sig
+
+version: ~
+
+bootstrap_8:
+
+    - configure_kx: >
+        --with-xtlibdir=/lib/xtables
+
+    - make_repeat: ~
+
+    # No testsuite
+
+    - install: ~
+    - sh: ln -sfv xtables-multi /sbin/iptables-xml
+    - install_pkg_file: 744 iptables.sh /etc
+    - install_pkg_file: 744 iptables_disable.sh /etc
+    - install_pkg_file: 744 iptables_show.sh /etc
+    - install_pkg_file: 644 iptables.service /etc/systemd/system
+    - sh: mkdir '/etc/systemd/system/network.target.wants/'
+    - sh: ln -svf '/etc/systemd/system/iptables.service' '/etc/systemd/system/network.target.wants/iptables.service' 
+

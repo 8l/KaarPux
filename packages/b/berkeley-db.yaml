@@ -1,0 +1,49 @@
+package:
+  name: berkeley-db
+  version: 6.1.26
+  www: http://www.oracle.com/technetwork/products/berkeleydb/overview/index.html
+  short: Berkeley DB enables the development of custom data management solutions, without the overhead traditionally associated with such custom projects.
+
+download:
+  file: db-${KX_BERKELEY_DB_VERSION}.tar.gz
+  dir: db-${KX_BERKELEY_DB_VERSION}
+  url: http://download.oracle.com/berkeley-db/
+  checksum: dd1417af5443f326ee3998e40986c3c60e2a7cfb5bfa25177ef7cadb2afb13a6
+
+version: 
+  installed: |
+    my $txt=`db_stat -V`;
+    $txt =~ m|^Berkeley DB ([0-9\.]+)\D|;
+    return $1;
+  upstream: kxver_scrape_url("db", "http://www.oracle.com/technetwork/products/berkeleydb/downloads/index.html");
+
+bootstrap_8:
+  - echo: configure
+  - sh: |
+      cd build_unix
+      ../dist/configure --prefix="${KX_PREFIX}" --enable-compat185 --enable-dbm --enable-cxx
+  - make: ~
+
+  - sh: if test -z "${KX_DISABLE_TEST}"; then
+  - echo: check
+  - sh: |
+        make cutest
+        make test_mutex
+        ./cutest
+  - sh: fi
+
+  - install: docdir=/usr/share/doc/berkeley-db
+  - sh: >
+        chown -Rv root:root
+        "${KX_PREFIX}"/bin/db_*
+        "${KX_PREFIX}"/include/db.h
+        "${KX_PREFIX}"/include/db_185.h
+        "${KX_PREFIX}"/include/db_cxx.h
+        "${KX_PREFIX}"/lib/libdb*.so
+        "${KX_PREFIX}"/lib/libdb*.la
+        "${KX_PREFIX}"/share/doc/berkeley-db
+
+# We can not really test the command-line utilities standalone )-:
+
+verify_cli: |
+  kx_cli_match_success "db_stat -V" { Berkeley DB }

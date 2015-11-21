@@ -1,0 +1,24 @@
+package:
+  name: usbutils
+  version: 008
+  www: http://www.linux-usb.org/
+
+download:
+  kernelxz: linux/utils/usb/usbutils
+  checksum: 44741af0bae9d402a0ef160a29b2fa700bb656ab5e0a4b3343d51249c2a44c8c
+
+version:
+  installed_sh_trailing: lsusb --version
+
+bootstrap_8:
+    - configure_kx: ~
+    - make: ~
+    # No testsuite
+    - install: ~    
+    # TODO - sh: install -v -m755 update-usbids.sh /sbin/update-usbids
+
+verify_cli: |
+  kx_cli_success /bin/lsusb --version
+  kx_cli_match_success /bin/lsusb { Bus Device ID }
+  kx_cli_match_success /bin/usb-devices { Bus Lev Prnt Port Cnt Spd MxCh }
+

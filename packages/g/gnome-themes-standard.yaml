@@ -1,0 +1,22 @@
+package:
+  name: gnome-themes-standard
+  version: 3.18.0
+
+download:
+  gnomexz: ~
+  checksum: e646eb04c225282b7df7fff65741adaad4cf9ed2c12616b7310e7edd27d2bacb
+
+version:
+  installed_na: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

@@ -1,0 +1,294 @@
+package:
+  name: gcc
+  version: 5.2.0
+  # Remember to update the version for gcc-libstdc++ as well
+  www: http://www.gnu.org/software/gcc/
+  short: The GNU Compiler Collection.
+
+lfs:
+  - http://www.linuxfromscratch.org/lfs/view/development/chapter05/gcc-pass1.html
+  - http://www.linuxfromscratch.org/lfs/view/development/chapter05/gcc-pass2.html
+  - http://www.linuxfromscratch.org/lfs/view/development/chapter06/gcc.html
+
+download:
+  gnuv: ~
+  # url: ftp://gcc.gnu.org/pub/gcc/snapshots/${KX_GCC_VERSION}
+  file_tar_bz2: ~
+  checksum: 5f835b04b5f7dd4f4d2dc96190ec1621b8d89f2dc6f638f9f8bc1b1014ba8cad
+
+version:
+  upstream_gnu: ~
+  news: http://www.gnu.org/software/gcc/releases.html
+  changelog: ChangeLog
+  source: http://gcc.gnu.org/git/?p=gcc.git
+
+doc: |
+  <para>
+    <application>gcc</application> is first build on the host system in the <systemitem>Bootstrap 1</systemitem> phase.
+    This <application>gcc</application> is then used to bootstrap a new <application>gcc</application> in the <systemitem>Bootstrap 2</systemitem> phase.
+    Then the final <application>gcc</application> is build in the <systemitem>Bootstrap 5</systemitem> phase.
+  </para>
+
+
+# ==========================================================
+
+bootstrap_1:
+
+  - echo: Including GMP and MPFR and MPC for GCC
+  - untar: ${KX_BASE}/build/bootstrap_1 ${KX_BASE}/../downloads/${KX_GMP_FILE}
+  - untar: ${KX_BASE}/build/bootstrap_1 ${KX_BASE}/../downloads/${KX_MPFR_FILE}
+  - untar: ${KX_BASE}/build/bootstrap_1 ${KX_BASE}/../downloads/${KX_MPC_FILE}
+  - sh: ln -svf ../${KX_GMP} gmp
+  - sh: ln -svf ../${KX_MPFR} mpfr
+  - sh: ln -svf ../${KX_MPC} mpc
+
+  - echo: Patching
+
+    # change the location of GCC's default dynamic linker to use the one installed in /tools
+    # and
+    # remove /usr/include from GCC's include search path
+  - sh: | 
+      for file in $(find gcc/config -name linux64.h -o -name linux.h -o -name sysv4.h); do
+      cp -uv ${file} ${file}.orig
+      sed -e 's@/lib\(64\)\?\(32\)\?/ld@/tools&@g' -e 's@/usr@/tools@g' ${file}.orig > ${file}
+      cat <<EOF >> ${file}
+  - sh: '#undef STANDARD_STARTFILE_PREFIX_1'
+  - sh: '#undef STANDARD_STARTFILE_PREFIX_2'
+  - sh: '#define STANDARD_STARTFILE_PREFIX_1 "/tools/lib/"'
+  - sh: '#define STANDARD_STARTFILE_PREFIX_2 ""'
+  - sh: | 
+      EOF
+      touch ${file}.orig
+      done
+  - sh: sed -i '/k prot/agcc_cv_libc_provides_ssp=yes' gcc/configure
+
+  - separate_builddir: ~
+
+  - echo: configure
+  - sh: >
+      ../${KX_GCC}/configure
+          --target="${KX_TARGET}"
+          --prefix="${KX_TOOLS}"
+          --with-sysroot="${KX_MNT}"
+          --with-newlib
+          --without-headers
+          --with-local-prefix=/tools
+          --with-native-system-header-dir="${KX_TOOLS}/include"
+          --disable-nls
+          --disable-shared
+          --disable-multilib
+          --disable-decimal-float
+          --disable-threads
+          --disable-libatomic
+          --disable-libgomp
+          --disable-libitm
+          --disable-libquadmath
+          --disable-libsanitizer
+          --disable-libssp
+          --disable-libvtv
+          --disable-libcilkrts
+          --disable-bootstrap
+          --disable-libmudflap
+          --disable-libstdc++-v3
+          --enable-languages=c,c++
+          --disable-lto
+          --enable-checking=no
+          --with-default-libstdcxx-abi=gcc4-compatible
+          --disable-dependency-tracking
+
+  - make: ~
+
+  - install: ~
+
+# ==========================================================
+
+bootstrap_2:
+
+  - echo: Including GMP and MPFR and MPC for GCC
+  - untar:  ${KX_BASE}/build/bootstrap_2 ${KX_BASE}/../downloads/${KX_GMP_FILE}
+  - untar:  ${KX_BASE}/build/bootstrap_2 ${KX_BASE}/../downloads/${KX_MPFR_FILE}
+  - untar:  ${KX_BASE}/build/bootstrap_2 ${KX_BASE}/../downloads/${KX_MPC_FILE}
+  - untar:  ${KX_BASE}/build/bootstrap_2 ${KX_BASE}/../downloads/${KX_ISL_FILE}
+  - sh: ln -svf ../${KX_GMP} gmp
+  - sh: ln -svf ../${KX_MPFR} mpfr
+  - sh: ln -svf ../${KX_MPC} mpc
+  - sh: ln -svf ../${KX_ISL} isl
+
+  - echo: Patching
+
+  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55930
+  - patch: 55980.patch
+
+    # Install full limits.h header
+  - sh: >
+      cat gcc/limitx.h gcc/glimits.h gcc/limity.h >
+      `dirname $(${KX_TARGET}-gcc -print-libgcc-file-name)`/include-fixed/limits.h
+
+
+    # change the location of GCC's default dynamic linker to use the one installed in /tools
+    # and
+    # remove /usr/include from GCC's include search path
+  - sh: | 
+      for file in $(find gcc/config -name linux64.h -o -name linux.h -o -name sysv4.h); do
+      cp -uv ${file} ${file}.orig
+      sed -e 's@/lib\(64\)\?\(32\)\?/ld@/tools&@g' -e 's@/usr@/tools@g' $file.orig > $file
+      cat <<EOF >> ${file}
+  - sh: '#undef STANDARD_STARTFILE_PREFIX_1'
+  - sh: '#undef STANDARD_STARTFILE_PREFIX_2'
+  - sh: '#define STANDARD_STARTFILE_PREFIX_1 "/tools/lib/"'
+  - sh: '#define STANDARD_STARTFILE_PREFIX_2 ""'
+  - sh: | 
+      EOF
+      touch ${file}.orig
+      done
+
+  - separate_builddir: ~
+
+  - echo: Configure
+  - sh: >
+        CC="${KX_TARGET}-gcc"
+        CXX="${KX_TARGET}-g++"
+        AR="${KX_TARGET}-ar"
+        RANLIB="${KX_TARGET}-ranlib"
+        ../${KX_GCC}/configure
+          --prefix=${KX_TOOLS}
+          --with-local-prefix=${KX_TOOLS}
+          --with-native-system-header-dir=${KX_TOOLS}/include
+          --enable-clocale=gnu
+          --enable-shared
+          --enable-threads=posix
+          --enable-__cxa_atexit
+          --disable-libunwind-exceptions
+          --enable-gnu-unique-object
+          --enable-linker-build-id
+          --with-linker-hash-style=gnu
+          --enable-initfini-array
+          --enable-languages=c,c++
+          --disable-libstdcxx-pch
+          --disable-multilib
+          --disable-bootstrap
+          --enable-gold=yes
+          --enable-ld=default
+          --enable-plugin
+          --with-plugin-ld=ld.bfd
+          --enable-lto
+          --enable-checking=no
+          --with-default-libstdcxx-abi=gcc4-compatible
+          --disable-dependency-tracking
+
+  - make: ~
+
+  - install: ~
+
+  - echo: post-install GCC
+  - sh: ln -svf "${KX_TOOLS}/bin/gcc" "${KX_TOOLS}/bin/cc"
+
+# ==========================================================
+
+bootstrap_5:
+
+  # Setting this environment variable prevents a hard-coded path to /tools/bin/sed
+  - sh: export SED=sed
+
+  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55930
+  - patch: 55980.patch
+
+  - separate_builddir: ~
+
+  - echo: configure
+
+  - sh: >
+      ../${KX_GCC}/configure
+        --prefix=''
+        --enable-shared
+        --enable-threads=posix
+        --enable-__cxa_atexit
+        --enable-gnu-unique-object
+        --enable-linker-build-id
+        --with-linker-hash-style=gnu
+        --enable-initfini-array
+        --enable-clocale=gnu
+        --enable-languages=c,c++
+        --disable-multilib
+        --disable-bootstrap
+        --with-system-zlib
+        --enable-lto
+        --enable-gold
+        --enable-ld=default
+        --enable-plugin
+        --with-plugin-ld=ld.bfd
+        --with-pkgversion=KaarPux
+        --enable-checking=release
+        --with-default-libstdcxx-abi=gcc4-compatible
+        --disable-dependency-tracking
+
+  - make: ~ 
+
+
+  - sh: if test -z "${KX_DISABLE_TEST}"; then
+
+  - echo: check
+
+  - sh: |
+      ulimit -s 65536
+      make ${KX_MAKE_J} -k check || true
+
+    # Some tests may fail, see e.g.
+    # http://www.linuxfromscratch.org/lfs/view/development/chapter06/gcc.html
+  - echo: Test summary
+  - sh: |
+      ../${KX_GCC}/contrib/test_summary | tee "${KX_BASE}/log/bootstrap_5/gcc_CHECK.txt"
+      E=$( grep unexpected "${KX_BASE}/log/bootstrap_5/gcc_CHECK.txt" | awk 'BEGIN{E=0}{E+=$NF}END{print E}' )
+      echo "Found [$E] errors"
+      test $E -le 30 || { kx_error_exit "Too many errors in test: $E"; exit 2; }
+
+  - sh: fi
+
+
+  - install: ~
+
+    # Some packages expect the C preprocessor to be installed in the /lib directory. To support those packages, create this symlink
+  - sh: ln -svf ../bin/cpp /lib
+
+    # Many packages use the name cc to call the C compiler. To satisfy those packages, create a symlink
+  - sh: ln -svf gcc /bin/cc
+
+    # Add a compatibility symlink to enable building programs with Link Time Optimization (LTO)
+  - sh: |
+        install -dm755 /lib/bfd-plugins
+        ln -sfv ../../libexec/gcc/$(gcc -dumpmachine)/${KX_GCC_VERSION}/liblto_plugin.so /lib/bfd-plugins
+
+    # Move a misplaced file
+    # else we get errors like
+    # ldconfig: //lib/libstdc++.so.6.0.19-gdb.py is not an ELF file - it has the wrong magic bytes at the start.
+  - sh: |
+        mkdir -pv /share/gdb/auto-load/usr/lib
+        mv -v /lib/*gdb.py /share/gdb/auto-load/usr/lib
+
+# ==========================================================
+
+# Tested in "verify_toolchain":
+# /bin/cpp
+# /bin/cc  /bin/gcc
+# /bin/c++ /bin/g++
+
+# TODO: Not explicitly tested:
+# /bin/gcc-ar
+# /bin/gcc-nm
+# /bin/gcc-ranlib
+# /bin/gcov
+
+# TODO: Do we want to test those libraries?
+# /lib/libgcc_s.so
+# /lib/libgomp.so
+# /lib/libitm.so
+# /lib/libmudflap.so
+# /lib/libmudflapth.so
+# /lib/libquadmath.so
+# /lib/libssp.la
+# /lib/libssp_nonshared.la
+# /lib/libssp.so
+# /lib/libstdc++.la
+# /lib/libstdc++.so
+# /lib/libsupc++.la
+

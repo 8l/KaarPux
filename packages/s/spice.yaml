@@ -1,0 +1,24 @@
+package:
+  name: spice
+  version: 0.12.6
+  www: http://spice-space.org/
+  short: The Spice project aims to provide a complete open source solution for interaction with virtualized desktop devices or easily enable your application to be extensible in JavaScript. 
+
+download:
+  url: http://spice-space.org/download/releases/
+  file_tar_bz2: ~
+  checksum: f148ea30135bf80a4f465ce723a1cd6d4ccb34c098b6298a020b378ace8569b6
+
+version:
+  installed_sh_trailing: spicec --version
+
+linux:
+
+  - build:
+    - configure_kx: --enable-client --disable-smartcard --disable-static
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

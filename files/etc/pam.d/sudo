@@ -1,0 +1,21 @@
+#%PAM-1.0
+#
+# pam.d configuration file for
+# sudo - execute a command as another user
+#
+
+# System defaults
+auth      include     system-auth
+account   include     system-auth
+password  include     system-auth
+
+# DO NOT:
+# session   include     system-auth
+
+# limit resources
+session   required    pam_limits.so
+
+# forward xauth keys between users
+session     optional        pam_xauth.so
+
+

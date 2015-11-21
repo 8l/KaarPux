@@ -1,0 +1,25 @@
+package:
+  name: exempi
+  version: 2.2.2
+  www: libopenraw.freedesktop.org/
+  short: library to parse XMP metadata
+
+download:
+  url: http://libopenraw.freedesktop.org/download
+  file_tar_bz2: ~
+  checksum: 0e7ad0e5e61b6828e38d31a8cc59c26c9adeed7edf4b26708c400beb6a686c07
+  verify: asc
+
+version:
+  installed_pkgconfig: exempi-2.0
+
+linux:
+
+  - build:
+    - use_gcc: ~
+    - configure_kx: --disable-static --enable-unittest=no
+    - make: ~
+
+  - install:
+    - use_gcc: ~
+    - install: ~

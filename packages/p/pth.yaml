@@ -1,0 +1,36 @@
+package:
+  name: pth
+  version: 2.0.7
+  www: http://www.gnu.org/software/pth/
+  short: The GNU Portable Threads.
+
+download:
+  gnuz: ~
+  checksum: 9cb4a25331a4c4db866a31cbe507c793
+
+version:
+  installed: kxver_sh_pattern("pth-config --version", qr|GNU Pth ([0-9]+[0-9.]*[0-9]+) |);
+
+bootstrap_8:
+
+    - configure_kx: --disable-static
+    - make_repeat: ~
+    - check: ~
+    - install: ~
+
+# TODO
+# install -v -m755 -d /usr/share/doc/pth-2.0.7 &&
+# install -v -m644    README PORTING SUPPORT TESTS \
+#                    /usr/share/doc/pth-2.0.7
+
+
+# ==========================================================
+
+verify_cli: |
+
+  kx_cli_success /bin/pth-config --help
+  kx_cli_match_success "/bin/pth-config --cflags" { include  }
+  kx_cli_match_success "/bin/pth-config --ldflags" { lib  }
+
+# TODO: better testcases
+

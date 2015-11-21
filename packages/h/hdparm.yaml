@@ -1,0 +1,28 @@
+package:
+  name: hdparm
+  version: 9.48
+  www: http://sourceforge.net/projects/hdparm/
+  short: get/set ATA/SATA drive parameters
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: ce97b4a71cb04146f54cf6f69787e7f97ddfda9836dc803b459d3b3df3a4fbee
+
+version:
+  installed_sh_trailing: hdparm -V
+  upstream: kxver_upstream_sourceforge("hdparm", "hdparm", "hdparm");
+
+linux:
+  - build:
+    - sh: |
+        # clang does not know about this gcc parameter
+        if test "${CC:-x}" = "clang"; then
+        sed -i -e "/^CFLAGS/ s:-fkeep-inline-functions::" Makefile || die "sed clang failed"
+        fi
+    - make: ~     
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success "hdparm -V" { hdparm }

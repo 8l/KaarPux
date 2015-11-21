@@ -1,0 +1,166 @@
+package:
+  name: coreutils
+  version: 8.24
+  www: http://www.gnu.org/software/coreutils/
+  short: |
+      The GNU Core Utilities are the basic file, shell and text manipulation utilities of the GNU operating system.
+      These are the core utilities which are expected to exist on every operating system. 
+
+download:
+  gnux: ~
+  checksum: a2d75286a4b9ef3a13039c2da3868a61be4ee9f17d8ae380a35a97e506972170
+
+version: 
+  installed_sh_trailing: ls --version
+  wiz_savannah: ~
+
+# ==========================================================
+
+bootstrap_3:
+  - use_gcc: ~
+  - configure: --prefix="${KX_TOOLS}" --enable-install-program=hostname
+  - make: ~
+  - install: ~ 
+  - echo: post-install coreutils
+
+# ==========================================================
+
+bootstrap_7:
+  - use_gcc: ~
+  - echo: configure
+  - sh: >
+      FORCE_UNSAFE_CONFIGURE=1
+      ./configure
+        --prefix="${KX_PREFIX}"
+        --enable-no-install-program=kill,uptime
+  - make: ~
+  - install: ~
+
+# ==========================================================
+
+bootstrap_8:
+  - use_gcc: ~
+  - echo: configure
+  - sh: >
+      FORCE_UNSAFE_CONFIGURE=1
+      ./configure
+        --prefix="${KX_PREFIX}"
+        --enable-no-install-program=kill,uptime
+  - make: ~
+  - sh: export RUN_EXPENSIVE_TESTS=yes
+  - sh: export RUN_VERY_EXPENSIVE_TESTS=yes
+  # TODO: investigate failing testcases
+  - check_ignore: ~
+  - install: ~ 
+
+# ==========================================================
+
+verify_cli: |
+
+  kx_cli_send_match_success /bin/base64 { "Lorem ipsum dolor sit amet." } { TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQuCg== }
+  kx_cli_success /bin/basename .
+  kx_cli_send_match_success /bin/cat { "First line" "Second line" } { "First line" "Second line" }
+  kx_cli_send_match_success /bin/cksum { "Lorem ipsum dolor sit amet." } { 925526964 28 }
+  kx_cli_send_match_success "/bin/cut -f2" { "First\tSecond\tThird" } { Second }
+  kx_cli_success /bin/date
+  kx_cli_send_match_success /bin/dd { "First line" "Second line" } { "First line" "Second line" }
+  kx_cli_match_success /bin/df { Filesystem / }
+  kx_cli_success /bin/dir
+  kx_cli_success /bin/dircolors
+  kx_cli_success /bin/dirname .
+  kx_cli_success /bin/du
+  kx_cli_match_success "/bin/echo foo bar baz" { foo "bar baz" }
+  kx_cli_match_success "/bin/env -i X=FooBar env" { FooBar }
+  kx_cli_send_match_success /bin/expand { "Lorem\tipsum\tdolor\tsit\tamet." } { "Lorem   ipsum   dolor   sit     amet." }
+  kx_cli_match_success "/bin/expr 2 + 2" { 4 }
+  kx_cli_match_success "/bin/factor 8678670" { 8678670 "2 3 5 7 11 13 17 17" }
+  kx_cli_failure /bin/false
+  kx_cli_send_success /bin/fmt { "Lorem ipsum dolor sit amet." }
+  kx_cli_send_success /bin/fold { "Lorem ipsum dolor sit amet." }
+  kx_cli_success /bin/groups
+  kx_cli_success /bin/hostid
+  kx_cli_match_success /bin/id { uid gid groups }
+  kx_cli_success /bin/logname
+  kx_cli_success /bin/ls
+  kx_cli_send_match_success /bin/md5sum { "Lorem ipsum dolor sit amet." } { 1944c76edab0a9d31540c9cfb5298004 }
+  kx_cli_send_match_success /bin/nl { "First line" "Second line" } { "1\tFirst line" "2\tSecond line" }
+  kx_cli_success /bin/nproc
+  kx_cli_send_match_success /bin/od { "Lorem ipsum dolor sit amet." } { "0000000 067514 062562 020155 070151 072563 020155 067544 067554" "0000020 020162 064563 020164 066541 072145 005056" "0000034"}
+  kx_cli_send_match_success /bin/paste { "First line" "Second line" } { "First line" "Second line" }
+  kx_cli_success /bin/pathchk -p -P "/foo/bar"
+  kx_cli_failure /bin/pathchk -p -P "/foo bar"
+  kx_cli_send_match_success /bin/pr { "First line" "Second line" } { "First line" "Second line" }
+  kx_cli_success /bin/printenv
+  kx_cli_match_success "/bin/printf %x 17" { "11" }
+  kx_cli_send_success /bin/ptx { "First line" "Second line" }
+  kx_cli_success /bin/pwd
+  kx_cli_success /bin/realpath .
+  kx_cli_match_success "/bin/seq 1 2 10" { 1 3 5 7 9 }
+  kx_cli_send_match_success /bin/sha1sum { "Lorem ipsum dolor sit amet." } { de6e5143e9b9f8b640349da3190878cfcae86068 }
+  kx_cli_send_match_success /bin/sha224sum { "Lorem ipsum dolor sit amet." } { adc9da8668c1300bef7e1d5f2a91ed0bd34a9c348263afb4e7b57665 }
+  kx_cli_send_match_success /bin/sha256sum { "Lorem ipsum dolor sit amet." } { 98bdbd3fb298c89cc8ad98fa42c6ea1b819701cd3e5869bc09d1498d333d587c }
+  kx_cli_send_match_success /bin/sha384sum { "Lorem ipsum dolor sit amet." } { 21b6b3c5d0160c1b79cf18e845a965b4e3e778961487831cdb2889866a06d52737f99fcbea7d68df440f77a4ab01ff9a }
+  kx_cli_send_match_success /bin/sha512sum { "Lorem ipsum dolor sit amet." } { f6b0f6645a302b3dee593ea6855a2d08b146fcbdce3a541e5b0772375ce711e3b5ffc64a4b15cf174689a6eaddf69159165093eac638a133986bcc0eb76824cd }
+  kx_cli_send_match_success /bin/shuf { "First line" "Second line" } { "Second line" }
+  kx_cli_success /bin/sleep 0.1
+  kx_cli_send_match_success /bin/sort { Bravo Alpha Delta Charlie } { Alpha Bravo Charlie Delta }
+  kx_cli_success /bin/stat .
+  kx_cli_success /bin/stdbuf -oL ls
+  kx_cli_success /bin/stty
+  kx_cli_success /bin/stty -a
+  kx_cli_send_match_success /bin/sum { "Lorem ipsum dolor sit amet." } { 11193 1 }
+  kx_cli_success /bin/sync
+  kx_cli_send_match_success /bin/tac { "First line" "Second line" } { "Second line" "First line" }
+  kx_cli_success /bin/test 7 -eq 7
+  kx_cli_failure /bin/test 7 -eq 9
+  kx_cli_failure /bin/timeout 0.1 sleep 2
+  kx_cli_success /bin/timeout 2 sleep 0.1
+  kx_cli_success /bin/touch .
+  kx_cli_send_match_success "/bin/tr psum PSUM" { "Lorem ipsum dolor sit amet." } { "LoreM iPSUM dolor Sit aMet." }
+  kx_cli_success /bin/true
+  kx_cli_send_match_success /bin/tsort { "3 8" "3 10" "5 11" "7 8" "7 11" "8 9" "11 2" "11 9" "11 10" } { 3 5 7 11 8 10 2 9 }
+  kx_cli_success /bin/tty
+  kx_cli_match_success /bin/uname { Linux }
+  kx_cli_match_success "/bin/uname -a" { Linux kx GNU/Linux }
+  kx_cli_send_match_success "/bin/unexpand -a" { "Lorem   ipsum   dolor   sit     amet." } { "Lorem\tipsum\tdolor\tsit\tamet." }
+  kx_cli_send_match_success /bin/uniq { Alpha Alpha Alpha Alpha Bravo Charlie Charlie Delta Delta Delta } { Alpha Bravo Charlie Delta }
+  kx_cli_success /bin/users
+  kx_cli_success /bin/vdir
+  kx_cli_send_match_success "/bin/wc -l" { 1 2 3 4 5 6 7 8 9 10 11 } { 11 }
+  kx_cli_success /bin/who
+  kx_cli_success /bin/whoami
+
+
+# TODO: more binaries to verify:
+
+# /bin/chcon
+# /bin/chgrp
+# /bin/chmod
+# /bin/chown
+# /bin/chroot
+# /bin/comm
+# /bin/cp
+# /bin/csplit
+# /bin/head
+# /bin/install
+# /bin/join
+# /bin/link
+# /bin/ln
+# /bin/mkdir
+# /bin/mkfifo
+# /bin/mknod
+# /bin/mktemp
+# /bin/mv
+# /bin/nice
+# /bin/nohup
+# /bin/pinky
+# /bin/readlink
+# /bin/runcon
+# /bin/shred
+# /bin/split
+# /bin/tail
+# /bin/tee
+# /bin/truncate
+# /bin/unlink
+# /bin/yes
+

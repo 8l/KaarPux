@@ -1,0 +1,58 @@
+package:
+  name: skype
+  version: 4.0.0.8
+  www: http://www.skype.com
+  short: |
+      Skype is a proprietary voice-over-Internet Protocol service and software application
+      originally created in 2003 by Swedish entrepreneur Niklas Zennstrom and his Danish partner Janus Friis.
+      It has been owned by Microsoft since 2011.
+
+download:
+  url: http://download.skype.com/linux
+  checksum: f7044abb001dff02f3cf7753fab86df1a593792ec466a5328c0534595726023f
+
+doc: |
+  <para>
+  Note that there is no x86_64 version of <application>skype</application>, so it will not run on 64-bit systems.
+  </para>
+
+version:
+  upstream: |
+      use LWP::UserAgent;
+      my $ua = LWP::UserAgent->new;
+      my $u='http://www.skype.com/go/getskype-linux-dynamic';
+      my $req = HTTP::Request->new(POST => $u);
+      print "get [$u]\n" if $debug;
+      my $res = $ua->request($req);
+      print "res=[$res]\n" if $debug;
+      my $loc = $res->{'_headers'}->{'location'};
+      print "loc=[$loc]\n" if $debug;
+      my $v='???';
+      $v = $1 if $loc =~ /skype-([0-9.]*)\./;
+      return $v;
+
+opt:
+
+  - build:
+    - echo: "No build"
+
+  - install:
+    - sh: |
+        mkdir -pv ${KX_PREFIX}
+        mkdir -pv ${KX_PREFIX}/bin
+        mkdir -pv ${KX_PREFIX}/etc
+        mkdir -pv ${KX_PREFIX}/share
+        mkdir -pv ${KX_PREFIX}/share/applications
+        cp skype ${KX_PREFIX}/bin
+        cp skype.conf ${KX_PREFIX}/etc
+        cp skype.desktop ${KX_PREFIX}/share/applications
+#        cp -rp avatars ${KX_PREFIX}/share/
+        cp -rp icons ${KX_PREFIX}/share/
+#        cp -rp lang ${KX_PREFIX}/share/
+#        cp -rp sounds ${KX_PREFIX}/share/
+        mkdir -pv ${KX_PREFIX}/share/icons/hicolor
+        for D in 16 32 48; do
+        mkdir -pv ${KX_PREFIX}/share/icons/hicolor/${D}x${D}/apps
+        cp icons/SkypeBlue_${D}x${D}.png  ${KX_PREFIX}/share/icons/hicolor/${D}x${D}/apps/skype.png
+        done
+

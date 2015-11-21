@@ -1,0 +1,86 @@
+package:
+  name: bc
+  version: 1.06
+  www: http://www.gnu.org/software/bc/
+  short: bc is an arbitrary precision numeric processing language.
+
+download:
+  gnuz: ~
+  checksum: d44b5dddebd8a7a7309aea6c36fda117
+  verify: no
+
+version:
+  news: NEWS
+
+bootstrap_5:
+
+    - echo: patching
+    - sh: |
+        sed -i '/PROTO.*readline/d' bc/scan.l
+        sed -i '/flex -I8/s/8//' configure
+        sed -i '/stdlib/a #include <string.h>' lib/number.c
+        sed -i 's/program.*save/static &/' bc/load.c
+
+    - configure_kx: --with-readline
+
+    - make: ~
+
+    - install: ~
+
+bootstrap_8:
+
+    - echo: patching
+    - sh: |
+        sed -i '/PROTO.*readline/d' bc/scan.l
+        sed -i '/flex -I8/s/8//' configure
+        sed -i '/stdlib/a #include <string.h>' lib/number.c
+        sed -i 's/program.*save/static &/' bc/load.c
+
+    - configure_kx: --with-readline
+    - make: ~
+
+    - sh: if test -z "${KX_DISABLE_TEST}"; then
+    - echo: testing
+    - sh: |
+        F="../../../log/BC-TEST.txt"
+        echo "quit" | ./bc/bc -l Test/checklib.b 2>&1 | tee "$F"
+        E=$( grep "^Total tests" "$F" | awk 'BEGIN{E=0}{E+=$NF}END{print E}' )
+        echo "Found [$E] total tests"
+        test $E -ge 10000 || { kx_error_exit "Too few tests executed: $E"; exit 2; }
+        E=$( grep "^Total failures" "$F" | awk 'BEGIN{E=0}{E+=$NF}END{print E}' )
+        echo "Found [$E] total failures"
+        test $E -lt 20 || { kx_error_exit "Too many failures: $E"; exit 2; }
+
+    - sh: fi
+
+    - install: ~
+
+verify_cli: |
+
+  # http://rosettacode.org/wiki/Arbitrary-precision_integers_%28included%29#bc
+  kx_cli_send_match_success /bin/bc {
+    "y = 5 ^ 4 ^ 3 ^ 2"
+    "c = length(y)"
+    "y / (10 ^ (c - 20))"
+    "y % (10 ^ 20)"
+    "c"
+    "quit"
+    } {
+    62060698786608744707
+    92256259918212890625
+    183231
+    }
+  kx_cli_send_match_success /bin/dc {
+    "5 4 3 2 ^ ^ ^ sy"
+    "ly Z sc"
+    "ly 10 lc 20 - ^ / p"
+    "ly 10 20 ^ % p"
+    "lc p"
+    "q"
+    } {
+    62060698786608744707
+    92256259918212890625
+    183231
+    }
+
+

@@ -1,0 +1,25 @@
+package:
+  name: file
+  version: 5.25
+  www: http://www.darwinsys.com/file/
+  short: The file command is "a file type guesser", that is, a command-line tool that tells you in words what kind of data a file contains.
+
+download:
+  file_tar_gz: ~
+  url: ftp://ftp.astron.com/pub/file
+  checksum: 3735381563f69fb4239470b8c51b876a80425348b8285a7cded8b61d6b890eca
+
+version: ~
+
+bootstrap_8:
+  - configure_kx: ~
+  - make: ~
+  - check: ~
+  - install: ~
+
+verify_cli: |
+
+  kx_cli_match_success "file /dev/null" { "character special" }
+  kx_cli_match_success "file /" { "directory" }
+  kx_cli_match_success "file /bin/file" { "LSB executable" SYSV GNU/Linux}
+

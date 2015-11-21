@@ -1,0 +1,36 @@
+package:
+  name: sysstat
+  version: 11.1.7
+  www: http://sebastien.godard.pagesperso-orange.fr/
+  short: Collection of performance monitoring tools for Linux.
+
+download:
+  url: http://sebastien.godard.pagesperso-orange.fr/
+  file_tar_xz: ~
+  checksum: c6767f14b157118189ac3228c650f4657399dc2a3ee8cecd7c9e6237865c02b5
+
+version:
+  installed_sh_trailing: sar -V
+  upstream: kxver_scrape_url(undef, "http://sebastien.godard.pagesperso-orange.fr/download.html", qr|sysstat-([0-9]+[0-9.]*[0-9]+)\.tar|);
+
+bootstrap_8:
+    - echo: Configure
+    - sh: > 
+        sa_lib_dir=/lib/sa
+        sa_dir=/var/log/sa
+        conf_dir=/etc/sysconfig
+        ./configure --prefix='' --disable-man-group
+    - make: ~     
+    # No testsuite
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success /bin/cifsiostat { Filesystem }
+  kx_cli_match_success /bin/iostat { Device }
+  kx_cli_match_success /bin/mpstat { CPU all }
+  kx_cli_match_success /bin/nfsiostat-sysstat { Filesystem }
+  kx_cli_match_success /bin/pidstat { PID }
+  # TODO:
+  # /bin/sadf
+  # /bin/sar
+

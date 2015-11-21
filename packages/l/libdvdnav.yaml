@@ -1,0 +1,25 @@
+package:
+  name: libdvdnav
+  version: 5.0.3
+  www: http://dvdnav.mplayerhq.hu/
+  short: library for DVD navigation.
+
+download:
+  url: http://download.videolan.org/pub/videolan/libdvdnav/${KX_LIBDVDNAV_VERSION}
+  file_tar_bz2: ~
+  checksum: 5097023e3d2b36944c763f1df707ee06b19dc639b2b68fb30113a5f2cbf60b6d
+
+version:
+  installed_pkgconfig: dvdnav
+  upstream: kxver_scrape_url(undef, "http://download.videolan.org/pub/videolan/libdvdnav/", qr|>([0-9]+[0-9.]*[0-9]+)/<|);
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

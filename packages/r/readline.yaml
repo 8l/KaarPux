@@ -1,0 +1,24 @@
+package:
+  name: readline
+  version: 6.3
+  www: http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
+  short: Functions for use by applications that allow users to edit command lines as they are typed in.
+
+download:
+  gnuz: ~
+  checksum: 56ba6071b9462f980c5a72ab0023893b65ba6debb4eeb475d7a563dc65cafd43
+
+version:
+  installed: kxver_header_file_mm("RL", "/include/readline/readline.h");
+
+bootstrap_7:
+  - echo: pre-configure
+  - doc: Reinstalling Readline will cause the old libraries to be moved to <libraryname>.old. While this is normally not a problem, in some cases it can trigger a linking bug in ldconfig.
+  - sh: sed -i '/MV.*old/d' Makefile.in
+  - sh: sed -i '/{OLDSUFF}/c:' support/shlib-install
+  - configure_kx: --libdir=/lib --disable-static
+  - sh: export CFLAGS="-fPIC"
+  # No testsuite
+  - make: SHLIB_LIBS=-lncurses
+  - install: ~
+

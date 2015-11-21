@@ -1,0 +1,27 @@
+package:
+  name: dconf
+  version: 0.24.0
+  www: https://live.gnome.org/dconf/
+  short: |
+      dconf is a low-level configuration system.
+      Its main purpose is to provide a backend to GSettings on platforms that don't already have configuration storage systems.
+
+download:
+  gnomexz: ~
+  checksum: 4373e0ced1f4d7d68d518038796c073696280e22957babb29feb0267c630fec2
+
+version:
+  installed_pkgconfig: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-schemas-compile
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

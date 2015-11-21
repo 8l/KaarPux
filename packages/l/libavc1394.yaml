@@ -1,0 +1,22 @@
+package:
+  name: libavc1394
+  version: 0.5.4
+  www: http://sourceforge.net/projects/libavc1394/
+  short: libavc1394 is a programming interface for the 1394 Trade Association AV/C (Audio/Video Control) Digital Interface Command Set.
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: 7cb1ff09506ae911ca9860bef4af08c2403f3e131f6c913a2cbd6ddca4215b53
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_upstream_sourceforge("libavc1394", "libavc1394", "libavc1394");
+
+linux:
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+  # 'make check' does nothing
+  - install:
+    - install: ~

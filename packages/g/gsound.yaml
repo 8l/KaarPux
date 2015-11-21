@@ -1,0 +1,20 @@
+package:
+  name: gsound
+  version: 1.0.1
+
+download:
+  url: https://download.gnome.org/sources/gsound/1.0
+  file_tar_xz: ~
+  checksum: ea0dd94429c0645f2f98824274ef04543fe459dd83a5449a68910acc3ba67f29
+
+version:
+  upstream_gnome_uneven: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --enable-man-pages --disable-gtk-doc
+    - make: ~
+
+  - install:
+    - install: ~

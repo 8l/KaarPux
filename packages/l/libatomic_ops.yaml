@@ -1,0 +1,26 @@
+package:
+  name: libatomic_ops
+  version: 7.4.2
+  www: https://github.com/ivmai/libatomic_ops
+  short: Atomic memory update operations portable implementation
+
+download:
+  url:  http://www.ivmaisoft.com/_bin/atomic_ops/
+  file_tar_gz: ~
+  checksum: 1d6538604b314d2fccdf86915e5c0857
+
+version:
+  installed_pkgconfig: atomic_ops
+
+linux:
+
+  - build:
+    - sh: autoreconf -fi
+    - configure_kx: --enable-shared --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~

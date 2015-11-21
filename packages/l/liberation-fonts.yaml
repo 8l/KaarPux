@@ -1,0 +1,28 @@
+package:
+  name: liberation-fonts
+  version: 2.00.0
+
+download:
+  url: https://fedorahosted.org/releases/l/i/liberation-fonts
+  file_tar_gz: ~
+  checksum: a4c5ca86da2319d66f657257c7b5b7cd56162e3bfc5396c873fb21e3f7eaf075
+
+doc: |
+  <para>
+  Do not blindly update to 2.00.1; we do not have the proper font build tools for this
+  </para>
+
+version:
+  hold: 1
+  installed_na: ~
+
+linux:
+  - build:
+    - make: ~
+  - install:
+    - sh: cp -rp liberation-fonts-ttf-${KX_LIBERATION_FONTS_VERSION} /share/fonts/TTF/
+    - sh: |
+        fc-cache -fs
+        mkfontscale /share/fonts/TTF
+        mkfontdir /share/fonts/TTF
+

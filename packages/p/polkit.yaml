@@ -1,0 +1,33 @@
+package:
+  name: polkit
+  version: 0.113
+  www: http://www.freedesktop.org/wiki/Software/polkit
+  short: |
+      Application-level toolkit for defining and handling the policy that allows unprivileged processes to speak to privileged processes:
+      It is a framework for centralizing the decision making process with respect to granting access to privileged operations for unprivileged applications.
+
+download:
+  url: http://www.freedesktop.org/software/polkit/releases/
+  file_tar_gz: ~
+  checksum: e1c095093c654951f78f8618d427faf91cf62abdefed98de40ff65eca6413c81
+  verify: sign
+
+version:
+  installed: kxver_sh_pattern("pkaction --version", qr|pkaction version ([0-9.]+)|);
+
+linux:
+  - build:
+    - configure_kx_bash: >
+        --disable-gtk-doc
+        --disable-static
+        --enable-man-pages 
+    - make: -j1
+  - test:
+    - check: ~
+  - install:
+    - sh: |
+        getent group polkitd > /dev/null || \
+            groupadd -fg ${KX_POLKITD_GID} polkitd
+        getent passwd polkitd > /dev/null || \
+            useradd -c "PolicyKit Daemon" -d /var/run/dbus -u ${KX_POLKITD_UID} -g polkitd -s /bin/false polkitd
+    - install: ~

@@ -1,0 +1,26 @@
+package:
+  name: asciidoc
+  version: 8.6.9
+  www: http://www.methods.co.nz/asciidoc/
+  short: AsciiDoc is a presentable text document format for writing articles, UNIX man pages and other small to medium sized documents.
+
+download:
+  sourceforge: ~
+  file_tar_gz: ~
+  checksum: 78db9d0567c8ab6570a6eff7ffdf84eadd91f2dfc0a92a2d0105d323cab4e1f0
+
+version:
+  upstream: kxver_upstream_sourceforge("asciidoc", "asciidoc", "asciidoc");
+
+bootstrap_8:
+    - configure_kx: ~
+    - make: ~
+    - echo: checking
+    - sh: |
+        python ./tests/testasciidoc.py update
+        python ./tests/testasciidoc.py run
+    - install: ~     
+
+verify_cli: |
+  kx_cli_send_match_success /bin/asciidoc { "First line" "Second line" } { "First line" "Second line" }
+

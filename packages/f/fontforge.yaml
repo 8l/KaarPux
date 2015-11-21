@@ -1,0 +1,22 @@
+package:
+  name: fontforge
+  version: 20120731-b
+  www: http://fontforge.org/
+  short: FontForge allows you to edit outline and bitmap fonts.
+
+download:
+  sourceforge: fontforge
+  file: fontforge_full-${KX_FONTFORGE_VERSION}.tar.bz2
+  checksum: b520f532b48e557c177dffa29120225066cc4e84
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_scrape_url(undef, "http://sourceforge.net/projects/fontforge/files/fontforge-source/", qr|fontforge_full-([0-9]+[0-9-]*[0-9a-z-]*)\.tar|);
+
+linux:
+  - build:
+    - configure_kx: --with-freetype-src="${KX_BASE}/build/linux/${KX_FREETYPE}"
+    - make: ~
+  - install:
+    - install: ~ 
+

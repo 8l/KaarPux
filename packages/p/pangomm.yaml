@@ -1,0 +1,24 @@
+package:
+  name: pangomm
+  version: 2.38.1
+  www: http://developer.gnome.org/pangomm/
+  short: The official C++ interface for the Pango font layout library.
+
+download:
+  gnomexz: ~
+  checksum: effb18505b36d81fc32989a39ead8b7858940d0533107336a30bc3eef096bc8b
+
+version:
+  installed_pkgconfig: pangomm-1.4
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-documentation
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

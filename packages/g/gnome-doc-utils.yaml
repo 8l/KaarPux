@@ -1,0 +1,29 @@
+package:
+  name: gnome-doc-utils
+  version: 0.20.10
+  www: https://live.gnome.org/GnomeDocUtils
+  short: |
+      gnome-doc-utils is a collection of documentation utilities for the Gnome project.
+      It includes xml2po tool which makes it easier to translate and keep up to date translations of documentation. 
+
+download:
+  gnomexz: ~
+  checksum: cb0639ffa9550b6ddf3b62f3b1add92fb92ab4690d351f2353cffe668be8c4a6
+
+version:
+  installed_pkgconfig: ~
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success "gnome-doc-prepare --version" { gnome-doc-prepare }

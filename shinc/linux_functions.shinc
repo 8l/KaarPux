@@ -1,0 +1,232 @@
+#
+# KaarPux: http://kaarpux.kaarposoft.dk
+#
+# Copyright (C) 2012-2013: Henrik Kaare Poulsen
+#
+# License: http://kaarpux.kaarposoft.dk/license.html
+#
+
+# ============================================================
+
+kx_prepare_linux () {
+	local WHERE="$1"
+	local NAME="$2"
+	
+	kx_step_echo "Unpacking and preparing ${NAME}"
+
+	local BB="${KX_BASE}/build/${WHERE}"
+	local DD="${KX_BASE}/../downloads"
+	
+	eval "local SD=\"${BB}/\${KX_${NAME}}\""
+	rm -rf "${SD}"
+	mkdir -pv "${SD}"
+
+	eval "local DF=\"${DD}/\${KX_${NAME}_FILE}\""
+	kx_untar "${BB}" "${DF}"	
+	
+	cd "${SD}"
+
+}
+
+
+# ============================================================
+
+kx_noprepare_linux () {
+	local WHERE="$1"
+	local NAME="$2"
+	
+	kx_step_echo "No prepare for ${NAME}"
+
+	local BB="${KX_BASE}/build/${WHERE}"
+	eval "local SD=\"${BB}/\${KX_${NAME}}\""
+	cd "${SD}"
+
+}
+
+
+# ============================================================
+
+kx_install_done () {
+	local WHERE="$1"
+	local NAME="$2"
+
+	local BB="${KX_BASE}/build/${WHERE}"
+
+	eval "local SD=\"${BB}/\${KX_${NAME}}\""
+	test -n "${KX_KEEP_BUILD_DIRECTORIES:-}" || rm -rf "${SD}"*
+}
+
+# ============================================================
+
+kx_exe_linux_script () {
+	local SCRIPT="$1"
+	local START_SECS=$(date +%s)
+
+	kx_log KX_PKG_INFO "Executing linux script: [$SCRIPT]"
+	su -l kaarpux <<- EOF3 || kx_log_error_exit $? KX_PKG_FAIL "Executing linux script [$SCRIPT] FAILED [$?]"
+		cd "${KX_BASE}" && \
+		"./linux_scripts/${SCRIPT}" > "./log/linux/${SCRIPT}.log" 2>&1
+	EOF3
+
+	kx_time_diff "${SCRIPT}" "${START_SECS}"
+}
+
+
+# ============================================================
+
+kx_exe_linux_sudo () {
+	local SCRIPT="$1"
+	local START_SECS=$(date +%s)
+
+	kx_log KX_PKG_INFO "Executing linux sudo script: [$SCRIPT]"
+	"${KX_BASE}/linux_scripts/${SCRIPT}" > "${KX_BASE}/log/linux/${SCRIPT}.log" 2>&1 \
+		|| kx_log_error_exit $? KX_PKG_FAIL "Executing linux sudo script [$SCRIPT] FAILED [$?]"
+
+	kx_time_diff "${SCRIPT}" "${START_SECS}"
+}
+
+
+# ============================================================
+
+kx_exe_opt_script () {
+	local SCRIPT="$1"
+	local START_SECS=$(date +%s)
+
+	kx_log KX_PKG_INFO "Executing opt script: [$SCRIPT]"
+	"${KX_BASE}/linux_scripts/${SCRIPT}" > "${KX_BASE}/log/opt/${SCRIPT}.log" 2>&1 \
+		|| kx_log_error_exit $? KX_PKG_FAIL "Executing opt script [$SCRIPT] FAILED [$?]"
+
+	kx_time_diff "${SCRIPT}" "${START_SECS}"
+}
+
+
+# ============================================================
+
+kx_sukx_step () {
+	local REQUIRED="$1"
+	local PASS="$2"
+	local PKG="$3"
+	local STEP="$4"
+	local TITLE="$5"
+	local PART2="$6"
+
+	if test "$PASS" = "opt"; then
+		kx_regular_step "$@"
+		return $?
+	fi
+
+	if ! test -f "${KX_BASE}/scripts/${PASS}/${PKG}_${STEP}.sh"; then
+		test -z "${REQUIRED}" && return 0
+		kx_log_error_exit 1 KX_PKG_FAIL \
+		"${TITLE} ${PASS} package [${PKG}]${PART2} FAILED: Missing file [scripts/${PASS}/${PKG}_${STEP}.sh]"
+	fi
+
+	kx_log KX_PKG_INFO "${TITLE} ${PASS} package: [${PKG}]"
+
+	if test -z "${KX_SYSTEMTAP:-}"; then
+		su -l kaarpux <<- EOF || kx_log_error_exit $? KX_PKG_FAIL "${TITLE} ${PASS} package [${PKG}]${PART2} FAILED [$?]"
+			cd "${KX_BASE}"
+			"time" -v ./scripts/${PASS}/${PKG}_${STEP}.sh > ./log/${PASS}/${PKG}_${STEP}.log 2>&1
+		EOF
+	else
+		cd "${KX_BASE}"
+		local PIPE="./kaarpux_${PASS}_${PKG}_${STEP}_stap_pipe"
+		rm -f "${PIPE}"
+		mkfifo "${PIPE}"
+		chown kaarpux "${PIPE}"
+
+		cat ${PIPE} | egrep -v '^??pipe:|^??UNKNOWN:|^??/home|^??/dev|^??/proc|^??/sys|^??/tmp|^??/etc/ld.so.cache' | awk '!x[$0]++' \
+			> "../flist/${PASS}_${PKG}_${STEP}.rw" &
+
+		su -l kaarpux <<- EOF || kx_log_error_exit $? KX_PKG_FAIL "${TITLE} ${PASS} package [${PKG}]${PART2} FAILED"
+			cd "${KX_BASE}"
+			staprun /lib/modules/$(uname -r)/systemtap/kx_open.ko -R -vvv \
+				-c "env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-/lib} ./scripts/${PASS}/${PKG}_${STEP}.sh" \
+				-o "${PIPE}" > ./log/${PASS}/${PKG}_${STEP}.log 2>&1
+		EOF
+
+		rm -f "${PIPE}"
+	fi
+}
+
+
+# ============================================================
+
+kx_regular_step () {
+	local REQUIRED="$1"
+	local PASS="$2"
+	local PKG="$3"
+	local STEP="$4"
+	local TITLE="$5"
+	local PART2="$6"
+
+	if ! test -f "${KX_BASE}/scripts/${PASS}/${PKG}_${STEP}.sh"; then
+		test -z "${REQUIRED}" && return 0
+		kx_log_error_exit 1 KX_PKG_FAIL \
+		"${TITLE} ${PASS} package [${PKG}]${PART2} FAILED: Missing file [scripts/${PASS}/${PKG}_${STEP}.sh]"
+	fi
+
+	kx_log KX_PKG_INFO "${TITLE} ${PASS} package: [${PKG}]"
+
+	if test -z "${KX_SYSTEMTAP:-}"; then
+		"time" -v ${KX_BASE}/scripts/${PASS}/${PKG}_${STEP}.sh > ${KX_BASE}/log/${PASS}/${PKG}_${STEP}.log 2>&1 \
+			|| kx_log_error_exit $? KX_PKG_FAIL "${TITLE} ${PASS} package [${PKG}]${PART2} FAILED [$?]"
+	else
+		cd "${KX_BASE}"
+		local PIPE="./kaarpux_${PASS}_${PKG}_${STEP}_stap_pipe"
+		rm -f "${PIPE}"
+		mkfifo "${PIPE}"
+
+		cat ${PIPE} | egrep -v '^??pipe:|^??UNKNOWN:|^??/home|^??/dev|^??/proc|^??/sys|^??/tmp|^??/etc/ld.so.cache' | awk '!x[$0]++' \
+			> "../flist/${PASS}_${PKG}_${STEP}.rw" &
+
+		(
+			staprun /lib/modules/$(uname -r)/systemtap/kx_open.ko -R \
+				-c "env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-/lib} ./scripts/${PASS}/${PKG}_${STEP}.sh" \
+				-o "${PIPE}" > "./log/${PASS}/${PKG}_${STEP}.log" 2>&1
+		) || kx_log_error_exit $? KX_PKG_FAIL "${TITLE} ${PASS} package [${PKG}]${PART2} FAILED [$?]"
+
+		rm -f "${PIPE}"
+	fi
+}
+
+
+# ============================================================
+
+kx_build_linux_pkg () {
+	local STEP="$1"
+	local PKG="$2"
+	local PAR="${3:-}"
+	local START_SECS=$(date +%s)
+
+	kx_regular_step ""  ${STEP} ${PKG} PREBUILD "Preparing build of" ""
+	kx_sukx_step    req ${STEP} ${PKG} BUILD "Building" ""
+	test -z "${KX_DISABLE_TEST}" && kx_sukx_step "" ${STEP} ${PKG} TEST "Testing" ""
+	kx_regular_step req ${STEP} ${PKG} INSTALL "Installing" ""
+	kx_sukx_step    ""  ${STEP} ${PKG} BUILD2 "Building" " part 2"
+	test -z "${KX_DISABLE_TEST}" && kx_sukx_step "" ${STEP} ${PKG} TEST2 "Testing" " part2"
+	kx_regular_step ""  ${STEP} ${PKG} INSTALL2 "Installing" " part 2"
+
+	kx_time_diff "${PKG}" ${START_SECS}
+
+	if test "${PAR}" != "PARALLEL" -a "${STEP}" = "opt"; then
+		kx_log KX_PAR_UOPT "Updating /opt filesystem"
+		${KX_BASE}/../master/tools/kx_opt.pl >> ${KX_BASE}/log/opt/opt.log
+	fi
+
+}
+
+
+# ============================================================
+
+kx_build_linux_pkg_parallel () {
+	local STEP="$1"
+	local PKG="$2"
+	if test -n "${KX_PARALLEL:-}"; then
+		{ ( kx_build_linux_pkg ${STEP} ${PKG} PARALLEL) || echo $PKG >> "${KX_BASE}/.kaarpux_parallel_error"; } &
+	else
+		kx_build_linux_pkg ${STEP} ${PKG}
+	fi
+}
+
+

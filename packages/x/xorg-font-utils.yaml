@@ -1,0 +1,14 @@
+package:
+  name: xorg-font-utils
+  version: 7.7
+
+xorg:
+
+  - app_modules: |
+#      52f0ea21d368e68bfc50ecb552a9ac2eb99ddd356f776a817895ac110976b8d9 fonttosfnt-1.0.4.tar.bz2
+      P 38f447be0c61f94c473f128cf519dd0cff63b5d7775240a2e895a183a61e2026  bdftopcf-1.0.5.tar.bz2    kxver_sh_trailing('bdftopcf -v');
+      . 8c6d5228af885477b9aec60ca6f172578e7d2de42234357af62fb00439453f20 mkfontscale-1.1.2.tar.bz2 return "n/a";
+      . 56d52a482df130484e51fd066d1b6eda7c2c02ddbc91fe6e2be1b9c4e7306530  mkfontdir-1.0.7.tar.bz2   return "n/a";
+  - font_modules: |
+      1 aa7ebdb0715106dd255082f2310dbaa2cd7e225957c2a77d719720c7cc92b921 font-util-1.3.1.tar.bz2
+

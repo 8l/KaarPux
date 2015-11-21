@@ -1,0 +1,19 @@
+package:
+  name: iana-etc
+  version: 2.30
+  www: http://sethwklein.net/iana-etc
+  short: The iana-etc package provides the Unix/Linux /etc/services and /etc/protocols files.
+
+download:
+  url: http://sethwklein.net
+  checksum: 3ba3afb1d1b261383d247f46cb135ee8
+
+version:
+  installed_na: ~
+  upstream: kxver_scrape_url("iana-etc", "http://sethwklein.net/iana-etc");
+
+bootstrap_7:
+  - make: ~
+  # No testsuite
+  - install: ~
+

@@ -1,0 +1,25 @@
+package:
+  name: libdvdread
+  version: 5.0.3
+  www: http://dvdnav.mplayerhq.hu/
+  short: simple foundation for reading DVD video disks.
+
+download:
+  url: http://download.videolan.org/pub/videolan/libdvdread/${KX_LIBDVDREAD_VERSION}
+  file_tar_bz2: ~
+  checksum: 321cdf2dbdc83c96572bc583cd27d8c660ddb540ff16672ecb28607d018ed82b
+
+version:
+  installed_pkgconfig: dvdread
+  upstream: kxver_scrape_url(undef, "http://download.videolan.org/pub/videolan/libdvdread/", qr|>([0-9]+[0-9.]*[0-9]+)/<|);
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~

@@ -1,0 +1,18 @@
+package:
+  name: libgudev
+  version: 230
+  www: https://wiki.gnome.org/Projects/libgudev
+  short: libudev. It was originally part of udev-extras, then udev, then systemd. It's now a project on its own. 
+
+download:
+  url: https://download.gnome.org/sources/libgudev/${KX_LIBGUDEV_VERSION}
+  file_tar_xz: ~
+  checksum: a2e77faced0c66d7498403adefcc0707105e03db71a2b2abd620025b86347c18
+
+version:
+  installed_pkgconfig: ~
+
+bootstrap_8:
+  - configure_kx: ~
+  - make: ~
+  - install: ~

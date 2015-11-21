@@ -1,0 +1,22 @@
+package:
+  name: telepathy-farstream
+  version: 0.6.2
+  www: http://www.freedesktop.org/wiki/Software/Farstream
+  short: The Farstream (formerly Farsight) project is an effort to create a framework to deal with all known audio/video conferencing protocols.
+
+download:
+  url: http://telepathy.freedesktop.org/releases/telepathy-farstream
+  file_tar_gz: ~
+  checksum: 6fa099f22d13a2a49240445a13e918928aef097675d76e5cc9f98ab496087e0a
+  verify: asc
+
+version:
+  installed_pkgconfig: ~
+
+linux:
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --disable-Werror
+    - make: ~
+  # 'make check' does nothing
+  - install:
+    - install: ~

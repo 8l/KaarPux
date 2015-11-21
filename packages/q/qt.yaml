@@ -1,0 +1,55 @@
+package:
+  name: qt
+  version: 5.5.1
+  www: http://qt-project.org/
+  short: Cross-platform application and UI framework.
+
+download:
+  url: http://download.qt-project.org/official_releases/qt/${KX_QT_VERSION_MM}/${KX_QT_VERSION}/single
+  file: qt-everywhere-opensource-src-${KX_QT_VERSION}.tar.xz
+  dir: qt-everywhere-opensource-src-${KX_QT_VERSION}
+  checksum: 6f028e63d4992be2b4a5526f2ef3bfa2fe28c5c757554b11d9e8d86189652518
+
+version:
+  installed_pkgconfig: QtCore
+  upstream: kxver_scrape_url("qt-everywhere-opensource-src", "http://qt-project.org/downloads");
+
+linux:
+  - build:
+    - patch: jasper_jpeg.patch
+    - echo: configure
+    - sh: unset CC CXX
+    - sh: >
+        ./configure
+        -prefix /usr
+        -opensource
+        -confirm-license 
+        -platform linux-clang
+        -release
+        -journald
+        -make libs
+        -make tools
+        -system-zlib
+        -system-sqlite
+        -system-libpng
+        -system-libjpeg
+        -system-pcre
+        -system-freetype
+        -system-harfbuzz
+        -system-xcb
+        -system-xkbcommon
+        -pulseaudio
+        -no-alsa
+        -no-qml-debug
+        -no-nis
+        -dbus-linked
+        -openssl-linked
+        -optimized-qmake
+        -nomake examples
+        -verbose
+    - echo: make
+    - sh: >
+        make ${KX_MAKE_J}
+  # No test suite
+  - install:
+    - install: ~

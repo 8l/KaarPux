@@ -1,0 +1,39 @@
+package:
+  name: cyrus-sasl
+  version: 2.1.26
+  www: http://cyrusimap.org/
+
+download:
+  url: ftp://ftp.cyrusimap.org/cyrus-sasl
+  file_tar_gz: ~
+  checksum: 8fbc5136512b59bb793657f36fadda6359cae3b08f01fd16b3d406f1345b7bc3
+
+version:
+  sensitive: 1
+  installed: kxver_header_file("SASL", "/include/sasl/sasl.h", "STEP");
+
+linux:
+
+  - build:
+    - use_gcc: ~
+    - sh: export CFLAGS="-fPIC"
+    - patch: cyrus-sasl-2.1.26-fixes-1.patch
+
+    - echo: reconfigure
+    - sh: autoreconf -fi
+    - sh: cd saslauthd; autoreconf -fi; cd ..
+
+    - configure_kx: >
+        --enable-shared
+        --disable-static
+        --with-dblib=gdbm
+        --with-pic=yes
+
+    - echo: make
+    - sh: make
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~
+    - sh: install -v -dm700 /var/lib/sasl

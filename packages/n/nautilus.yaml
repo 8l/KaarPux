@@ -1,0 +1,61 @@
+package:
+  name: nautilus
+  version: 3.18.1
+  www: https://live.gnome.org/Nautilus
+  short: File manager for the GNOME desktop.
+
+download:
+  gnomexz: ~
+  checksum: 9db310b255268f1bd5e93642821a138029550d96a51b408528377d6b121d55ad
+version:
+  upstream_gnome: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-gtk-doc --disable-static --disable-schemas-compile --disable-tracker
+    - make: ~
+
+  - install:
+    - install: ~
+
+verify_gui: |
+    spawn nautilus nautilus
+
+    await panel _ 4
+    find togglebutton Home 4
+
+    application
+    await table _ 8
+    find tablecell Places 4
+
+    application
+    find table _ 8
+    find tablecell Home 4
+
+    application
+    find table _ 8
+    find tablecell Devices 4
+
+    application
+    find table _ 8
+    find tablecell Computer 4
+
+    application
+    find table _ 8
+    find tablecell Network 4
+
+    application
+    find table _ 8
+    find tablecell BrowseNetwork 4
+
+    application
+    await scrollpane ContentView 12
+
+    application
+    find panel _ 4
+    find togglebutton Menu 6
+
+    altf4
+    desktop
+    away application nautilus 1

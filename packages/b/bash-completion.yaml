@@ -1,0 +1,26 @@
+package:
+  name: bash-completion
+  version: 2.1
+  www: http://bash-completion.alioth.debian.org/
+  short: collection of shell functions that take advantage of the programmable completion feature of bash
+
+download:
+  url: http://bash-completion.alioth.debian.org/files
+  file_tar_bz2: ~
+  checksum: 2b606804a7d5f823380a882e0f7b6c8a37b0e768e72c3d4107c51fbe8a46ae4f
+
+
+version:
+  installed_pkgconfig: ~
+  upstream: kxver_scrape_url 'bash-completion', 'http://bash-completion.alioth.debian.org/'
+
+bootstrap_8:
+
+    - configure: --prefix=/
+    - make: ~
+
+    # TODO: check
+    # - check: ~
+
+    - install: ~
+

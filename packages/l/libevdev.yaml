@@ -1,0 +1,23 @@
+package:
+  name: libevdev
+  version: 1.4.4
+  www: http://www.freedesktop.org/wiki/Software/libevdev/
+  short: a wrapper library for evdev devices
+
+download:
+  url: http://freedesktop.org/software/libevdev
+  file_tar_xz: ~
+  checksum: ed9979369b6a6e28f5897d099538549ecffb2b7c00c1b717eb77c31d85bc45a9
+
+version: ~
+
+linux:
+
+  - build:
+    - configure_kx: ~
+    - make: ~
+
+  # Tests needs to be run as root
+
+  - install:
+    - install: ~

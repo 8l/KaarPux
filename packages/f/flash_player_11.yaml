@@ -1,0 +1,62 @@
+package:
+  name: flash_player_11
+  version: 11.2.202.548
+  www: http://www.adobe.com/software/flash/about/
+  changelog: http://helpx.adobe.com/flash-player/release-note/release-notes-developer-flash-player.html
+  short: A lightweight, robust runtime environment for rich media and rich Internet applications.
+
+doc: |
+  <para>
+    Flash Player 11.2 is the last supported Flash Player version for Linux. Adobe will continue to provide security updates
+  </para>
+
+# TODO: download_32:
+#  full_url: http://fpdownload.macromedia.com/get/flashplayer/pdc/${KX_FLASH_PLAYER_11_VERSION}/install_flash_player_11_linux.i386.tar.gz
+#  file: install_flash_player_${KX_FLASH_PLAYER_11_VERSION}_linux.i386.tar.gz
+#  checksum: 0b42d40f9362eab3f9eb13f495bfd392351873494cdbf8a02cece0b71c5ffae4
+
+download_64:
+  full_url: http://fpdownload.macromedia.com/get/flashplayer/pdc/${KX_FLASH_PLAYER_11_VERSION}/install_flash_player_11_linux.x86_64.tar.gz
+  file: install_flash_player_${KX_FLASH_PLAYER_11_VERSION}_linux.x86_64.tar.gz
+  checksum: 62ec1da116e879233ef41d3c77bbe2e7ccb88ab2311d2bcba2e665c94e18e847
+
+version:
+  sensitive: 1
+  installed_sh_trailing: strings /opt/lib/mozilla/plugins/libflashplayer.so | grep ^FlashPlayer_ | sed -e s/FlashPlayer_// -e s/_FlashPlayer// -e s/_/./g
+  upstream: | 
+      my $furl = "http://www.adobe.com/software/flash/about/";
+      my $fcontent = get($furl) or print "*** Could not download [${furl}]: $@\n";
+      $fcontent =~ m|<strong>Linux</strong>.*?Mozilla.*?<td>([0-9]+[0-9.]*[0-9]+)</td>|s;
+      if ($1) { return $1; } else { return "???"; }
+  wiz_url: |
+      my ($pkg_ver, $pkg, $ver) = @_;
+      my $file = "install_flash_player_\${KX_FLASH_PLAYER_11_VERSION}_linux.x86_64.tar.gz";
+      my $url = "http://fpdownload.macromedia.com/get/flashplayer/pdc/\${KX_FLASH_PLAYER_11_VERSION}/install_flash_player_11_linux.x86_64.tar.gz";
+      $file = kxver_replace_version($file, $pkg, $ver);
+      $url = kxver_replace_version($url, $pkg, $ver);
+      return ($file, $url);
+  wiz_can_diff: 0
+  url: ~
+  news: http://www.adobe.com/support/documentation/en/flashplayer/releasenotes.html
+
+opt:
+
+  - prepare_and_build:
+    - sh: |
+        cd ${KX_BASE}/build/opt
+        rm -rf "${KX_FLASH_PLAYER_11}"
+        mkdir -p "${KX_FLASH_PLAYER_11}"
+        cd "${KX_FLASH_PLAYER_11}"
+        echo EEE $(pwd) ${KX_BASE}/../downloads/${KX_FLASH_PLAYER_11_FILE}
+    - untar: $(pwd) ${KX_BASE}/../downloads/${KX_FLASH_PLAYER_11_FILE}
+
+  - install:
+    - sh: |
+        mkdir -pv "${KX_PREFIX}"
+        rm -rf usr/lib usr/lib64 usr/share/kde4
+        cp -rp usr/* "${KX_PREFIX}"
+        mkdir -pv "${KX_PREFIX}/lib/${KX_FLASH_PLAYER_11}"
+        chmod +x libflashplayer.so
+        cp -p libflashplayer.so "${KX_PREFIX}/lib/${KX_FLASH_PLAYER_11}"
+        mkdir -pv "${KX_PREFIX}/lib/mozilla/plugins"
+        ln -svf "${KX_PREFIX}/lib/${KX_FLASH_PLAYER_11}/libflashplayer.so" "${KX_PREFIX}/lib/mozilla/plugins/"

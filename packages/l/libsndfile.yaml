@@ -1,0 +1,29 @@
+package:
+  name: libsndfile
+  version: 4b14e4519031abe6c842cdb017bfa3d206ed8a99
+  www: http://www.mega-nerd.com/libsndfile/
+  short: |
+      C library for reading and writing files containing sampled sound
+      (such as MS Windows WAV and the Apple/SGI AIFF format)
+      through one standard library interface.
+
+download:
+  full_url: https://github.com/erikd/libsndfile/archive/${KX_LIBSNDFILE_VERSION}.zip
+  file: libsndfile-${KX_LIBSNDFILE_VERSION}.zip
+  dir: libsndfile-${KX_LIBSNDFILE_VERSION}
+  checksum: 0bfcc6520339902f24410eab40876679c9b3c4b16c60467ea23d5dbd51ea22de
+
+version:
+  installed_pkgconfig: sndfile
+
+linux:
+  - build:
+    - sh: ./autogen.sh
+    - configure_kx: --disable-static
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~     
+
+# TODO: verify_cli: testcases

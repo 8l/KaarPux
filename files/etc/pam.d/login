@@ -1,0 +1,34 @@
+#%PAM-1.0
+#
+# pam.d configuration file for login
+#
+
+# Prevent non-root users from login if /var/run/nologin or /etc/nologin exist.
+auth      requisite   pam_nologin.so
+
+# Limit root login to special local devices
+# Not used
+# auth      required    pam_securetty.so
+
+auth      include     system-auth
+
+account   include     system-auth
+
+# logdaemon style login access control
+account   required    pam_access.so
+
+
+# limit resources
+session   required    pam_limits.so
+
+# Show date of last login
+session   optional    pam_lastlog.so
+
+# Record user's login uid to the process attribute
+session   optional    pam_loginuid.so
+
+session   include     system-auth
+
+password  include     system-auth
+
+

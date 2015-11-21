@@ -1,0 +1,33 @@
+package:
+  name: neon
+  version: 0.30.1
+  www: http://www.webdav.org/neon/
+  short: neon is an HTTP and WebDAV client library, with a C interface.
+
+download:
+  url: http://www.webdav.org/neon
+  file_tar_gz: ~
+  checksum: 00c626c0dc18d094ab374dbd9a354915bfe4776433289386ed489c2ec0845cdd
+  verify: asc
+
+version:
+  installed_pkgconfig: neon
+
+linux:
+  - build:
+    - configure_kx: --enable-shared --disable-static --with-ssl=openssl --with-ca-bundle=/etc/ssl/certs/ca-bundle.crt --enable-threadsafe-ssl=posix
+    - make: ~
+
+  - test:
+    # Make sure that the test certificates contains the correct ISO 8859 characters
+    - sh: sed -e 's/echo -e/echo/' -i test/makekeys.sh
+    # no_redirect sometimes fails
+    # presumable because the test server goes away to fast
+    - sh: sed -e '/T(no_redirect)/d' -i test/redirect.c
+    - check: ~
+
+  - install:
+    - install: ~
+
+verify_cli: |
+  kx_cli_match_success "neon-config --cflags --libs" { neon }

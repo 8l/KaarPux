@@ -1,0 +1,32 @@
+package:
+  name: sgml-common
+  version: 0.6.3
+  short: The SGML Common package contains install-catalog. This is useful for creating and maintaining centralized SGML catalogs.
+
+download:
+  url: http://gd.tuwien.ac.at/hci/kde/devel/docbook/SOURCES/
+  file_tgz: ~
+  checksum: 103c9828f24820df86e55e7862e28974
+
+version:
+  installed_sh_version: install-catalog --version
+
+linux:
+
+  - build:
+    - doc: see http://www.linuxfromscratch.org/blfs/view/svn/pst/sgml-common.html
+    - patch: sgml-common-0.6.3-manpage-1.patch
+    - sh: autoreconf -f -i
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~
+    - sh: install-catalog --add /etc/sgml/sgml-ent.cat /usr/share/sgml/sgml-iso-entities-8879.1986/catalog
+    - sh: install-catalog --add /etc/sgml/sgml-docbook.cat /etc/sgml/sgml-ent.cat
+
+verify_cli: |
+  kx_cli_match_success /bin/sgmlwhich { sgml.conf }
+

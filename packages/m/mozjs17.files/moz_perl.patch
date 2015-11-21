@@ -1,0 +1,12 @@
+diff -Naur mozjs17.0.0.ORIG/js/src/config/milestone.pl mozjs17.0.0/js/src/config/milestone.pl
+--- mozjs17.0.0.ORIG/js/src/config/milestone.pl	2013-02-11 23:33:22.000000000 +0100
++++ mozjs17.0.0/js/src/config/milestone.pl	2015-06-19 16:49:40.243880209 +0200
+@@ -55,7 +55,7 @@
+ #
+ my $milestone = Moz::Milestone::getOfficialMilestone($MILESTONE_FILE);
+ 
+-if (defined(@TEMPLATE_FILE)) {
++if (@TEMPLATE_FILE) {
+   my $TFILE;
+ 
+   foreach $TFILE (@TEMPLATE_FILE) {

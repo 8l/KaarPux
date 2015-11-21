@@ -1,0 +1,31 @@
+package:
+  name: time
+  version: 1.7
+  www: http://www.gnu.org/software/time/
+  short: The 'time' command runs another program, then displays information about the resources used by that program, collected by the system while the program was running.
+
+download:
+  gnuz: ~
+  checksum: e38d2b8b34b1ca259cf7b053caac32b3
+  verify: no
+
+version:
+  installed_na: ~
+  news: NEWS
+  changelog: ChangeLog
+
+bootstrap_8:
+  # Patches from Fedora
+  # http://pkgs.fedoraproject.org/cgit/time.git/tree/
+  - patch: time-1.7-Recompute-CPU-usage-at-microsecond-level.patch
+  - patch: time-1.7-ru_maxrss-is-in-kilobytes-on-Linux.patch
+  - patch: time-1.7-verbose.patch
+  - sh: echo "ac_cv_func_wait3=\${ac_cv_func_wait3='yes'}" >> config.cache
+  - configure_kx: ~
+  - make: ~
+  # No testsuite
+  - install: DESTDIR=''
+
+verify_cli: |
+  kx_cli_match_success "/bin/time ls" { user system elapsed }
+

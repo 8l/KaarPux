@@ -1,0 +1,28 @@
+package:
+  name: python-twisted
+  version: 15.4.0
+  www: http://twistedmatrix.com
+  short: Twisted is an event-driven networking engine written in Python
+
+
+download:
+  url: https://pypi.python.org/packages/source/T/Twisted
+  file: Twisted-${KX_PYTHON_TWISTED_VERSION}.tar.bz2
+  dir: Twisted-${KX_PYTHON_TWISTED_VERSION}
+  checksum: 78862662fa9ae29654bc2b9d349c3f1d887e6b2ed978512c4442d53ea861f05c
+
+version:
+  installed_sh_trailing: twistd --version
+  upstream_pypi: Twisted
+
+linux:
+  - build:
+    - sh: python setup.py build
+  - test:
+    - sh: python setup.py test
+  - install:
+    - sh: python setup.py install --prefix=${KX_PREFIX}
+    - echo:  "Install manual pages"
+    - sh: install -v -m644 doc/*/man/*.1 "${KX_PREFIX}/man/man1"
+
+# TODO: verify_cli testcases

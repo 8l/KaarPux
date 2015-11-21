@@ -1,0 +1,24 @@
+package:
+  name: xf86-video-intel
+  version: 2.99.917
+
+
+download:
+  url: http://xorg.freedesktop.org/releases/individual/driver
+  checksum: 00b781eea055582820a123c47b62411bdf6aabf4f03dc0568faec55faf9667c9
+
+version: ~
+
+linux:
+
+  - build:
+    # Fix crash in startup due to un-initialized variables
+    - patch: kaarpux.patch
+    - configure_kx: ~
+    - make: ~
+
+  # 'make check' does nothing
+
+  - install:
+    - install: ~     
+

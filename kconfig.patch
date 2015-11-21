@@ -1,0 +1,106 @@
+diff -Naur kconfig-linux-3.18.9.ORIG/scripts/kconfig/confdata.c kconfig-linux-3.18.9/scripts/kconfig/confdata.c
+--- kconfig-linux-3.18.9.ORIG/scripts/kconfig/confdata.c	2015-03-06 23:53:42.000000000 +0100
++++ kconfig-linux-3.18.9/scripts/kconfig/confdata.c	2015-03-28 21:40:45.938879455 +0100
+@@ -25,7 +25,7 @@
+ static const char *conf_filename;
+ static int conf_lineno, conf_warnings, conf_unsaved;
+ 
+-const char conf_defname[] = "arch/$ARCH/defconfig";
++const char conf_defname[] = ".defconfig";
+ 
+ static void conf_warning(const char *fmt, ...)
+ {
+diff -Naur kconfig-linux-3.18.9.ORIG/scripts/kconfig/gconf.glade kconfig-linux-3.18.9/scripts/kconfig/gconf.glade
+--- kconfig-linux-3.18.9.ORIG/scripts/kconfig/gconf.glade	2015-03-06 23:53:42.000000000 +0100
++++ kconfig-linux-3.18.9/scripts/kconfig/gconf.glade	2015-03-28 21:40:45.942212819 +0100
+@@ -4,7 +4,7 @@
+ 
+ <widget class="GtkWindow" id="window1">
+   <property name="visible">True</property>
+-  <property name="title" translatable="yes">Gtk Kernel Configurator</property>
++  <property name="title" translatable="yes">Gtk KaarPux Configurator</property>
+   <property name="type">GTK_WINDOW_TOPLEVEL</property>
+   <property name="window_position">GTK_WIN_POS_NONE</property>
+   <property name="modal">False</property>
+diff -Naur kconfig-linux-3.18.9.ORIG/scripts/kconfig/mconf.c kconfig-linux-3.18.9/scripts/kconfig/mconf.c
+--- kconfig-linux-3.18.9.ORIG/scripts/kconfig/mconf.c	2015-03-06 23:53:42.000000000 +0100
++++ kconfig-linux-3.18.9/scripts/kconfig/mconf.c	2015-03-28 21:40:45.942212819 +0100
+@@ -31,16 +31,14 @@
+ "\n"
+ "Menu items beginning with following braces represent features that\n"
+ "  [ ] can be built in or removed\n"
+-"  < > can be built in, modularized or removed\n"
+-"  { } can be built in or modularized (selected by other feature)\n"
+ "  - - are selected by other feature,\n"
+-"while *, M or whitespace inside braces means to build in, build as\n"
+-"a module or to exclude the feature respectively.\n"
++"while * or whitespace inside braces means to build in,\n"
++"or to exclude the feature respectively.\n"
+ "\n"
+ "To change any of these features, highlight it with the cursor\n"
+-"keys and press <Y> to build it in, <M> to make it a module or\n"
++"keys and press <Y> to build it in, or\n"
+ "<N> to remove it.  You may also press the <Space Bar> to cycle\n"
+-"through the available options (i.e. Y->N->M->Y).\n"
++"through the available options (i.e. Y->N->Y).\n"
+ "\n"
+ "Some additional keyboard hints:\n"
+ "\n"
+@@ -176,9 +174,9 @@
+ 	"Arrow keys navigate the menu.  "
+ 	"<Enter> selects submenus ---> (or empty submenus ----).  "
+ 	"Highlighted letters are hotkeys.  "
+-	"Pressing <Y> includes, <N> excludes, <M> modularizes features.  "
++	"Pressing <Y> selectes a feature, while <N> will exclude a feature.  "
+ 	"Press <Esc><Esc> to exit, <?> for Help, </> for Search.  "
+-	"Legend: [*] built-in  [ ] excluded  <M> module  < > module capable"),
++	"Legend: [*] feature is selected  [ ] feature is excluded"),
+ radiolist_instructions[] = N_(
+ 	"Use the arrow keys to navigate this window or "
+ 	"press the hotkey of the item you wish to select "
+@@ -979,8 +977,7 @@
+ 	case -1:
+ 		printf(_("\n\n"
+ 			 "*** End of the configuration.\n"
+-			 "*** Execute 'make' to start the build or try 'make help'."
+-			 "\n\n"));
++			 "\n"));
+ 		res = 0;
+ 		break;
+ 	default:
+diff -Naur kconfig-linux-3.18.9.ORIG/scripts/kconfig/zconf.tab.c_shipped kconfig-linux-3.18.9/scripts/kconfig/zconf.tab.c_shipped
+--- kconfig-linux-3.18.9.ORIG/scripts/kconfig/zconf.tab.c_shipped	2015-03-06 23:53:42.000000000 +0100
++++ kconfig-linux-3.18.9/scripts/kconfig/zconf.tab.c_shipped	2015-03-28 21:40:45.942212819 +0100
+@@ -2297,7 +2297,7 @@
+ 
+ 	sym_init();
+ 	_menu_init();
+-	rootmenu.prompt = menu_add_prompt(P_MENU, "Linux Kernel Configuration", NULL);
++	rootmenu.prompt = menu_add_prompt(P_MENU, "KaarPux Configuration", NULL);
+ 
+ 	if (getenv("ZCONF_DEBUG"))
+ 		zconfdebug = 1;
+diff -Naur kconfig-linux-3.18.9.ORIG/scripts/kconfig/zconf.y kconfig-linux-3.18.9/scripts/kconfig/zconf.y
+--- kconfig-linux-3.18.9.ORIG/scripts/kconfig/zconf.y	2015-03-06 23:53:42.000000000 +0100
++++ kconfig-linux-3.18.9/scripts/kconfig/zconf.y	2015-03-28 21:40:45.942212819 +0100
+@@ -493,7 +493,7 @@
+ 
+ 	sym_init();
+ 	_menu_init();
+-	rootmenu.prompt = menu_add_prompt(P_MENU, "Linux Kernel Configuration", NULL);
++	rootmenu.prompt = menu_add_prompt(P_MENU, "KaarPux Configuration", NULL);
+ 
+ 	if (getenv("ZCONF_DEBUG"))
+ 		zconfdebug = 1;
+diff -Naur kconfig-linux-3.18.9.ORIG/scripts/kconfig/Makefile kconfig-linux-3.18.9/scripts/kconfig/Makefile
+--- kconfig-linux-3.18.9.ORIG/scripts/kconfig/Makefile	2015-03-06 23:53:42.000000000 +0100
++++ kconfig-linux-3.18.9/scripts/kconfig/Makefile	2015-04-02 15:04:29.560262676 +0200
+@@ -12,7 +12,7 @@
+ endif
+ 
+ # We need this, in case the user has it in its environment
+-unexport CONFIG_
++#unexport CONFIG_
+ 
+ xconfig: $(obj)/qconf
+ 	$< $(Kconfig)

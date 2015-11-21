@@ -1,0 +1,37 @@
+package:
+  name: attr
+  version: 2.4.47
+  www: http://savannah.nongnu.org/projects/attr
+  short: Commands for Manipulating Filesystem Extended Attributes
+
+download:
+  url: http://download.savannah.gnu.org/releases/attr/
+  file: attr-${KX_ATTR_VERSION}.src.tar.gz
+  checksum: 25772f653ac5b2e3ceeb89df50e4688891e21f723c460636548971652af0a859
+  verify: sig
+
+version:
+  installed_sh_trailing: getfattr --version
+  changelog: doc/CHANGES
+  source: http://git.savannah.gnu.org/cgit/attr.git
+
+bootstrap_7:
+
+    - configure_kx: --disable-static
+
+    - make: ~
+
+    - install: install-dev install-lib
+
+
+# ==========================================================
+
+verify_cli: |
+
+  kx_cli_success /bin/attr -l .
+  kx_cli_match_success "/bin/getfattr --version" { getfattr  }
+  kx_cli_match_success "/bin/setfattr --version" { setfattr  }
+  kx_cli_success /bin/getfattr -d .
+
+# TODO: better testcases
+

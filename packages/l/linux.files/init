@@ -1,0 +1,192 @@
+#!/bin/busybox sh
+
+
+# ########################################
+# INITAIL DEVICE NODES
+# ########################################
+
+mkdir -p /dev /proc /sys
+
+[ -e /dev/console ] || mknod -m 0600 /dev/console c 5 1
+[ -e /dev/null ] || mknod -m 0666 /dev/null c 1 3
+[ -e /dev/kmsg ] || mknod -m 0660 /dev/kmsg c 1 11
+
+
+# ########################################
+# REDIRECT OOUTPUT
+# ########################################
+
+# Keep a copy of the stdout and stderr file descriptors, to be used in case boot fails
+exec 3>&1
+exec 4>&2
+
+# If everything works fine, we want to redirect stdout and stderr to the kernel log
+exec >/dev/kmsg 2>&1
+
+echo "KaarPux initramfs: starting"
+
+
+# ########################################
+# FUNCTIONS
+# ########################################
+
+revert_redirects() {
+    # revert to old stdout and stderr file descriptors
+    exec 1>&3
+    exec 2>&4
+}
+
+shell() {
+    echo "KaarPux initramfs: dropping to busybox"
+    revert_redirects
+    /bin/busybox --install -s /bin
+    exec /bin/sh
+}
+
+error() {
+    echo "KaarPux initramfs: *** ERROR *** $1"
+    shell
+}
+
+
+# ########################################
+# BASIC DIRECTORIES AND MOUNTS
+# ########################################
+
+mount -t proc -o nosuid,nodev,noexec proc /proc || error "mounting /proc"
+mount -t sysfs -o nosuid,nodev,noexec sys /sys || error "mounting /sys"
+mount -t devtmpfs -o nosuid,noexec,mode=0755 devtmpfs /dev || error "mounting /dev"
+
+
+# ########################################
+# PROCESSING COMMANDLINE
+# ########################################
+
+CMDL="$(cat /proc/cmdline)" || error "unable to read /proc/cmdline"
+echo "KaarPux initramfs: processing commandline"
+echo "KaarPux initramfs: [$CMDL]"
+
+# Pass arguments we do not understand to the next init process
+INIT_ARGS=""
+
+# The init program
+INIT="/sbin/init"
+
+for x in $(cat /proc/cmdline); do
+	case $x in
+	root=*)
+		ROOT=${x#root=}
+		;;
+	init=*)
+		INIT=${x#init=}
+		;;
+	busybox)
+		BUSYBOX="yes"
+		;;
+	debuginitramfs)
+		DEBUG="yes"
+		;;
+	*)
+		INIT_ARGS="${INIT_ARGS} ${x}"
+		;;
+	esac
+done
+
+
+# ########################################
+# DEBUG OUTPUT IF SO REQUESTED
+# ########################################
+
+if [ -n "${DEBUG}" ]; then
+	echo "KaarPux initramfs: /dev"
+	find /dev -print
+	echo "KaarPux initramfs: /proc/partitions"
+	cat /proc/partitions
+	echo "KaarPux initramfs: /proc/filesystems"
+	cat /proc/filesystems
+	echo "KaarPux initramfs: blkid"
+	blkid
+fi
+
+
+# ########################################
+# DROP TO BUSYBOX IF SO REQUESTED
+# ########################################
+
+[ -n "${BUSYBOX}" ] && shell
+
+
+# ########################################
+# MOUNTING ROOT FILE SYSTEM
+# ########################################
+
+[ -z "${ROOT}" ] && error "no root= specified on commandline"
+
+case "${ROOT}" in
+LABEL=*|UUID=*)
+	echo "KaarPux initramfs: resolving root file system [${ROOT}]"
+	ROOT=$(findfs ${ROOT}) || error "no such root device"
+	;;
+esac
+
+echo "KaarPux initramfs: mounting root file system [${ROOT}]"
+mount -o ro ${ROOT} /mnt; ROOTRC=$?
+
+if [ "${ROOTRC}" -ne "0" ]; then
+	echo "KaarPux initramfs: *** problem mounting root file system."
+	echo "KaarPux initramfs: cat /proc/partitions"
+	cat /proc/partitions
+	echo "KaarPux initramfs: blkid"
+	blkid
+	echo "KaarPux initramfs: blkid -p ${ROOT}"
+	blkid -p ${ROOT}
+	echo "KaarPux initramfs: dd bs=2048 count=1 if=${ROOT} of=/dump.dd && hexdump -C /dump.dd"
+	dd bs=2048 count=1 if=${ROOT} of=/dump.dd && hexdump -C /dump.dd
+	echo "KaarPux initramfs: sleeping 1 sec."
+	sleep 1
+	echo "KaarPux initramfs: try again: mounting root file system [${ROOT}]"
+	mount -o ro ${ROOT} /mnt; ROOTRC=$?
+fi
+
+if [ "${ROOTRC}" -ne "0" ]; then
+	echo "KaarPux initramfs: *** problem mounting root file system."
+	echo "KaarPux initramfs: sleeping 10 sec."
+	sleep 10
+	echo "KaarPux initramfs: try again: mounting root file system [${ROOT}] -t ext4"
+	mount -t ext4 -o ro ${ROOT} /mnt; ROOTRC=$?
+fi
+[ "${ROOTRC}" -eq "0" ] || error "unable to mount root file system"
+
+
+# ########################################
+# FINAL MOUNTS
+# ########################################
+
+echo "KaarPux initramfs: moving mounts"
+
+mount -o move /dev /mnt/dev || error "moving /dev"
+mount -o move /proc /mnt/proc || error "moving /proc"
+mount -o move /sys /mnt/sys || error "moving /sys"
+
+echo "KaarPux initramfs: additional mounts"
+
+mkdir -p /mnt/dev/pts /mnt/run
+mount -t devpts -o nosuid,noexec,gid=5,mode=620 devpts /mnt/dev/pts || error "mounting /dev/pts"
+mount -t tmpfs -o size=30% tmpfs /mnt/run || error "mounting /run"
+
+mkdir -p /mnt/run/var
+mkdir -p /mnt/run/lock
+mkdir -p /mnt/run/shm
+chmod 1777 /mnt/run/shm
+ln -s /run/shm /mnt/dev/shm
+
+
+# ########################################
+# CONTINUE BOOT
+# ########################################
+
+echo "KaarPux initramfs: now booting on new root"
+echo "KaarPux initramfs: [ ${INIT} ${INIT_ARGS} ]"
+revert_redirects
+exec switch_root /mnt ${INIT} $INIT_ARGS
+

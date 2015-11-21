@@ -1,0 +1,27 @@
+package:
+  name: xcb-util-image
+  version: 0.4.0
+  www: http://xcb.freedesktop.org/
+  short: Utility libraries for XC Binding - Port of Xlib's XImage and XShmImage functions
+
+download:
+  url: http://xcb.freedesktop.org/dist/
+  file_tar_bz2: ~
+  checksum: 2db96a37d78831d643538dd1b595d7d712e04bdccf8896a5e18ce0f398ea2ffc
+
+version: ~
+
+linux:
+
+  - build:
+    - configure_kx: --disable-static
+    - make: ~
+
+  - test:
+    - check: ~
+
+  - install:
+    - install: ~
+
+
+

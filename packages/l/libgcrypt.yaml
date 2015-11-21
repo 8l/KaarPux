@@ -1,0 +1,36 @@
+package:
+  name: libgcrypt
+  version: 1.6.4
+  www: http://www.gnu.org/software/libgcrypt/
+  short: General purpose cryptographic library based on the code from GnuPG.
+
+download:
+  url: ftp://ftp.gnupg.org/gcrypt/libgcrypt/
+  file_tar_bz2: ~
+  checksum: c9bc2c7fe2e5f4ea13b0c74f9d24bcbb1ad889bb39297d8082aebf23f4336026
+  verify: sig
+
+doc: |
+  <para>
+  Provides functions for all cryptograhic building blocks:
+  <itemizedlist>
+  <listitem><para>symmetric ciphers (AES, DES, Blowfish, CAST5, Twofish, SEED, Camellia, Arcfour)</para></listitem>
+  <listitem><para>hash algorithms (MD4, MD5, RIPE-MD160, SHA-1, SHA_224, SHA-256, SHA-384, SHA-512, TIGER-192, Whirlpool)</para></listitem>
+  <listitem><para>MACs (HMAC for all hash algorithms), public key algorithms (RSA, Elgamal, DSA, ECDSA)</para></listitem>
+  <listitem><para>large integer functions</para></listitem>
+  <listitem><para>random numbers</para></listitem>
+  <listitem><para>and a lot of supporting functions</para></listitem>
+  </itemizedlist>
+  </para>
+
+version:
+  installed_sh_trailing: libgcrypt-config --version
+
+linux:
+  - build:
+    - configure_kx: ~
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~

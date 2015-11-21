@@ -1,0 +1,22 @@
+package:
+  name: cmake
+  version: 3.3.2
+  www: http://www.cmake.org/
+  short: CMake is a family of tools designed to build, test and package software.
+
+download:
+  url:  http://www.cmake.org/files/v${KX_CMAKE_VERSION_MM}/
+  file_tar_gz: ~
+  checksum: e75a178d6ebf182b048ebfe6e0657c49f0dc109779170bad7ffcb17463f2fc22
+
+version:
+  upstream: kxver_scrape_url("", "http://www.cmake.org/cmake/resources/software.html", qr|cmake-([0-9\.]+)\.tar\.gz|);
+
+linux:
+  - build:
+    - sh: ./bootstrap --prefix=/ --system-libs --no-system-jsoncpp --parallel=${KX_JOBS} --sphinx-man
+    - make: ~
+  - test:
+    - sh: bin/ctest --parallel ${KX_JOBS} -E Qt4Deploy || bin/ctest --rerun-failed
+  - install:
+    - install: ~

@@ -1,0 +1,27 @@
+package:
+  name: openjdk-cacerts
+  version: 1
+  short: Import Mozilla CA Certificates into Java keystore.
+
+download:
+  no_download: ~
+
+version:
+  installed: 1
+  upstream: 1
+
+opt:
+
+  - prepare_and_build:
+    - sh: mkdir -pv ${KX_BASE}/build/opt/${KX_OPENJDK_CACERTS}
+    - echo: "No build"
+
+  - install:
+    - sh: |
+        CACERTS=/opt/kaarpux/${KX_OPENJDK}/jre/lib/security/cacerts
+        mv ${CACERTS} ${CACERTS}.$(date +%s) || true
+        for F in $(cd "/etc/ssl/certs"; ls -1 *.pem); do
+        echo $F
+        keytool -importcert -file /etc/ssl/certs/$F -alias ${F%.pem} -keystore ${CACERTS} -storepass changeit -noprompt
+        done
+        keytool -list -keystore ${CACERTS} -storepass changeit

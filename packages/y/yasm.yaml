@@ -1,0 +1,32 @@
+package:
+  name: yasm
+  version: 1.3.0
+  www: http://yasm.tortall.net/
+  short: |
+      Yasm Modular Assembler Project: 
+      Yasm is a complete rewrite of the NASM assembler under the "new" BSD License.
+
+download:
+  url: http://www.tortall.net/projects/yasm/releases
+  file_tar_gz: ~
+  checksum: 3dce6601b495f5b3d45b59f7d2492a340ee7e84b5beca17e48f862502bd5603f
+
+version: ~
+
+linux:
+  - build:
+    - configure_kx: ~
+    - make: ~
+  - test:
+    - check: ~
+  - install:
+    - install: ~
+
+verify_cli: |
+  # TODO: Add real testcase
+  kx_cli_match_success "/bin/yasm --version" { yasm }
+
+  # Untested binaries:
+  # /bin/vsyasm
+  # /bin/ytasm
+
